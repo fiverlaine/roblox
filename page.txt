@@ -1,0 +1,382 @@
+Pagina 1 - https://robloxvault.space/api/products?page=2&limit=20&search=&tipo=&minPrice=0&maxPrice=9999999
+{
+    "success": true,
+    "total": 245,
+    "page": 1,
+    "totalPages": 13,
+    "produtos": [
+        {
+            "name": "Backtrack",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-8b8e45931f80ff23c7948320869b12a7/420/420/EmoteAnimation/Webp/noFilter",
+            "price": "498",
+            "priceRobux": 498,
+            "creator": "Tazzers UGC Investors",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/115857630898024/Backtrack"
+        },
+        {
+            "name": "Máscara de Ouro Dourado",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-c0b4cb514d8c31285c099a87d45c47a5/420/420/FaceAccessory/Webp/noFilter",
+            "price": "1.500",
+            "priceRobux": 1500,
+            "creator": "Digital Cosmos",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/17256250348/M-scara-de-Ouro-Dourado"
+        },
+        {
+            "name": "✅Camisa U Limitada",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-a510c9326796e0c8c740eabc140430b5/420/420/ShirtAccessory/Webp/noFilter",
+            "price": "2.000",
+            "priceRobux": 2000,
+            "creator": "Tazzers UGC Investors",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/102371031598801/Camisa-U-Limitada"
+        },
+        {
+            "name": "Valquíria",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-f708f69e274ae68dae535f199e1e1618/420/420/Hat/Webp/noFilter",
+            "price": "2.500",
+            "priceRobux": 2500,
+            "creator": "ClubFuture",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/73962723077265/Valqu-ria"
+        },
+        {
+            "name": "Esqueletar",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-decc4d129c3555560d6d610ef30e6f4e/420/420/Face/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "Roblox",
+            "itemType": "Regular",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/10770395/Esqueletar"
+        },
+        {
+            "name": "Halo Encantado de Gelo",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-c38116294139d2498c2b1569591fe0b7/420/420/Hat/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "@Dev_R0VER",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/13184014772/Halo-Encantado-de-Gelo"
+        },
+        {
+            "name": "Sem Barra de Textura",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-685d18b362dd1f00ad4061d66bb93a20/420/420/Hat/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "xThree",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/13656086039/Sem-Barra-de-Textura"
+        },
+        {
+            "name": "[⏳] Bill Cipher Edição de Pirâmide",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-bb5760ef8679aa59a5b347acf2ba6d15/420/420/Hat/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "The Night Club Productions",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/112164567021846/Bill-Cipher-Edi-o-de-Pir-mide"
+        },
+        {
+            "name": "Coroa Ornamental de Sakura Preta",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-d0f305a47f8cbd15f2a2614983103cea/420/420/Hat/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "桜 SAKURA",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/13686051785/Coroa-Ornamental-de-Sakura-Preta"
+        },
+        {
+            "name": "Coroa de Crânio de Rubi",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-56fd58b2a6d15d95e600dee11b697291/420/420/Hat/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "@Beac_n",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/13352462639/Coroa-de-Cr-nio-de-Rubi"
+        },
+        {
+            "name": "Saco de ombro acolchoado de treinador azul congelado",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-cbe917f5ce16b5be1bad96fa6ba55051/420/420/FrontAccessory/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "Coach",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/129554544492085/Saco-de-ombro-acolchoado-de-treinador-azul-congelado"
+        },
+        {
+            "name": "Martelo Preto e Vermelho do InceptionTime",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-f9632212d30f210eec94208aea790c82/420/420/BackAccessory/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "@InceptionTime",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/17365569287/Martelo-Preto-e-Vermelho-do-InceptionTime"
+        },
+        {
+            "name": "Troféu da Copa Stanley da NHL de 2024",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-b49b9a26283f8293871615676129f87f/420/420/BackAccessory/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "NHL Official Roblox Group",
+            "itemType": "Regular",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/87046302022718/Trof-u-da-Copa-Stanley-da-NHL-de-2024"
+        },
+        {
+            "name": "Lâmina do Eclipse da Sombra da Noite",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-7cdbfbb8d1d4d8c5cf3a7401c2b783a9/420/420/BackAccessory/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "Motion UGC",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/16899413491/L-mina-do-Eclipse-da-Sombra-da-Noite"
+        },
+        {
+            "name": "Cartola com Fita Amarela",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-6b7bce4cd1c89c6bcee788801fda3595/420/420/Hat/Webp/noFilter",
+            "price": "3.082",
+            "priceRobux": 3082,
+            "creator": "Roblox",
+            "itemType": "Regular",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/124746065/Cartola-com-Fita-Amarela"
+        },
+        {
+            "name": "Rosto Costurado",
+            "imageUrl": "https://tr.rbxcdn.com/30DAY-DynamicHeadCostume-60DFDF621949A1921B1A75D8BE5C03A7-Png/420/420/DynamicHeadCostume/Webp/noFilter",
+            "price": "3.082",
+            "priceRobux": 3082,
+            "creator": "Roblox",
+            "itemType": "Regular",
+            "url": "https://www.roblox.comhttps://www.roblox.com/bundles/1212/Rosto-Costurado"
+        },
+        {
+            "name": "Coroa de Louros Dourados",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-106e7d5254585ce82396790ce454b90b/420/420/Hat/Webp/noFilter",
+            "price": "3.082",
+            "priceRobux": 3082,
+            "creator": "Roblox",
+            "itemType": "Regular",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/10770304/Coroa-de-Louros-Dourados"
+        },
+        {
+            "name": "Fedora Brilhante Negra Clássica",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-9fcce6b3806ec24fb59a1d0d85e9a69f/420/420/Hat/Webp/noFilter",
+            "price": "3.200",
+            "priceRobux": 3200,
+            "creator": "16950458",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/74396164231010/Fedora-Brilhante-Negra-Cl-ssica"
+        },
+        {
+            "name": "🎃 Dominus",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-5a53706433b0d964fb9d437c35f619a3/420/420/Hat/Webp/noFilter",
+            "price": "3.200",
+            "priceRobux": 3200,
+            "creator": "General UGC",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/136027869014520/Dominus"
+        },
+        {
+            "name": "Dinheiro Cripto Moeda",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-67b8e8149b00e754147b137223ff37b1/420/420/FrontAccessory/Webp/noFilter",
+            "price": "3.200",
+            "priceRobux": 3200,
+            "creator": "Pudding Textiles",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/131046051501552/Dinheiro-Cripto-Moeda"
+        }
+    ]
+}
+
+Pagina 2 - https://robloxvault.space/api/products?page=2&limit=20&search=&tipo=&minPrice=0&maxPrice=9999999
+
+{
+    "success": true,
+    "total": 245,
+    "page": 2,
+    "totalPages": 13,
+    "produtos": [
+        {
+            "name": "✅ Preto",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-e75360a0e9f35a7da519424451ca0d3b/420/420/FaceAccessory/Webp/noFilter",
+            "price": "3.222",
+            "priceRobux": 3222,
+            "creator": "Prince Accessories",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/15150465553/Preto"
+        },
+        {
+            "name": "Chapéu Homburg Dourado",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-1ce4cbe4f2d26b678330cf7e5178e00d/420/420/Hat/Webp/noFilter",
+            "price": "3.333",
+            "priceRobux": 3333,
+            "creator": "@Yourius",
+            "itemType": "Regular",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/5918108592/Chap-u-Homburg-Dourado"
+        },
+        {
+            "name": "Fedora Vermelho Luminoso + Fones de ouvido + Tons + Chifres",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-ff3f82f365780601ec15427b4c3b51cf/420/420/Hat/Webp/noFilter",
+            "price": "3.369",
+            "priceRobux": 3369,
+            "creator": "Yummy studio!!",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/100562462909257/Fedora-Vermelho-Luminoso-Fones-de-ouvido-Tons-Chifres"
+        },
+        {
+            "name": "Relógio de Bolso Dourado Antigo",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-992485f7b7f30c86acd932686a26ba03/420/420/FrontAccessory/Webp/noFilter",
+            "price": "3.400",
+            "priceRobux": 3400,
+            "creator": "gospodindev's UGC",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/113078702226349/Rel-gio-de-Bolso-Dourado-Antigo"
+        },
+        {
+            "name": "Coroa de Estrela Negra",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-2b1a37b71597e5a474e5f34f5bab8051/420/420/Hat/Webp/noFilter",
+            "price": "3.450",
+            "priceRobux": 3450,
+            "creator": "Pixel-Creation",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/14827869178/Coroa-de-Estrela-Negra"
+        },
+        {
+            "name": "Senhor da Morte Korblox",
+            "imageUrl": "https://tr.rbxcdn.com/30DAY-Avatar-E130600A8A15FA27C8DD03FE92687684-Png/420/420/Avatar/Webp/noFilter",
+            "price": "3.464",
+            "priceRobux": 3464,
+            "creator": "Roblox",
+            "itemType": "Regular",
+            "url": "https://www.roblox.comhttps://www.roblox.com/bundles/154/Senhor-da-Morte-Korblox"
+        },
+        {
+            "name": "Le Lapin Rouge",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-f040c37415ed3e1b84b5ba07f799bb9b/420/420/Hat/Webp/noFilter",
+            "price": "3.468",
+            "priceRobux": 3468,
+            "creator": "Roblox",
+            "itemType": "Regular",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/15668139/Le-Lapin-Rouge"
+        },
+        {
+            "name": "Arco Rosa com Estrelas e Crescente Lunar",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-89e52fc476ee8a9c5d1dfcd4043db498/420/420/Hat/Webp/noFilter",
+            "price": "3.499",
+            "priceRobux": 3499,
+            "creator": "TYC Limiteds",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/100420394912721/Arco-Rosa-com-Estrelas-e-Crescente-Lunar"
+        },
+        {
+            "name": "Capa de Sigil Abandonada de Aço Azul",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-ef95fb770e581252057c50b1aa906f83/420/420/BackAccessory/Webp/noFilter",
+            "price": "3.499",
+            "priceRobux": 3499,
+            "creator": "Kings",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/104151574509864/Capa-de-Sigil-Abandonada-de-A-o-Azul"
+        },
+        {
+            "name": "Chifres de Halo Branco [LIMITADO]",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-8d39d48a3c51f15c30d8e7607848542b/420/420/Hat/Webp/noFilter",
+            "price": "3.500",
+            "priceRobux": 3500,
+            "creator": "Olympus Studio.",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/109874914396426/Chifres-de-Halo-Branco-LIMITADO"
+        },
+        {
+            "name": "Balde da Perdição",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-6b7c4ac86cacb0f38672e824148d0be7/420/420/Hat/Webp/noFilter",
+            "price": "3.500",
+            "priceRobux": 3500,
+            "creator": "Epic’s UGC Plus",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/85455901359402/Balde-da-Perdi-o"
+        },
+        {
+            "name": "Diadema Alada",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-149779b3ef5161e5dd7545b3dde05f46/420/420/Hat/Webp/noFilter",
+            "price": "3.500",
+            "priceRobux": 3500,
+            "creator": ".heavensent",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/14425166517/Diadema-Alada"
+        },
+        {
+            "name": "Fedora Azul Brilhante Clássica",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-eb79e95dec5a2d0f7ec2f9e2ed7cfaf6/420/420/Hat/Webp/noFilter",
+            "price": "3.597",
+            "priceRobux": 3597,
+            "creator": "16950458",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/81215817360474/Fedora-Azul-Brilhante-Cl-ssica"
+        },
+        {
+            "name": "Lidar com isso Meme Sunglasses",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-4f07fe9c763f770565282f9e7a491492/420/420/FaceAccessory/Webp/noFilter",
+            "price": "3.599",
+            "priceRobux": 3599,
+            "creator": "Classic Epic Wear",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/124410012240925/Lidar-com-isso-Meme-Sunglasses"
+        },
+        {
+            "name": "ASAS DE DRAGÃO PRETO",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-555604a9bc17fecb8092d914788ff078/420/420/BackAccessory/Webp/noFilter",
+            "price": "3.600",
+            "priceRobux": 3600,
+            "creator": "Vestigia",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/100753214757136/ASAS-DE-DRAG-O-PRETO"
+        },
+        {
+            "name": "Rosto Sério",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-82ca798aa44c28597591cf08b7369f8b/420/420/FaceAccessory/Webp/noFilter",
+            "price": "3.600",
+            "priceRobux": 3600,
+            "creator": "@Miner79954",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/15404600482/Rosto-S-rio"
+        },
+        {
+            "name": "[LIMITADO] ✨ Chifres de Estrela Brilhante Rosa",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-1483414a90782c6b11fc5f93964f955c/420/420/Hat/Webp/noFilter",
+            "price": "3.616",
+            "priceRobux": 3616,
+            "creator": "@Ilikespaghettiyeah",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/107702689123524/LIMITADO-Chifres-de-Estrela-Brilhante-Rosa"
+        },
+        {
+            "name": "Dominus",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-de7727522e36b910ae8e20085994a902/420/420/Hat/Webp/noFilter",
+            "price": "3.700",
+            "priceRobux": 3700,
+            "creator": "Con Artist Studios",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/109638058240607/Dominus"
+        },
+        {
+            "name": "Chifres Korblox",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-6dc0b32b5414db6dd0c23e28e5c36f45/420/420/Hat/Webp/noFilter",
+            "price": "3.750",
+            "priceRobux": 3750,
+            "creator": "@9_Spy",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/14616930490/Chifres-Korblox"
+        },
+        {
+            "name": "Espada da Eternidade: Quartzo Rosa [PBR]",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-77dca25e685595c38c96f66243bc0c91/420/420/BackAccessory/Webp/noFilter",
+            "price": "3.775",
+            "priceRobux": 3775,
+            "creator": "Theia's Vision",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/130865902253834/Espada-da-Eternidade-Quartzo-Rosa-PBR"
+        }
+    ]
+}
+
+Vai até a pagina 13

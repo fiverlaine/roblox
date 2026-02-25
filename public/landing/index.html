@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecionando...</title>
+</head>
+<body>
+  <p>Redirecionando...</p>
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'YOUR_PIXEL_ID_HERE');
+    fbq('track', 'PageView');
+  </script>
+  <noscript>
+    <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_HERE&ev=PageView&noscript=1"/>
+  </noscript>
+
+  <script>
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+
+    function getAllTrackingParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return {
+        utm_source: urlParams.get('utm_source') || '',
+        utm_medium: urlParams.get('utm_medium') || '',
+        utm_campaign: urlParams.get('utm_campaign') || '',
+        utm_term: urlParams.get('utm_term') || '',
+        utm_content: urlParams.get('utm_content') || '',
+        fbclid: urlParams.get('fbclid') || '',
+        fbp: getCookie('_fbp') || '',
+      };
+    }
+
+    function redirect() {
+      if (typeof fbq === 'function') {
+        fbq('track', 'Lead');
+      }
+
+      const params = getAllTrackingParams();
+      const queryString = new URLSearchParams(params).toString();
+
+      // Replace with your Supabase Edge Function URL
+      const trackingUrl = window.TRACKING_URL || '/api/tracking-redirect';
+      window.location.href = `${trackingUrl}?${queryString}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(redirect, 500);
+    });
+  </script>
+</body>
+</html>

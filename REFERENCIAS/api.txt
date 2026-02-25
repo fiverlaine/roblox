@@ -1,0 +1,199 @@
+https://robloxvault.space/api/inventory
+
+{
+    "success": true,
+    "estatisticas": {
+        "totalItens": 1,
+        "totalVendidos": 0,
+        "valorTotalRobux": 23914,
+        "valorTotalReal": 1282.44
+    },
+    "itens": [
+        {
+            "id": "699d234474d4019efe0e3e63",
+            "produto": {
+                "name": "Cavaleiro sem cabeça",
+                "imageUrl": "https://tr.rbxcdn.com/180DAY-0be55d9369fdecdfd1ce9bf2c94c85b8/420/420/ShoulderAccessory/Webp/noFilter",
+                "price": "23.914",
+                "creator": "[ Content Deleted 762382241 ]",
+                "itemType": "Regular",
+                "url": "https://www.roblox.comhttps://www.roblox.com/catalog/101294663369417/Cavaleiro-sem-cabe-a"
+            },
+            "valorRobux": 23914,
+            "valorReal": 1282.44,
+            "status": "ativo",
+            "compradoEm": "2026-02-24T04:04:20.752Z"
+        }
+    ]
+}
+
+--------------------------------------
+
+https://robloxvault.space/api/auth/me
+
+{
+    "success": true,
+    "usuario": {
+        "id": "699d166a74d4019efe0dcdd7",
+        "nome": "Julio Cezar",
+        "email": "fiverlaine123@gmail.com",
+        "cpf": "12345678990",
+        "saldoRobux": 86,
+        "saldoReal": 0,
+        "possuiLicenca": false,
+        "avatar": null,
+        "criado_em": "2026-02-24T03:09:30.655Z",
+        "isAdmin": false
+    }
+}
+
+--------------------------------------
+
+https://robloxvault.space/api/inventory/estatisticas
+
+{
+    "success": true,
+    "estatisticas": {
+        "totalCompras": 1,
+        "itensAtivos": 1,
+        "itensVendidos": 0,
+        "totalGastoRobux": 23914,
+        "totalVendasRobux": 0,
+        "itemMaisCaro": {
+            "produto": {
+                "name": "Cavaleiro sem cabeça",
+                "imageUrl": "https://tr.rbxcdn.com/180DAY-0be55d9369fdecdfd1ce9bf2c94c85b8/420/420/ShoulderAccessory/Webp/noFilter",
+                "price": "23.914",
+                "creator": "[ Content Deleted 762382241 ]",
+                "itemType": "Regular",
+                "url": "https://www.roblox.comhttps://www.roblox.com/catalog/101294663369417/Cavaleiro-sem-cabe-a"
+            },
+            "_id": "699d234474d4019efe0e3e63",
+            "usuario_id": "699d166a74d4019efe0dcdd7",
+            "valorRobux": 23914,
+            "status": "ativo",
+            "compradoEm": "2026-02-24T04:04:20.752Z",
+            "createdAt": "2026-02-24T04:04:20.752Z",
+            "updatedAt": "2026-02-24T04:04:20.752Z",
+            "__v": 0
+        },
+        "ultimaCompra": {
+            "produto": {
+                "name": "Cavaleiro sem cabeça",
+                "imageUrl": "https://tr.rbxcdn.com/180DAY-0be55d9369fdecdfd1ce9bf2c94c85b8/420/420/ShoulderAccessory/Webp/noFilter",
+                "price": "23.914",
+                "creator": "[ Content Deleted 762382241 ]",
+                "itemType": "Regular",
+                "url": "https://www.roblox.comhttps://www.roblox.com/catalog/101294663369417/Cavaleiro-sem-cabe-a"
+            },
+            "_id": "699d234474d4019efe0e3e63",
+            "usuario_id": "699d166a74d4019efe0dcdd7",
+            "valorRobux": 23914,
+            "status": "ativo",
+            "compradoEm": "2026-02-24T04:04:20.752Z",
+            "createdAt": "2026-02-24T04:04:20.752Z",
+            "updatedAt": "2026-02-24T04:04:20.752Z",
+            "__v": 0
+        },
+        "totalVendasReal": 0
+    }
+}
+
+--------------------------------------
+
+https://robloxvault.space/api/products/destaque
+{
+    "success": true,
+    "produtos": [
+        {
+            "name": "Headdress Preto",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-f601245795c474e2cf1927f805719703/420/420/Hat/Webp/noFilter",
+            "price": "10.000",
+            "priceRobux": 10000,
+            "creator": "cpu ᅠ",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/14146971952/Headdress-Preto"
+        },
+        {
+            "name": "Galinha extremamente brilhosa faiscante",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-6da146476d47da37d1d74794ea03f557/420/420/Hat/Webp/noFilter",
+            "price": "9.450",
+            "priceRobux": 9450,
+            "creator": "Roblox",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/12805007199/Galinha-extremamente-brilhosa-faiscante"
+        },
+        {
+            "name": "Sombra de Olho Verde Blackout",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-2c2457339be56258ca75ca6707c6b7d2/420/420/FaceAccessory/Webp/noFilter",
+            "price": "4.289",
+            "priceRobux": 4289,
+            "creator": "Classics Factory",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/14437436638/Sombra-de-Olho-Verde-Blackout"
+        },
+        {
+            "name": "Coroa de Estrela Negra",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-2b1a37b71597e5a474e5f34f5bab8051/420/420/Hat/Webp/noFilter",
+            "price": "3.450",
+            "priceRobux": 3450,
+            "creator": "Pixel-Creation",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/14827869178/Coroa-de-Estrela-Negra"
+        },
+        {
+            "name": "Asas de esqueleto do ceifeiro de ossos",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-7f92859e5fc9143328e1bb0971986ccf/420/420/BackAccessory/Webp/noFilter",
+            "price": "4.999",
+            "priceRobux": 4999,
+            "creator": "Theia's Vision",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/15453615103/Asas-de-esqueleto-do-ceifeiro-de-ossos"
+        },
+        {
+            "name": "Saco de ombro acolchoado de treinador azul congelado",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-cbe917f5ce16b5be1bad96fa6ba55051/420/420/FrontAccessory/Webp/noFilter",
+            "price": "3.000",
+            "priceRobux": 3000,
+            "creator": "Coach",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/129554544492085/Saco-de-ombro-acolchoado-de-treinador-azul-congelado"
+        },
+        {
+            "name": "Dupla arma de dinheiro vermelha",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-59ef573d67a93ea76646d0ea562ec98d/420/420/ShoulderAccessory/Webp/noFilter",
+            "price": "4.999",
+            "priceRobux": 4999,
+            "creator": "@KURISHIU",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/13019484027/Dupla-arma-de-dinheiro-vermelha"
+        },
+        {
+            "name": "Relógio de Bolso Dourado Antigo",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-992485f7b7f30c86acd932686a26ba03/420/420/FrontAccessory/Webp/noFilter",
+            "price": "3.400",
+            "priceRobux": 3400,
+            "creator": "gospodindev's UGC",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/113078702226349/Rel-gio-de-Bolso-Dourado-Antigo"
+        },
+        {
+            "name": "O sorriso icônico do ídolo de olhos violetas brilhantes 🌠 Ai",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-5fc1d28cc89e3971bcf2ab29b5d73242/420/420/FaceAccessory/Webp/noFilter",
+            "price": "4.000",
+            "priceRobux": 4000,
+            "creator": "CrazyErzy's Club",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/14246671559/O-sorriso-ic-nico-do-dolo-de-olhos-violetas-brilhantes-Ai"
+        },
+        {
+            "name": "Martelo de Hallow Fantasmagórico",
+            "imageUrl": "https://tr.rbxcdn.com/180DAY-000fc1f0835529b932ed8736d424dfb9/420/420/BackAccessory/Webp/noFilter",
+            "price": "15.556",
+            "priceRobux": 15556,
+            "creator": "Yuko's UGC",
+            "itemType": "Limited U",
+            "url": "https://www.roblox.comhttps://www.roblox.com/catalog/15355800057/Martelo-de-Hallow-Fantasmag-rico"
+        }
+    ]
+}

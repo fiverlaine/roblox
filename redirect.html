@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirecionando...</title>
+
+  <!-- Meta Pixel Code -->
+  <script>
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod
+          ? n.callMethod.apply(n, arguments)
+          : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = !0;
+      n.version = "2.0";
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = !0;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    })(
+      window,
+      document,
+      "script",
+      "https://connect.facebook.net/en_US/fbevents.js",
+    );
+    fbq("init", "2001703983730286");
+    fbq("track", "PageView");
+  </script>
+  <noscript><img height="1" width="1" style="display: none"
+      src="https://www.facebook.com/tr?id=2001703983730286&ev=PageView&noscript=1" /></noscript>
+  <!-- End Meta Pixel Code -->
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #4678C0 0%, #2d5aa0 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      color: white;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+  </style>
+
+  <script>
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+      return null;
+    }
+
+    function getAllTrackingParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const trackingParams = {};
+      const utmKeys = [
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_term",
+        "utm_content",
+      ];
+
+      if (urlParams.has("fbclid")) {
+        trackingParams.fbclid = urlParams.get("fbclid");
+      }
+
+      utmKeys.forEach((key) => {
+        if (urlParams.has(key)) {
+          trackingParams[key] = urlParams.get(key);
+        }
+      });
+
+      const fbpCookie = getCookie("_fbp");
+      if (fbpCookie) {
+        trackingParams.fbp = fbpCookie;
+      }
+
+      return trackingParams;
+    }
+
+    function redirect() {
+      // Edge Function URL - handles lead creation + redirect to Telegram bot
+      const edgeFunctionURL =
+        "https://eopofvyigdokxatoijzt.supabase.co/functions/v1/tracking-redirect";
+      const trackingParams = getAllTrackingParams();
+
+      // Fire Lead event before redirecting
+      if (typeof fbq !== "undefined") {
+        fbq("track", "Lead");
+      }
+
+      let finalURL = edgeFunctionURL;
+      if (Object.keys(trackingParams).length > 0) {
+        finalURL = `${edgeFunctionURL}?${new URLSearchParams(trackingParams).toString()}`;
+      }
+
+      window.location.href = finalURL;
+    }
+
+    // Wait 500ms for Meta Pixel to load and create _fbp cookie, then redirect
+    window.addEventListener("DOMContentLoaded", () => {
+      setTimeout(redirect, 500);
+    });
+  </script>
+</head>
+
+<body>
+  <div class="loader">
+    <div class="spinner"></div>
+    <p>Redirecionando...</p>
+  </div>
+</body>
+
+</html>
