@@ -204,8 +204,10 @@ export const useItemStore = create<ItemState>()((set, get) => ({
       
       if (uiError || !userItem) throw uiError || new Error('Item not found');
 
-      const itemValue = (userItem.item.price_robux * 0.05);
+      // Net value: 0.046037 per Robux (after platform fee)
+      const itemValue = userItem.item.price_robux * 0.046037;
 
+      // Mark item as selling
       const { error: updateError } = await supabase
         .from('user_items')
         .update({ status: 'selling' })
@@ -213,17 +215,31 @@ export const useItemStore = create<ItemState>()((set, get) => ({
 
       if (updateError) throw updateError;
 
-      // Update profile balance
+      // Update profile balance - parseFloat to avoid string concatenation
+      // (numeric type from Supabase returns as string "0.00")
       const { data: profile } = await supabase
         .from('profiles')
         .select('real_balance')
         .eq('id', user.id)
         .single();
 
-      await supabase
+      const currentBalance = parseFloat(String(profile?.real_balance ?? '0'));
+      const newBalance = currentBalance + itemValue;
+
+      const { error: balanceError } = await supabase
         .from('profiles')
-        .update({ real_balance: (profile?.real_balance || 0) + itemValue })
+        .update({ real_balance: newBalance })
         .eq('id', user.id);
+
+      if (balanceError) throw balanceError;
+
+      // Mark item as sold with timestamp
+      const { error: soldError } = await supabase
+        .from('user_items')
+        .update({ status: 'sold', sold_at: new Date().toISOString() })
+        .eq('id', userItemId);
+
+      if (soldError) throw soldError;
 
       // Refresh user items
       await get().fetchUserItems();
