@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CreditCard, Loader2, Coins } from 'lucide-react';
+import { X, Loader2, Coins, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import type { Item } from '../../lib/types';
 import { formatRobux } from '../../lib/utils';
+import { useAuthStore } from '../../stores/authStore';
 import { supabase } from '../../lib/supabase';
 
 interface PurchaseModalProps {
@@ -11,36 +13,19 @@ interface PurchaseModalProps {
   onClose: () => void;
 }
 
-function formatCardNumber(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 16);
-  return digits.replace(/(.{4})/g, '$1 ').trim();
-}
-
-function formatExpiry(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 4);
-  if (digits.length >= 3) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-  return digits;
-}
-
 export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
+  const navigate = useNavigate();
+  const { profile, refreshBalance } = useAuthStore();
   const [loading, setLoading] = useState(false);
-
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardName, setCardName] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
 
   if (!item) return null;
 
-  const isValid =
-    cardNumber.replace(/\s/g, '').length === 16 &&
-    cardName.trim().length >= 3 &&
-    /^\d{2}\/\d{2}$/.test(expiry) &&
-    /^\d{3,4}$/.test(cvv);
+  const hasEnoughRobux = profile && profile.robux_balance >= item.price_robux;
 
   const handlePurchase = async () => {
-    if (!isValid) {
-      toast.error('Preencha todos os dados do cartão');
+    if (!profile) return;
+    if (!hasEnoughRobux) {
+      toast.error('Saldo de Robux insuficiente');
       return;
     }
 
@@ -52,32 +37,25 @@ export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
         return;
       }
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/validate-card-purchase`,
+      const { data: result, error: apiError } = await supabase.functions.invoke(
+        'buy-item-with-robux',
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            card_number: cardNumber,
-            holder_name: cardName,
-            expiry,
-            cvv,
-            item_id: item.id,
-          }),
-        },
+          body: { item_id: item.id },
+        }
       );
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        toast.error(result.error || 'Erro ao processar compra');
+      if (apiError) {
+        toast.error(apiError.message || 'Erro ao processar compra');
         return;
       }
 
-      toast.success('Compra realizada com sucesso!');
+      if (result && result.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      await refreshBalance();
+      toast.success('Item comprado com sucesso!');
       onClose();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro ao processar compra';
@@ -131,69 +109,63 @@ export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
             </div>
           </div>
 
-
-
-          <h3 className="text-sm font-semibold text-text-primary mb-1">Dados do Cartão</h3>
-          <p className="text-xs text-text-secondary mb-3">Use o cartão gerado no bot do Telegram</p>
-
-          <div className="space-y-3">
-            <div className="relative">
-              <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-text-tertiary pointer-events-none" />
-              <input
-                type="text"
-                inputMode="numeric"
-                placeholder="Número do Cartão"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                className="input pl-11"
-              />
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-500 font-medium">Seu saldo de Robux</span>
+              <span className={`text-sm font-bold ${hasEnoughRobux ? 'text-brand-primary' : 'text-red-500'}`}>
+                {profile ? formatRobux(profile.robux_balance) : 0} R$
+              </span>
             </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                type="text"
-                placeholder="Nome no Cartão"
-                value={cardName}
-                onChange={(e) => setCardName(e.target.value)}
-                className="input"
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                placeholder="Validade (MM/AA)"
-                value={expiry}
-                onChange={(e) => setExpiry(formatExpiry(e.target.value))}
-                className="input"
-              />
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-gray-500 font-medium">Valor do Card</span>
+              <span className="text-sm font-bold text-gray-900">
+                - {formatRobux(item.price_robux)} R$
+              </span>
             </div>
-
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="CVV"
-              value={cvv}
-              onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
-              className="input max-w-[120px]"
-            />
+            <div className="h-px bg-gray-200 w-full my-2"></div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-900 font-bold">Saldo restante</span>
+              <span className={`text-sm font-bold ${hasEnoughRobux ? 'text-brand-primary' : 'text-red-500'}`}>
+                {profile ? formatRobux(profile.robux_balance - item.price_robux) : 0} R$
+              </span>
+            </div>
           </div>
 
-          <button
-            onClick={handlePurchase}
-            disabled={!isValid || loading}
-            className="btn btn-primary w-full mt-5 disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Processando...
-              </>
-            ) : (
-              <>
-                <Coins className="w-5 h-5" />
-                Comprar por {formatRobux(item.price_robux)} Robux
-              </>
-            )}
-          </button>
+          {!hasEnoughRobux ? (
+            <div className="space-y-4">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3">
+                <p className="text-sm text-red-700 font-medium text-center">
+                  Você não tem saldo de Robux suficiente para esta compra.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  onClose();
+                  navigate('/comprar-robux');
+                }}
+                className="btn btn-primary w-full bg-brand-primary hover:bg-brand-primary/90"
+              >
+                <Coins className="w-5 h-5 mr-2" />
+                Comprar mais Robux
+                <ArrowRight className="w-4 h-4 ml-auto" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={handlePurchase}
+              disabled={loading}
+              className="btn btn-primary w-full disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  Processando...
+                </>
+              ) : (
+                'Confirmar Compra'
+              )}
+            </button>
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>

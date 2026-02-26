@@ -61,28 +61,26 @@ export default function BuyRobux() {
         return;
       }
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/validate-card-purchase`,
+      const { data: result, error: apiError } = await supabase.functions.invoke(
+        'validate-card-purchase',
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
+          body: {
             card_number: cardNumber,
             holder_name: holderName,
             expiry,
             cvv,
             robux_amount: selectedPackage.robux,
-          }),
+          },
         }
       );
 
-      const result = await response.json();
+      if (apiError) {
+        toast.error(apiError.message || "Erro ao processar pagamento");
+        return;
+      }
 
-      if (!response.ok) {
-        toast.error(result.error || "Erro ao processar pagamento");
+      if (result && result.error) {
+        toast.error(result.error);
         return;
       }
 
