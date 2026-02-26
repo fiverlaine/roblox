@@ -9,7 +9,6 @@ import {
   Mail, 
   Key, 
   User as UserIcon,
-  DollarSign,
   Copy,
   CheckCircle,
   Clock,
@@ -246,70 +245,72 @@ export default function Wallet() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-20">
-      <div className="container mx-auto px-4 pt-8 max-w-2xl">
+    <div className="min-h-screen bg-white pb-24">
+      <div className="container mx-auto px-6 pt-8 max-w-md">
+        {/* Header Navigation */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors mb-8 font-medium group"
+          className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors mb-6 font-medium group"
         >
           <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
           <span>Voltar</span>
         </button>
 
-        <h1 className="text-2xl font-black text-gray-900 mb-8 tracking-tight">Central de Saques</h1>
+        <h1 className="text-2xl font-black text-gray-900 mb-6 tracking-tight">Central de Saques</h1>
 
         {/* Saldo Disponível Card */}
-        <div className="relative overflow-hidden rounded-[32px] bg-[#E8F5F1] p-8 mb-10 group selection:bg-emerald-100">
+        <div className="relative overflow-hidden rounded-[24px] bg-[#E8F5F2] p-6 mb-8 shadow-sm">
           <div className="relative z-10">
-            <div className="flex items-center gap-2 text-emerald-800/60 mb-3 font-semibold text-sm">
-              <WalletIcon size={18} />
-              <span>Saldo Disponível</span>
+            <div className="flex items-center gap-2 text-[#4A7D71] mb-2 font-bold text-sm">
+              <Clock size={16} className="text-[#4A7D71]" />
+              <span className="opacity-80">Saldo Disponível</span>
             </div>
-            <div className="flex items-baseline gap-1.5 mb-5">
-              <span className="text-2xl font-bold text-emerald-500">R$</span>
-              <span className="text-5xl font-black text-emerald-500 tracking-tighter">
+            <div className="flex items-baseline gap-1 mt-1">
+              <span className="text-xl font-bold text-[#27A17D] mr-1">R$</span>
+              <span className="text-4xl font-black text-[#27A17D] tracking-tight">
                 {balanceParts[0]}
               </span>
-              <span className="text-3xl font-bold text-emerald-500/70">
+              <span className="text-2xl font-bold text-[#27A17D] opacity-80">
                 ,{balanceParts[1]}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-emerald-800/50">
-              <Zap size={16} className="fill-emerald-800/10 text-emerald-500" />
-              <span className="text-xs font-bold">Saques processados via PIX instantâneo</span>
+            <div className="flex items-center gap-2 text-[#4A7D71] mt-5 opacity-70">
+              <Zap size={14} className="fill-[#27A17D] text-[#27A17D]" />
+              <span className="text-[10px] font-bold uppercase tracking-wide">Saques processados via PIX instantâneo</span>
             </div>
           </div>
-          <div className="absolute right-[-20px] bottom-[-20px] opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
-            <WalletIcon size={200} />
+          {/* Background Wallet Icon */}
+          <div className="absolute right-[-10px] bottom-[-10px] opacity-[0.04] rotate-12 pointer-events-none">
+            <WalletIcon size={140} />
           </div>
         </div>
 
         {/* Form Solicitar Retirada */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           <div>
-            <h2 className="text-xl font-black text-gray-900 mb-1">Solicitar Retirada</h2>
-            <p className="text-sm text-gray-500 font-medium">Preencha os dados para receber seu pagamento</p>
+            <h2 className="text-lg font-black text-gray-900 mb-0.5">Solicitar Retirada</h2>
+            <p className="text-xs text-gray-400 font-medium">Preencha os dados para receber seu pagamento</p>
           </div>
 
-          <div className="space-y-6">
-            <div className="space-y-2.5">
-              <label className="block text-sm font-bold text-gray-700 px-1">Valor do Saque</label>
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <label className="block text-[13px] font-bold text-gray-700 ml-1">Valor do Saque</label>
               <div className="relative">
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
-                  <WalletIcon size={20} />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <WalletIcon size={18} />
                 </div>
                 <input
                   type="text"
                   placeholder="0,00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full pl-14 pr-5 py-5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 transition-all outline-none font-bold text-gray-800"
+                  className="w-full pl-12 pr-5 py-4 bg-gray-50/80 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#27A17D]/5 focus:border-[#27A17D]/30 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300"
                 />
               </div>
             </div>
 
-            <div className="space-y-4">
-              <label className="block text-sm font-bold text-gray-700 px-1">Tipo de Chave PIX</label>
+            <div className="space-y-4 pt-1">
+              <label className="block text-[13px] font-bold text-gray-700 ml-1">Tipo de Chave PIX</label>
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { id: 'cpf', label: 'CPF', icon: <UserIcon size={20} /> },
@@ -320,50 +321,69 @@ export default function Wallet() {
                   <button
                     key={type.id}
                     onClick={() => setPixKeyType(type.id as PixKeyType)}
-                    className={`flex flex-col items-center justify-center gap-2.5 p-5 rounded-2xl border-2 transition-all duration-200 ${
+                    className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 ${
                       pixKeyType === type.id
-                        ? 'bg-blue-50 border-blue-500 text-blue-600 shadow-md transform scale-[1.02]'
-                        : 'bg-white border-gray-50 text-gray-400 hover:border-gray-100 hover:bg-gray-50'
+                        ? 'bg-[#F2F5FF] border-[#4F6BFF] text-[#4F6BFF] shadow-sm transform scale-[1.02]'
+                        : 'bg-[#F9FAFB] border-transparent text-gray-400 hover:bg-gray-100'
                     }`}
                   >
-                    <div className={`${pixKeyType === type.id ? 'text-blue-600' : 'text-gray-300'}`}>
+                    <div className={`${pixKeyType === type.id ? 'text-[#4F6BFF]' : 'text-gray-300'}`}>
                       {type.icon}
                     </div>
-                    <span className="text-[11px] font-black uppercase tracking-widest">{type.label}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">{type.label}</span>
                   </button>
                 ))}
               </div>
 
-              <div className="pt-2">
+              <div className="space-y-2 pt-1">
+                 <label className="block text-[13px] font-bold text-gray-700 ml-1">Chave PIX</label>
                 <input
                   type="text"
-                  placeholder={`Informe seu ${pixKeyType === 'random' ? 'Chave Aleatória' : pixKeyType.toUpperCase()}`}
+                  placeholder={pixKeyType === 'cpf' ? '000.000.000-00' : `Informe seu ${pixKeyType === 'random' ? 'Chave Aleatória' : pixKeyType.toUpperCase()}`}
                   value={pixKey}
                   onChange={(e) => setPixKey(e.target.value)}
-                  className="w-full px-6 py-5 bg-gray-50/50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all outline-none font-bold text-gray-800"
+                  className="w-full px-5 py-4 bg-gray-50/80 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#4F6BFF]/5 focus:border-[#4F6BFF]/30 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300"
                 />
               </div>
             </div>
           </div>
 
-          <div className="pt-4 pb-10">
+          {/* Info Box */}
+          <div className="bg-[#F6F8FF] rounded-3xl p-5 border border-[#4F6BFF]/5 mt-4">
+             <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-[#E8EDFF] flex items-center justify-center">
+                   <Zap size={16} className="text-[#4F6BFF] fill-[#4F6BFF]" />
+                </div>
+                <span className="text-sm font-bold text-gray-900">Informações do Saque:</span>
+             </div>
+             <div className="space-y-2.5 ml-1">
+                <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+                   <CheckCircle size={14} className="text-emerald-500" />
+                   <span>Valor mínimo: R$ 10,00</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+                   <Zap size={14} className="text-orange-400 fill-orange-400" />
+                   <span>Prazo: Instantâneo (24/7)</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+                   <CheckCircle size={14} className="text-emerald-500" />
+                   <span>Taxa zero para saques</span>
+                </div>
+             </div>
+          </div>
+
+          <div className="pt-2 pb-6">
             <button
               onClick={handleRequestWithdrawal}
               disabled={loading}
-              className="w-full h-[64px] bg-gray-900 hover:bg-black text-white text-lg font-black rounded-2xl shadow-xl shadow-gray-200 transition-all active:scale-[0.98] flex items-center justify-center gap-3 uppercase tracking-wider"
+              className="w-full h-[60px] bg-[#4F6BFF] hover:bg-[#3D55D9] text-white text-base font-black rounded-2xl shadow-lg shadow-[#4F6BFF]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
             >
               {loading ? (
-                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <Loader2 size={24} className="animate-spin" />
               ) : (
-                <>
-                  <DollarSign size={22} className="text-emerald-400" />
-                  <span>Solicitar Saque</span>
-                </>
+                <span>Confirmar Saque</span>
               )}
             </button>
-            <p className="text-center text-[10px] text-gray-400 mt-5 font-bold uppercase tracking-widest bg-gray-50 py-2 rounded-full inline-block px-6 mx-auto w-full">
-              O processamento pode levar até 2 horas
-            </p>
           </div>
         </div>
       </div>

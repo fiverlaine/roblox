@@ -20,7 +20,7 @@ interface ItemState {
   fetchFeaturedItems: () => Promise<void>;
   fetchUserItems: () => Promise<void>;
   purchaseItem: (itemId: string, cardData: Record<string, unknown>) => Promise<void>;
-  sellItem: (userItemId: string) => Promise<void>;
+  sellItem: (userItemId: number) => Promise<void>;
 }
 
 export const useItemStore = create<ItemState>()((set, get) => ({
@@ -187,15 +187,46 @@ export const useItemStore = create<ItemState>()((set, get) => ({
     }
   },
 
-  sellItem: async (userItemId: string) => {
+  sellItem: async (userItemId: number) => {
     set({ loading: true });
     try {
-      const { error } = await supabase
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Get item price
+      const { data: userItem, error: uiError } = await supabase
+        .from('user_items')
+        .select('*, item:items(price_robux)')
+        .eq('id', userItemId)
+        .single();
+      
+      if (uiError || !userItem) throw uiError || new Error('Item not found');
+
+      const itemValue = (userItem.item.price_robux * 0.05);
+
+      const { error: updateError } = await supabase
         .from('user_items')
         .update({ status: 'selling' })
         .eq('id', userItemId);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // Update profile balance
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('real_balance')
+        .eq('id', user.id)
+        .single();
+
+      await supabase
+        .from('profiles')
+        .update({ real_balance: (profile?.real_balance || 0) + itemValue })
+        .eq('id', user.id);
+
+      // Refresh user items
+      await get().fetchUserItems();
     } finally {
       set({ loading: false });
     }

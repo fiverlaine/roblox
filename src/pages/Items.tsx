@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useItemStore } from '../stores/itemStore';
 import { useAuthStore } from '../stores/authStore';
 import { formatRobux } from '../lib/utils';
+import { toast } from 'react-hot-toast';
 
 export default function Items() {
   const navigate = useNavigate();
@@ -28,11 +29,16 @@ export default function Items() {
 
   const activeItems = userItems.filter((ui) => ui.status === 'active');
 
-  const handleSellClick = () => {
+  const handleSellClick = async (userItemId: number) => {
     if (!profile?.has_seller_pass) {
       setSellerModalOpen(true);
     } else {
-      // TODO: Implement selling logic for users with pass
+      try {
+        await useItemStore.getState().sellItem(userItemId);
+        toast.success("Item colocado à venda com sucesso!");
+      } catch (error) {
+        toast.error("Erro ao vender item. Tente novamente.");
+      }
     }
   };
 
@@ -153,7 +159,7 @@ export default function Items() {
                           Transferir p/ conta
                         </button>
                         <button 
-                          onClick={handleSellClick}
+                          onClick={() => handleSellClick(userItem.id)}
                           className="btn btn-ghost h-10 px-md text-body w-full bg-white hover:bg-green-50 text-gray-600 hover:text-green-700 border border-gray-200 hover:border-green-200 py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-sm"
                         >
                           <DollarSign size={16} className="mr-2" />
