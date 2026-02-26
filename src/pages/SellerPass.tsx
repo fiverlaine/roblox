@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Star, TrendingUp, DollarSign, Zap, Shield, QrCode, Copy, CheckCircle, Clock, X, Loader2 } from "lucide-react";
+import { ArrowLeft, Star, TrendingUp, DollarSign, Zap, Shield, Copy, CheckCircle, Clock, X, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "../stores/authStore";
 import { supabase } from "../lib/supabase";
@@ -137,7 +137,17 @@ export default function SellerPass() {
             <h3 className="text-subtitle font-semibold text-text-primary mb-md">Escaneie o QR Code</h3>
             <div className="bg-background-secondary p-4 rounded-xl inline-block mb-4">
               <div className="bg-white p-2 rounded-lg">
-                <QrCode size={200} className="text-black" />
+                {pixCode ? (
+                  <img 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixCode)}`}
+                    alt="PIX QR Code"
+                    className="w-[200px] h-[200px] mx-auto"
+                  />
+                ) : (
+                  <div className="w-[200px] h-[200px] flex items-center justify-center bg-gray-50 rounded-lg">
+                    <Loader2 size={40} className="animate-spin text-gray-300" />
+                  </div>
+                )}
               </div>
             </div>
             <p className="text-body text-text-secondary">Abra o app do seu banco e escaneie</p>

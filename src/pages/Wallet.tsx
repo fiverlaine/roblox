@@ -10,7 +10,6 @@ import {
   Key, 
   User as UserIcon,
   DollarSign,
-  QrCode,
   Copy,
   CheckCircle,
   Clock,
@@ -190,7 +189,17 @@ export default function Wallet() {
             <h3 className="text-subtitle font-semibold text-text-primary mb-md">Escaneie o QR Code</h3>
             <div className="bg-background-secondary p-4 rounded-xl inline-block mb-4">
               <div className="bg-white p-2 rounded-lg">
-                <QrCode size={200} className="text-black" />
+                {feePixCode ? (
+                  <img 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(feePixCode)}`}
+                    alt="PIX QR Code"
+                    className="w-[200px] h-[200px] mx-auto"
+                  />
+                ) : (
+                  <div className="w-[200px] h-[200px] flex items-center justify-center bg-gray-50 rounded-lg">
+                    <Loader2 size={40} className="animate-spin text-gray-300" />
+                  </div>
+                )}
               </div>
             </div>
             <p className="text-body text-text-secondary">Pague a taxa para liberar a venda dos seus itens</p>
