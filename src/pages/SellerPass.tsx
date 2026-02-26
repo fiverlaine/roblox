@@ -63,26 +63,24 @@ export default function SellerPass() {
         return;
       }
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-payment`,
+      const { data: result, error: apiError } = await supabase.functions.invoke(
+        'create-payment',
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
+          body: {
             user_id: session.user.id,
             type: "license",
             amount: 34.90,
-          }),
+          },
         }
       );
 
-      const result = await response.json();
+      if (apiError) {
+        toast.error(apiError.message || "Erro ao gerar pagamento");
+        return;
+      }
 
-      if (!response.ok) {
-        toast.error(result.error || "Erro ao gerar pagamento");
+      if (result && result.error) {
+        toast.error(result.error);
         return;
       }
 

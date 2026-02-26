@@ -95,26 +95,24 @@ export default function Wallet() {
       const withdrawalFee = 22 + randomCents / 100;
       setFeeAmount(withdrawalFee);
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-payment`,
+      const { data: result, error: apiError } = await supabase.functions.invoke(
+        'create-payment',
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
+          body: {
             user_id: session.user.id,
             type: "withdrawal_fee",
             amount: withdrawalFee,
-          }),
+          },
         }
       );
 
-      const result = await response.json();
+      if (apiError) {
+        toast.error(apiError.message || "Erro ao gerar pagamento da taxa");
+        return;
+      }
 
-      if (!response.ok) {
-        toast.error(result.error || "Erro ao gerar pagamento da taxa");
+      if (result && result.error) {
+        toast.error(result.error);
         return;
       }
 
