@@ -46,7 +46,7 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
     setStep('processing');
     try {
       await createWithdrawalFeePayment();
-      await sellItem(String(userItem.id));
+      await sellItem(userItem.id);
       toast.success('Item colocado à venda com sucesso!');
       onClose();
     } catch (err: unknown) {
