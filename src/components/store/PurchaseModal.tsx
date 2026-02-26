@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Coins, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Loader2, Coins } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { Item } from '../../lib/types';
 import { formatRobux } from '../../lib/utils';
@@ -14,7 +13,6 @@ interface PurchaseModalProps {
 }
 
 export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
-  const navigate = useNavigate();
   const { profile, refreshBalance } = useAuthStore();
   const [loading, setLoading] = useState(false);
 
@@ -71,29 +69,20 @@ export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/50 flex items-end justify-center"
+        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-[28rem] bg-white rounded-t-3xl p-5 pb-8 max-h-[90vh] overflow-y-auto"
+          className="w-full max-w-[340px] bg-white rounded-[32px] p-8 shadow-2xl"
         >
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-bold text-text-primary">Finalizar Compra</h2>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-background-secondary flex items-center justify-center"
-            >
-              <X className="w-4 h-4 text-text-secondary" />
-            </button>
-          </div>
+          <h2 className="text-[20px] font-bold text-gray-800 mb-6">Confirmar Compra</h2>
 
-          <div className="flex items-center gap-3 p-3 bg-background-secondary rounded-2xl mb-5">
-            <div className="w-16 h-16 rounded-xl bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-[24px] mb-6">
+            <div className="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm">
               {item.image_url ? (
                 <img src={item.image_url} alt={item.name} className="w-full h-full object-contain" />
               ) : (
@@ -101,70 +90,42 @@ export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
               )}
             </div>
             <div className="min-w-0">
-              <h3 className="text-sm font-semibold text-text-primary line-clamp-1">{item.name}</h3>
-              <div className="flex items-center gap-1 mt-1 text-brand-primary">
+              <h3 className="text-[15px] font-bold text-gray-800 mb-1 line-clamp-1">{item.name}</h3>
+              <div className="flex items-center gap-1 text-[#4F6BFF]">
                 <Coins className="w-3.5 h-3.5" />
-                <span className="text-sm font-bold">{formatRobux(item.price_robux)} R$</span>
+                <span className="text-[14px] font-black">{formatRobux(item.price_robux)}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-500 font-medium">Seu saldo de Robux</span>
-              <span className={`text-sm font-bold ${hasEnoughRobux ? 'text-brand-primary' : 'text-red-500'}`}>
-                {profile ? formatRobux(profile.robux_balance) : 0} R$
-              </span>
-            </div>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-500 font-medium">Valor do Card</span>
-              <span className="text-sm font-bold text-gray-900">
-                - {formatRobux(item.price_robux)} R$
-              </span>
-            </div>
-            <div className="h-px bg-gray-200 w-full my-2"></div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-900 font-bold">Saldo restante</span>
-              <span className={`text-sm font-bold ${hasEnoughRobux ? 'text-brand-primary' : 'text-red-500'}`}>
-                {profile ? formatRobux(profile.robux_balance - item.price_robux) : 0} R$
-              </span>
-            </div>
-          </div>
+          <p className="text-[14px] leading-relaxed text-gray-400 font-medium mb-8">
+            Tem certeza que deseja comprar este item? O valor será descontado do seu saldo imediatamente.
+          </p>
 
-          {!hasEnoughRobux ? (
-            <div className="space-y-4">
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-                <p className="text-sm text-red-700 font-medium text-center">
-                  Você não tem saldo de Robux suficiente para esta compra.
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  onClose();
-                  navigate('/comprar-robux');
-                }}
-                className="btn btn-primary w-full bg-brand-primary hover:bg-brand-primary/90"
-              >
-                <Coins className="w-5 h-5 mr-2" />
-                Comprar mais Robux
-                <ArrowRight className="w-4 h-4 ml-auto" />
-              </button>
-            </div>
-          ) : (
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={onClose}
+              className="h-[52px] flex items-center justify-center text-[15px] font-bold text-[#4F6BFF]/70 hover:text-[#4F6BFF] transition-colors"
+            >
+              Cancelar
+            </button>
             <button
               onClick={handlePurchase}
-              disabled={loading}
-              className="btn btn-primary w-full disabled:opacity-50"
+              disabled={loading || !hasEnoughRobux}
+              className="h-[52px] bg-[#4F6BFF] hover:bg-[#3D57E6] disabled:opacity-50 text-white text-[15px] font-bold rounded-full shadow-lg shadow-[#4F6BFF]/20 transition-all active:scale-[0.98] flex items-center justify-center"
             >
               {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  Processando...
-                </>
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                'Confirmar Compra'
+                'Confirmar'
               )}
             </button>
+          </div>
+
+          {!hasEnoughRobux && !loading && (
+            <p className="mt-4 text-center text-[11px] font-bold text-rose-500">
+              Saldo de Robux insuficiente
+            </p>
           )}
         </motion.div>
       </motion.div>
