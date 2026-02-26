@@ -7,14 +7,19 @@ import {
   DollarSign,
   AlertCircle,
   X,
-  Search,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useItemStore } from '../stores/itemStore';
+import { useAuthStore } from '../stores/authStore';
 import { formatRobux } from '../lib/utils';
 
 export default function Items() {
+  const navigate = useNavigate();
+  const { profile } = useAuthStore();
   const { userItems, loading, fetchUserItems } = useItemStore();
   const [redeemModalOpen, setRedeemModalOpen] = useState(false);
+  const [sellerModalOpen, setSellerModalOpen] = useState(false);
   const [skinCode, setSkinCode] = useState('');
 
   useEffect(() => {
@@ -22,6 +27,14 @@ export default function Items() {
   }, [fetchUserItems]);
 
   const activeItems = userItems.filter((ui) => ui.status === 'active');
+
+  const handleSellClick = () => {
+    if (!profile?.has_seller_pass) {
+      setSellerModalOpen(true);
+    } else {
+      // TODO: Implement selling logic for users with pass
+    }
+  };
 
   return (
     <>
@@ -139,7 +152,10 @@ export default function Items() {
                           <ArrowRightLeft size={16} className="mr-2" />
                           Transferir p/ conta
                         </button>
-                        <button className="btn btn-ghost h-10 px-md text-body w-full bg-white hover:bg-green-50 text-gray-600 hover:text-green-700 border border-gray-200 hover:border-green-200 py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-sm">
+                        <button 
+                          onClick={handleSellClick}
+                          className="btn btn-ghost h-10 px-md text-body w-full bg-white hover:bg-green-50 text-gray-600 hover:text-green-700 border border-gray-200 hover:border-green-200 py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-sm"
+                        >
                           <DollarSign size={16} className="mr-2" />
                           Vender Item
                         </button>
@@ -153,77 +169,148 @@ export default function Items() {
         </div>
       </div>
 
-      {/* Modal Resgatar Skin - igual ao itens.html */}
-      {redeemModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={() => setRedeemModalOpen(false)}
-          role="dialog"
-          aria-label="Resgatar Skin"
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+      {/* Modal Resgatar Skin */}
+      <AnimatePresence>
+        {redeemModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setRedeemModalOpen(false)}
           >
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <Code size={24} className="text-brand-primary" />
-                  Resgatar Skin
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => setRedeemModalOpen(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
-                  aria-label="Fechar"
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Code size={24} className="text-brand-primary" />
+                    Resgatar Skin
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setRedeemModalOpen(false)}
+                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setRedeemModalOpen(false);
+                    setSkinCode('');
+                  }}
                 >
-                  <X size={20} />
-                </button>
-              </div>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  // TODO: chamar API para resgatar skin pelo código
-                  setRedeemModalOpen(false);
-                  setSkinCode('');
-                }}
-              >
-                <div className="space-y-4 mb-6">
-                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                    <p className="text-sm text-blue-800 leading-relaxed">
-                      Digite o código da skin para adicioná-la ao seu inventário.
-                    </p>
-                  </div>
-                  <div className="w-full">
-                    <label className="block text-body font-medium text-text-primary mb-xs">
-                      Código da Skin
-                    </label>
-                    <div className="relative">
-                      <Search
-                        size={20}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                      />
+                  <div className="space-y-4 mb-6">
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                      <p className="text-sm text-blue-800 leading-relaxed">
+                        Digite o código da skin para adicioná-la ao seu inventário.
+                      </p>
+                    </div>
+                    <div className="w-full">
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        Código da Skin
+                      </label>
                       <input
                         type="text"
-                        className="input w-full pl-12"
+                        className="input w-full"
                         placeholder="Ex: SKIN-1234-ABCD"
                         value={skinCode}
                         onChange={(e) => setSkinCode(e.target.value)}
+                        autoFocus
                       />
                     </div>
                   </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary h-[52px] px-xl w-full"
+                  >
+                    Buscar Skin
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal Seller Pass */}
+      <AnimatePresence>
+        {sellerModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+            onClick={() => setSellerModalOpen(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-yellow-50 to-white -z-0"></div>
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-100 rounded-full blur-3xl opacity-50"></div>
+              <div className="absolute -top-10 -left-10 w-32 h-32 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
+              
+              <button
+                onClick={() => setSellerModalOpen(false)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors z-10 backdrop-blur-sm"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="p-8 relative z-0 flex flex-col items-center text-center">
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 bg-yellow-400 blur-2xl opacity-20 rounded-full transform scale-150"></div>
+                  <img
+                    src="/assets/icone_seller_pass-C63vdARS.png"
+                    alt="Roblox Seller Pass"
+                    className="w-40 h-40 object-contain relative z-10 drop-shadow-lg"
+                  />
                 </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary h-[52px] px-xl w-full"
-                >
-                  Buscar Skin
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+
+                <h2 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
+                  Se torne um vendedor na plataforma
+                </h2>
+                
+                <div className="w-12 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-4"></div>
+                
+                <p className="text-gray-500 font-medium mb-4">
+                  Sua conta ainda não está habilitada para vendas.
+                </p>
+                
+                <p className="text-gray-600 text-sm leading-relaxed mb-8 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  Para desbloquear o poder de vender seus itens e começar a lucrar, você precisa adquirir o <span className="font-bold text-gray-900">Roblox Seller Pass</span> — sua licença oficial de vendedor na plataforma.
+                </p>
+
+                <div className="space-y-3 w-full">
+                  <button
+                    onClick={() => navigate('/licenca')}
+                    className="btn btn-primary h-[52px] px-xl w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white border-0 shadow-lg shadow-orange-500/20 py-4 text-base font-bold transform hover:scale-[1.02] transition-all"
+                  >
+                    ADQUIRIR SELLER PASS
+                  </button>
+                  <button
+                    onClick={() => setSellerModalOpen(false)}
+                    className="btn btn-ghost h-[52px] px-xl w-full text-gray-400 hover:text-gray-600 hover:bg-transparent text-sm font-medium"
+                  >
+                    Agora não
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
