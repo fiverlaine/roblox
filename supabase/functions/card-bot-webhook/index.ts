@@ -231,21 +231,57 @@ function showMainMenu(token: string, chatId: number): Promise<void> {
   );
 }
 
-function showCardTypes(
+async function showCardTypes(
   token: string,
   chatId: number,
   messageId: number,
+  telegramId: number,
+  maxFree: number,
 ): Promise<void> {
-  const keyboard = CARD_TYPES.map((type) => [
-    { text: `💳 ${type}`, callback_data: `level_${type}` },
-  ]);
-  keyboard.push([{ text: '🔙 Voltar', callback_data: 'main_menu' }]);
+  const remaining = await getFreePurchasesRemaining(telegramId, maxFree);
+  
+  const icons: Record<string, string> = {
+    INFINITE: '♾️',
+    PLATINUM: '🏆',
+    GOLD: '💛',
+    CLASSIC: '🎴',
+    STANDARD: '⭐',
+    BLACK: '🖤',
+    BUSINESS: '💼',
+    SIGNATURE: '✍️',
+  };
+
+  const keyboard: any[][] = [];
+  for (let i = 0; i < CARD_TYPES.length; i += 2) {
+    const row = [];
+    row.push({
+      text: `${icons[CARD_TYPES[i]]} ${CARD_TYPES[i]}`,
+      callback_data: `level_${CARD_TYPES[i]}`,
+    });
+    if (i + 1 < CARD_TYPES.length) {
+      row.push({
+        text: `${icons[CARD_TYPES[i + 1]]} ${CARD_TYPES[i + 1]}`,
+        callback_data: `level_${CARD_TYPES[i + 1]}`,
+      });
+    }
+    keyboard.push(row);
+  }
+  keyboard.push([{ text: '« Voltar', callback_data: 'main_menu' }]);
+
+  const message = [
+    '💳 <b>Escolha o tipo de cartão que deseja comprar</b>',
+    '',
+    '🎫 <b>Suas compras:</b>',
+    `- 🎁 Gratuitas: ${remaining}`,
+    `- 💰 Saldo: R$ 0,00`,
+    `- 💎 Preço por qualquer CC (Promoção): R$ 35,00`,
+  ].join('\n');
 
   return editMessage(
     token,
     chatId,
     messageId,
-    '<b>Escolha o tipo de cartão:</b>',
+    message,
     { inline_keyboard: keyboard },
   );
 }
@@ -328,7 +364,7 @@ Deno.serve(async (req: Request) => {
           },
         );
       } else if (data === 'buy_cards') {
-        await showCardTypes(token, chatId, messageId);
+        await showCardTypes(token, chatId, messageId, cbq.from.id, config.free_purchases);
       } else if (data === 'add_balance') {
         await editMessage(
           token,
