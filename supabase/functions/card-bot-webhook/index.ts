@@ -386,23 +386,31 @@ Deno.serve(async (req: Request) => {
         await incrementPurchaseCount(cbq.from.id);
 
         const message = [
-          `<b>💳 Cartão ${cardType}</b>`,
+          `✅ <b>Cartao comprado com Sucesso!</b>`,
           '',
-          `<b>Número:</b> <code>${cardNumber}</code>`,
-          `<b>Titular:</b> ${holderName}`,
-          `<b>Validade:</b> ${expiry}`,
-          `<b>CVV:</b> ${cvv}`,
-          `<b>Banco:</b> ${bank}`,
-          `<b>Bandeira:</b> ${brand}`,
-          `<b>BIN:</b> ${bin}`,
+          `💳 <b>DADOS DO CARTAO</b>`,
           '',
-          `<b>CPF:</b> ${cpf}`,
-          `<b>Nascimento:</b> ${dob}`,
-          `<b>Endereço:</b> ${address}`,
+          `🔢 <b>Numero:</b> <code>${cardNumber}</code>`,
+          `👤 <b>Titular:</b> <code>${holderName}</code>`,
+          `📅 <b>Validade:</b> <code>${expiry}</code>`,
+          `🔐 <b>CVV:</b> <code>${cvv}</code>`,
+          '',
+          `📊 <b>INFORMACOES</b>`,
+          '',
+          `🏦 <b>Banco:</b> ${bank}`,
+          `💎 <b>Bandeira:</b> ${brand}`,
+          `⭐ <b>Tipo:</b> ${cardType}`,
+          `🔢 <b>BIN:</b> ${bin}`,
+          '',
+          `🔓 <b>DADOS BLOQUEADOS</b>`,
+          '',
+          `📄 <b>CPF:</b> ${cpf}`,
+          `🎂 <b>Data Nasc:</b> ${dob}`,
+          `📍 <b>Endereco:</b> ${address}`,
           '',
           isFree
-            ? `🆓 Compra gratuita (restam ${remaining - 1})`
-            : '💰 Compra paga',
+            ? `🎁 <b>Compra gratuita utilizada!</b>\n\n⚠️ <b>DADOS COMPLETOS:</b> Disponiveis apenas em compras pagas!\n💎 <b>Adicione saldo</b> para desbloquear CPF e endereco completos.\n\n⚠️ <b>IMPORTANTE:</b> Cartao gratuito nao tem troca!`
+            : `💰 <b>Compra paga realizada com sucesso!</b>`,
         ].join('\n');
 
         await editMessage(token, chatId, messageId, message, {
