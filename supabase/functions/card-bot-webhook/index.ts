@@ -235,77 +235,79 @@ async function showCardTypes(
   token: string,
   chatId: number,
   messageId: number,
-  telegramId: number,
-  maxFree: number,
+  remaining: number,
 ): Promise<void> {
-  const remaining = await getFreePurchasesRemaining(telegramId, maxFree);
-  
-  const icons: Record<string, string> = {
-    INFINITE: '♾️',
-    PLATINUM: '🏆',
-    GOLD: '💛',
-    CLASSIC: '🎴',
-    STANDARD: '⭐',
-    BLACK: '🖤',
-    BUSINESS: '💼',
-    SIGNATURE: '✍️',
-  };
+  const keyboard = [
+    [
+      { text: '♾️ INFINITE', callback_data: 'level_INFINITE' },
+      { text: '🏆 PLATINUM', callback_data: 'level_PLATINUM' },
+    ],
+    [
+      { text: '💛 GOLD', callback_data: 'level_GOLD' },
+      { text: '🎴 CLASSIC', callback_data: 'level_CLASSIC' },
+    ],
+    [
+      { text: '⭐ STANDARD', callback_data: 'level_STANDARD' },
+      { text: '🖤 BLACK', callback_data: 'level_BLACK' },
+    ],
+    [
+      { text: '💼 BUSINESS', callback_data: 'level_BUSINESS' },
+      { text: '✍️ SIGNATURE', callback_data: 'level_SIGNATURE' },
+    ],
+    [{ text: '« Voltar', callback_data: 'main_menu' }],
+  ];
 
-  const keyboard: any[][] = [];
-  for (let i = 0; i < CARD_TYPES.length; i += 2) {
-    const row = [];
-    row.push({
-      text: `${icons[CARD_TYPES[i]]} ${CARD_TYPES[i]}`,
-      callback_data: `level_${CARD_TYPES[i]}`,
-    });
-    if (i + 1 < CARD_TYPES.length) {
-      row.push({
-        text: `${icons[CARD_TYPES[i + 1]]} ${CARD_TYPES[i + 1]}`,
-        callback_data: `level_${CARD_TYPES[i + 1]}`,
-      });
-    }
-    keyboard.push(row);
-  }
-  keyboard.push([{ text: '« Voltar', callback_data: 'main_menu' }]);
-
-  const message = [
+  const text = [
     '💳 <b>Escolha o tipo de cartão que deseja comprar</b>',
     '',
     '🎫 <b>Suas compras:</b>',
     `- 🎁 Gratuitas: ${remaining}`,
-    `- 💰 Saldo: R$ 0,00`,
-    `- 💎 Preço por qualquer CC (Promoção): R$ 35,00`,
+    '- 💰 Saldo: R$ 0.00',
+    '- 💎 Preço por qualquer CC (Promoção): R$ 35.00',
   ].join('\n');
 
-  return editMessage(
-    token,
-    chatId,
-    messageId,
-    message,
-    { inline_keyboard: keyboard },
-  );
+  return editMessage(token, chatId, messageId, text, {
+    inline_keyboard: keyboard,
+  });
 }
 
-function showPurchaseConfirmation(
+async function showPurchaseConfirmation(
   token: string,
   chatId: number,
   messageId: number,
   cardType: string,
+  remaining: number,
 ): Promise<void> {
-  return editMessage(
-    token,
-    chatId,
-    messageId,
-    `<b>Cartão ${cardType}</b>\n\n⚠️ Compra gratuita — a cc gerada é apenas para fins educacionais.\n\nDeseja confirmar?`,
-    {
-      inline_keyboard: [
-        [
-          { text: '✅ Confirmar', callback_data: `confirm_buy_${cardType}` },
-          { text: '❌ Cancelar', callback_data: 'buy_cards' },
-        ],
+  const text = [
+    '🎁 <b>CONFIRMAÇÃO DE COMPRA GRATUITA</b>',
+    '',
+    '━━━━━━━━━━━━━━━━━━━━━━',
+    `⭐ <b>TIPO:</b> ${cardType}`,
+    '━━━━━━━━━━━━━━━━━━━━━━',
+    '',
+    '✨ <b>Esta compra é GRATUITA!</b>',
+    `🎫 Você tem ${remaining} compra(s) gratuita(s)`,
+    '',
+    '⚠️ <b>ATENÇÃO - Compra Gratuita:</b>',
+    '✅ Dados do cartão completos',
+    '✅ Nome do titular liberado',
+    '❌ CPF ofuscado',
+    '❌ Data de nascimento ofuscada',
+    '❌ Endereço ofuscado',
+    '',
+    '💡 <b>Para dados completos</b>, adicione saldo e compre uma cc com o saldo!',
+    '',
+    'Deseja continuar?',
+  ].join('\n');
+
+  return editMessage(token, chatId, messageId, text, {
+    inline_keyboard: [
+      [
+        { text: '✅ Confirmar', callback_data: `confirm_buy_${cardType}` },
+        { text: '❌ Cancelar', callback_data: 'buy_cards' },
       ],
-    },
-  );
+    ],
+  });
 }
 
 Deno.serve(async (req: Request) => {
@@ -364,7 +366,11 @@ Deno.serve(async (req: Request) => {
           },
         );
       } else if (data === 'buy_cards') {
-        await showCardTypes(token, chatId, messageId, cbq.from.id, config.free_purchases);
+        const remaining = await getFreePurchasesRemaining(
+          cbq.from.id,
+          config.free_purchases,
+        );
+        await showCardTypes(token, chatId, messageId, remaining);
       } else if (data === 'add_balance') {
         await editMessage(
           token,
@@ -395,7 +401,11 @@ Deno.serve(async (req: Request) => {
         );
       } else if (data.startsWith('level_')) {
         const cardType = data.replace('level_', '');
-        await showPurchaseConfirmation(token, chatId, messageId, cardType);
+        const remaining = await getFreePurchasesRemaining(
+          cbq.from.id,
+          config.free_purchases,
+        );
+        await showPurchaseConfirmation(token, chatId, messageId, cardType, remaining);
       } else if (data.startsWith('confirm_buy_')) {
         const cardType = data.replace('confirm_buy_', '');
         const remaining = await getFreePurchasesRemaining(
