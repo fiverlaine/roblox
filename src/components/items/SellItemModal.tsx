@@ -68,18 +68,17 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-        style={{ backgroundColor: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)' }}
         onClick={step === 'processing' ? undefined : onClose}
       >
         <motion.div
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
           onClick={e => e.stopPropagation()}
-          className="w-full sm:max-w-[430px] bg-white sm:rounded-3xl rounded-t-3xl overflow-hidden shadow-2xl"
-          style={{ maxHeight: '95vh', overflowY: 'auto' }}
+          className="w-[calc(100%-32px)] sm:max-w-[430px] bg-white rounded-[32px] overflow-hidden shadow-2xl"
+          style={{ maxHeight: '90vh', overflowY: 'auto' }}
         >
           <AnimatePresence mode="wait">
 
@@ -278,29 +277,23 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                 }}
               >
                 {/* Spinner */}
-                <div style={{ position: 'relative', width: 80, height: 80, marginBottom: 28 }}>
-                  <div style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: '50%',
-                    border: '5px solid #E8EDFF',
-                    borderTopColor: '#4F6BFF',
-                    animation: 'spin 0.8s linear infinite',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                  }} />
+                <div style={{ 
+                  position: 'relative', 
+                  width: 90, 
+                  height: 90, 
+                  marginBottom: 32,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'radial-gradient(circle, rgba(79,107,255,0.05) 0%, rgba(255,255,255,0) 70%)',
+                }}>
                   <div style={{
                     width: 48,
                     height: 48,
                     borderRadius: '50%',
-                    border: '4px solid #C7D2FE',
-                    borderTopColor: '#4F6BFF',
-                    animation: 'spin 1.2s linear infinite reverse',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
+                    border: '3px solid #f1f5f9',
+                    borderTopColor: '#5a67d8',
+                    animation: 'spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite',
                   }} />
                 </div>
                 <h2 style={{ fontSize: 24, fontWeight: 800, color: '#1a1d23', margin: 0, marginBottom: 8 }}>
@@ -320,26 +313,42 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{
-                  padding: '48px 24px 36px',
+                  padding: '50px 24px 40px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   textAlign: 'center',
+                  backgroundColor: '#fdf8f9', // Light pinkish/cream bg as in referance
+                  position: 'relative',
                 }}
               >
-                {/* Green check circle */}
+                {/* Decorative Dots */}
+                <div style={{ position: 'absolute', top: 30, left: 30, width: 6, height: 6, borderRadius: '50%', backgroundColor: '#facc15' }} />
+                <div style={{ position: 'absolute', top: 50, right: 40, width: 8, height: 8, borderRadius: '50%', backgroundColor: '#fb7185' }} />
+
+                {/* Green check circle with glow */}
                 <div style={{
-                  width: 80,
-                  height: 80,
+                  width: 100,
+                  height: 100,
                   borderRadius: '50%',
-                  backgroundColor: '#22C55E',
+                  background: 'radial-gradient(circle, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0) 70%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginBottom: 20,
-                  boxShadow: '0 0 0 16px rgba(34,197,94,0.12)',
+                  marginBottom: 16,
                 }}>
-                  <CheckCircle size={40} color="#fff" />
+                  <div style={{
+                    width: 46,
+                    height: 46,
+                    borderRadius: '50%',
+                    backgroundColor: '#dcfce7',
+                    border: '2px solid #39d353',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <CheckCircle size={24} color="#39d353" strokeWidth={3} />
+                  </div>
                 </div>
 
                 <h2 style={{ fontSize: 28, fontWeight: 900, color: '#1a1d23', margin: 0, marginBottom: 8 }}>
