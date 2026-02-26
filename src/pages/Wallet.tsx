@@ -245,25 +245,25 @@ export default function Wallet() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24">
-      <div className="container mx-auto px-6 pt-8 max-w-md">
+    <div className="min-h-screen bg-[#FDFDFD] pb-24">
+      <div className="container mx-auto px-6 pt-6 max-w-md">
         {/* Header Navigation */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors mb-6 font-medium group"
+          className="flex items-center gap-1.5 text-gray-400 hover:text-gray-900 transition-colors mb-6 font-semibold text-sm group"
         >
-          <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
           <span>Voltar</span>
         </button>
 
-        <h1 className="text-2xl font-black text-gray-900 mb-6 tracking-tight">Central de Saques</h1>
+        <h1 className="text-xl font-bold text-gray-800 mb-6 px-1">Central de Saques</h1>
 
         {/* Saldo Disponível Card */}
-        <div className="relative overflow-hidden rounded-[24px] bg-[#E8F5F2] p-6 mb-8 shadow-sm">
+        <div className="relative overflow-hidden rounded-[24px] bg-[#E8F5F2] p-7 mb-8">
           <div className="relative z-10">
-            <div className="flex items-center gap-2 text-[#4A7D71] mb-2 font-bold text-sm">
+            <div className="flex items-center gap-2 text-[#4A7D71] mb-2 font-bold text-xs opacity-70">
               <Clock size={16} className="text-[#4A7D71]" />
-              <span className="opacity-80">Saldo Disponível</span>
+              <span>Saldo Disponível</span>
             </div>
             <div className="flex items-baseline gap-1 mt-1">
               <span className="text-xl font-bold text-[#27A17D] mr-1">R$</span>
@@ -274,109 +274,109 @@ export default function Wallet() {
                 ,{balanceParts[1]}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-[#4A7D71] mt-5 opacity-70">
-              <Zap size={14} className="fill-[#27A17D] text-[#27A17D]" />
-              <span className="text-[10px] font-bold uppercase tracking-wide">Saques processados via PIX instantâneo</span>
+            <div className="flex items-center gap-2 text-[#4A7D71] mt-5 opacity-60">
+              <Zap size={14} className="fill-[#27A17D] text-[#27A17D] opacity-40" />
+              <span className="text-[10px] font-bold">Saques processados via PIX instantâneo</span>
             </div>
           </div>
           {/* Background Wallet Icon */}
-          <div className="absolute right-[-10px] bottom-[-10px] opacity-[0.04] rotate-12 pointer-events-none">
-            <WalletIcon size={140} />
+          <div className="absolute right-[-15px] bottom-[-15px] opacity-[0.05] pointer-events-none">
+            <WalletIcon size={160} className="text-[#27A17D]" />
           </div>
         </div>
 
         {/* Form Solicitar Retirada */}
-        <div className="space-y-6">
+        <div className="space-y-6 px-1">
           <div>
-            <h2 className="text-lg font-black text-gray-900 mb-0.5">Solicitar Retirada</h2>
-            <p className="text-xs text-gray-400 font-medium">Preencha os dados para receber seu pagamento</p>
+            <h2 className="text-md font-bold text-gray-800 mb-1">Solicitar Retirada</h2>
+            <p className="text-xs text-gray-400 font-medium tracking-tight">Preencha os dados para receber seu pagamento</p>
           </div>
 
           <div className="space-y-5">
-            <div className="space-y-2">
-              <label className="block text-[13px] font-bold text-gray-700 ml-1">Valor do Saque</label>
+            <div className="space-y-2.5">
+              <label className="block text-[13px] font-bold text-gray-600">Valor do Saque</label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                  <WalletIcon size={18} />
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300">
+                  <WalletIcon size={20} />
                 </div>
                 <input
                   type="text"
                   placeholder="0,00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full pl-12 pr-5 py-4 bg-gray-50/80 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#27A17D]/5 focus:border-[#27A17D]/30 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300"
+                  className="w-full pl-14 pr-5 py-5 bg-[#F9FAFB] border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#4F6BFF]/5 focus:border-[#4F6BFF]/10 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300 shadow-sm shadow-black/[0.01]"
                 />
               </div>
             </div>
 
             <div className="space-y-4 pt-1">
-              <label className="block text-[13px] font-bold text-gray-700 ml-1">Tipo de Chave PIX</label>
-              <div className="grid grid-cols-2 gap-3">
+              <label className="block text-[13px] font-bold text-gray-600">Tipo de Chave PIX</label>
+              <div className="grid grid-cols-2 gap-3.5">
                 {[
-                  { id: 'cpf', label: 'CPF', icon: <UserIcon size={20} /> },
-                  { id: 'email', label: 'E-mail', icon: <Mail size={20} /> },
-                  { id: 'phone', label: 'Tel', icon: <Smartphone size={20} /> },
-                  { id: 'random', label: 'Chave', icon: <Key size={20} /> }
+                  { id: 'cpf', label: 'CPF', icon: <UserIcon size={22} /> },
+                  { id: 'email', label: 'E-mail', icon: <Mail size={22} /> },
+                  { id: 'phone', label: 'Tel', icon: <Smartphone size={22} /> },
+                  { id: 'random', label: 'Chave', icon: <Key size={22} /> }
                 ].map((type) => (
                   <button
                     key={type.id}
                     onClick={() => setPixKeyType(type.id as PixKeyType)}
-                    className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 ${
+                    className={`flex flex-col items-center justify-center gap-2 p-5 rounded-[20px] border-2 transition-all duration-200 ${
                       pixKeyType === type.id
                         ? 'bg-[#F2F5FF] border-[#4F6BFF] text-[#4F6BFF] shadow-sm transform scale-[1.02]'
-                        : 'bg-[#F9FAFB] border-transparent text-gray-400 hover:bg-gray-100'
+                        : 'bg-[#F9FAFB] border-transparent text-gray-300 hover:bg-gray-100/50'
                     }`}
                   >
                     <div className={`${pixKeyType === type.id ? 'text-[#4F6BFF]' : 'text-gray-300'}`}>
                       {type.icon}
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest">{type.label}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.1em]">{type.label}</span>
                   </button>
                 ))}
               </div>
 
-              <div className="space-y-2 pt-1">
-                 <label className="block text-[13px] font-bold text-gray-700 ml-1">Chave PIX</label>
+              <div className="space-y-2.5 pt-2">
+                 <label className="block text-[13px] font-bold text-gray-600">Chave PIX</label>
                 <input
                   type="text"
                   placeholder={pixKeyType === 'cpf' ? '000.000.000-00' : `Informe seu ${pixKeyType === 'random' ? 'Chave Aleatória' : pixKeyType.toUpperCase()}`}
                   value={pixKey}
                   onChange={(e) => setPixKey(e.target.value)}
-                  className="w-full px-5 py-4 bg-gray-50/80 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#4F6BFF]/5 focus:border-[#4F6BFF]/30 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300"
+                  className="w-full px-6 py-5 bg-[#F9FAFB] border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#4F6BFF]/5 focus:border-[#4F6BFF]/10 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300 shadow-sm shadow-black/[0.01]"
                 />
               </div>
             </div>
           </div>
 
           {/* Info Box */}
-          <div className="bg-[#F6F8FF] rounded-3xl p-5 border border-[#4F6BFF]/5 mt-4">
-             <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-full bg-[#E8EDFF] flex items-center justify-center">
-                   <Zap size={16} className="text-[#4F6BFF] fill-[#4F6BFF]" />
+          <div className="bg-[#F8F9FE] rounded-[24px] p-6 border border-[#4F6BFF]/5">
+             <div className="flex items-center gap-3 mb-4">
+                <div className="w-9 h-9 rounded-full bg-[#EBF0FF] flex items-center justify-center">
+                   <Zap size={18} className="text-[#4F6BFF] fill-[#4F6BFF]" />
                 </div>
-                <span className="text-sm font-bold text-gray-900">Informações do Saque:</span>
+                <span className="text-sm font-bold text-gray-800">Informações do Saque:</span>
              </div>
-             <div className="space-y-2.5 ml-1">
-                <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
-                   <CheckCircle size={14} className="text-emerald-500" />
+             <div className="space-y-3.5 ml-1">
+                <div className="flex items-center gap-3 text-xs font-semibold text-gray-500">
+                   <CheckCircle size={14} className="text-[#27A17D] opacity-60" />
                    <span>Valor mínimo: R$ 10,00</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
-                   <Zap size={14} className="text-orange-400 fill-orange-400" />
+                <div className="flex items-center gap-3 text-xs font-semibold text-gray-500">
+                   <Zap size={14} className="text-orange-400 fill-orange-400 opacity-80" />
                    <span>Prazo: Instantâneo (24/7)</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
-                   <CheckCircle size={14} className="text-emerald-500" />
+                <div className="flex items-center gap-3 text-xs font-semibold text-gray-500">
+                   <CheckCircle size={14} className="text-[#27A17D] opacity-60" />
                    <span>Taxa zero para saques</span>
                 </div>
              </div>
           </div>
 
-          <div className="pt-2 pb-6">
+          <div className="pt-2 pb-10">
             <button
               onClick={handleRequestWithdrawal}
               disabled={loading}
-              className="w-full h-[60px] bg-[#4F6BFF] hover:bg-[#3D55D9] text-white text-base font-black rounded-2xl shadow-lg shadow-[#4F6BFF]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
+              className="w-full h-[64px] bg-[#4F6BFF] hover:bg-[#3D55D9] text-white text-base font-black rounded-[20px] shadow-xl shadow-[#4F6BFF]/15 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
             >
               {loading ? (
                 <Loader2 size={24} className="animate-spin" />
