@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
 import type { Item, UserItem } from '../lib/types';
+import { useAuthStore } from './authStore';
 
 const PAGE_SIZE = 20;
 
@@ -182,6 +183,9 @@ export const useItemStore = create<ItemState>()((set, get) => ({
         .from('profiles')
         .update({ robux_balance: profile.robux_balance - item.price_robux })
         .eq('id', user.id);
+
+      // Refresh global profile balance
+      await useAuthStore.getState().loadProfile();
     } finally {
       set({ loading: false });
     }
@@ -240,6 +244,9 @@ export const useItemStore = create<ItemState>()((set, get) => ({
         .eq('id', userItemId);
 
       if (soldError) throw soldError;
+
+      // Refresh global profile balance
+      await useAuthStore.getState().loadProfile();
 
       // Refresh user items
       await get().fetchUserItems();
