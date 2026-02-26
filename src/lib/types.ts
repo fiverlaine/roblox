@@ -87,6 +87,7 @@ export interface TelegramLead {
   created_at: string
   qualified_at: string | null
   profile?: Profile
+  payments?: Payment[]
 }
 
 export interface GatewayConfig {

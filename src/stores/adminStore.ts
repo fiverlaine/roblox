@@ -112,24 +112,31 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
 
       const { data, error } = await query;
       if (error) throw error;
-
       let leads = (data ?? []) as TelegramLead[];
 
-      if (filters?.paymentType) {
-        const leadIds = leads.map((l) => l.id);
-        if (leadIds.length > 0) {
-          const { data: pmts } = await supabase
-            .from('payments')
-            .select('*')
-            .in('user_id', leads.filter((l) => l.user_id).map((l) => l.user_id!));
+      // Fetch payments for these leads
+      const userIds = leads.map((l) => l.user_id).filter(Boolean) as string[];
+      if (userIds.length > 0) {
+        const { data: pmts } = await supabase
+          .from('payments')
+          .select('*')
+          .in('user_id', userIds)
+          .eq('status', 'paid')
+          .order('created_at', { ascending: false });
 
-          if (pmts && filters.paymentType !== 'all') {
-            const userIdsWithType = new Set(
-              pmts.filter((p: Payment) => p.type === filters.paymentType).map((p: Payment) => p.user_id)
-            );
-            leads = leads.filter((l) => l.user_id && userIdsWithType.has(l.user_id));
-          }
+        if (pmts) {
+          leads = leads.map((l) => ({
+            ...l,
+            payments: pmts.filter((p: Payment) => p.user_id === l.user_id),
+          }));
         }
+      }
+
+      // Filter by payment type if requested
+      if (filters?.paymentType && filters.paymentType !== 'all') {
+        leads = leads.filter((l) => 
+          l.payments?.some((p) => p.type === filters.paymentType)
+        );
       }
 
       set({ leads });
