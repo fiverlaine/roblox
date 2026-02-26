@@ -5,38 +5,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redirecionando...</title>
-
-  <!-- Meta Pixel Code -->
   <script>
-    !(function (f, b, e, v, n, t, s) {
-      if (f.fbq) return;
-      n = f.fbq = function () {
-        n.callMethod
-          ? n.callMethod.apply(n, arguments)
-          : n.queue.push(arguments);
-      };
-      if (!f._fbq) f._fbq = n;
-      n.push = n;
-      n.loaded = !0;
-      n.version = "2.0";
-      n.queue = [];
-      t = b.createElement(e);
-      t.async = !0;
-      t.src = v;
-      s = b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t, s);
-    })(
-      window,
-      document,
-      "script",
-      "https://connect.facebook.net/en_US/fbevents.js",
-    );
-    fbq("init", "2001703983730286");
-    fbq("track", "PageView");
+    window.pixelId = "69858677bf4a78e65736c8b0";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
   </script>
-  <noscript><img height="1" width="1" style="display: none"
-      src="https://www.facebook.com/tr?id=2001703983730286&ev=PageView&noscript=1" /></noscript>
-  <!-- End Meta Pixel Code -->
 
   <style>
     * {
@@ -68,7 +44,7 @@
       border: 4px solid rgba(255, 255, 255, 0.3);
       border-top-color: white;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin .8s linear infinite;
     }
 
     @keyframes spin {
@@ -82,68 +58,6 @@
       opacity: 0.9;
     }
   </style>
-
-  <script>
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(";").shift();
-      return null;
-    }
-
-    function getAllTrackingParams() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const trackingParams = {};
-      const utmKeys = [
-        "utm_source",
-        "utm_medium",
-        "utm_campaign",
-        "utm_term",
-        "utm_content",
-      ];
-
-      if (urlParams.has("fbclid")) {
-        trackingParams.fbclid = urlParams.get("fbclid");
-      }
-
-      utmKeys.forEach((key) => {
-        if (urlParams.has(key)) {
-          trackingParams[key] = urlParams.get(key);
-        }
-      });
-
-      const fbpCookie = getCookie("_fbp");
-      if (fbpCookie) {
-        trackingParams.fbp = fbpCookie;
-      }
-
-      return trackingParams;
-    }
-
-    function redirect() {
-      // Edge Function URL - handles lead creation + redirect to Telegram bot
-      const edgeFunctionURL =
-        "https://eopofvyigdokxatoijzt.supabase.co/functions/v1/tracking-redirect";
-      const trackingParams = getAllTrackingParams();
-
-      // Fire Lead event before redirecting
-      if (typeof fbq !== "undefined") {
-        fbq("track", "Lead");
-      }
-
-      let finalURL = edgeFunctionURL;
-      if (Object.keys(trackingParams).length > 0) {
-        finalURL = `${edgeFunctionURL}?${new URLSearchParams(trackingParams).toString()}`;
-      }
-
-      window.location.href = finalURL;
-    }
-
-    // Wait 500ms for Meta Pixel to load and create _fbp cookie, then redirect
-    window.addEventListener("DOMContentLoaded", () => {
-      setTimeout(redirect, 500);
-    });
-  </script>
 </head>
 
 <body>
@@ -151,6 +65,84 @@
     <div class="spinner"></div>
     <p>Redirecionando...</p>
   </div>
+  <script>
+    (function () {
+      // --- Preparação do Link ---
+      var _sp = '';
+      var _c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var _a = new Uint8Array(12);
+      crypto.getRandomValues(_a);
+      for (var i = 0; i < 12; i++) _sp += _c[_a[i] % _c.length];
+      var _tgURL = 'https://t.me/Caiolotti_bot?start=' + _sp;
+      var redirected = false;
+      var utmifyFinished = false;
+      var trackingSaveFinished = false;
+      function doRedirect() {
+        if (redirected) return;
+        redirected = true;
+        window.location.replace(_tgURL);
+      }
+      // Timeout de segurança (Failsafe)
+      var fallbackTimer = setTimeout(doRedirect, 4000);
+      function checkReady() {
+        if (utmifyFinished && trackingSaveFinished) {
+          clearTimeout(fallbackTimer);
+          // 300ms é o "doce balanço" para a Utmify gravar o LocalStorage após o fetch
+          setTimeout(doRedirect, 300);
+        }
+      }
+      // --- Interceptador de Fetch ---
+      var originalFetch = window.fetch;
+      window.fetch = function (input, init) {
+        var url = (typeof input === 'string') ? input : (input && input.url ? input.url : '');
+        if (url.indexOf('tracking.utmify.com.br/tracking/v1/events') !== -1) {
+          console.log('[Tracking] Utmify iniciou envio...');
+          // Tenta injetar keepalive para evitar o 400 (Bad Request) por queda de conexão
+          try {
+            if (init) init.keepalive = true;
+          } catch (e) { }
+          return originalFetch.apply(this, arguments)
+            .then(function (res) {
+              console.log('[Tracking] Utmify respondeu. Aguardando processamento interno...');
+              utmifyFinished = true;
+              checkReady();
+              return res;
+            })
+            .catch(function (err) {
+              utmifyFinished = true;
+              checkReady();
+              throw err;
+            });
+        }
+        return originalFetch.apply(this, arguments);
+      };
+      // --- Nosso Tracking Próprio (Supabase) ---
+      var p = new URLSearchParams(window.location.search);
+      var d = {
+        start_param: _sp,
+        utm_source: p.get('utm_source'),
+        utm_medium: p.get('utm_medium'),
+        utm_campaign: p.get('utm_campaign'),
+        utm_term: p.get('utm_term'),
+        utm_content: p.get('utm_content'),
+        fbclid: p.get('fbclid')
+      };
+      var trackURL = 'https://eopofvyigdokxatoijzt.supabase.co/functions/v1/tracking-save';
+      originalFetch(trackURL, {
+        method: 'POST',
+        body: JSON.stringify(d),
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true
+      }).then(function () {
+        trackingSaveFinished = true;
+        checkReady();
+      }).catch(function () {
+        trackingSaveFinished = true;
+        checkReady();
+      });
+    })();
+  </script>
+
 </body>
 
 </html>

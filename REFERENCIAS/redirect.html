@@ -1,108 +1,186 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Redirecionando...</title>
 
-    <!-- Meta Pixel Code -->
-    <script>
-      !(function (f, b, e, v, n, t, s) {
-        if (f.fbq) return;
-        n = f.fbq = function () {
-          n.callMethod
-            ? n.callMethod.apply(n, arguments)
-            : n.queue.push(arguments);
-        };
-        if (!f._fbq) f._fbq = n;
-        n.push = n;
-        n.loaded = !0;
-        n.version = "2.0";
-        n.queue = [];
-        t = b.createElement(e);
-        t.async = !0;
-        t.src = v;
-        s = b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t, s);
-      })(
-        window,
-        document,
-        "script",
-        "https://connect.facebook.net/en_US/fbevents.js",
-      );
-      fbq("init", "1531923727869518");
-      fbq("track", "PageView");
-    </script>
-    <noscript
-      ><img
-        height="1"
-        width="1"
-        style="display: none"
-        src="https://www.facebook.com/tr?id=1531923727869518&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- End Meta Pixel Code -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirecionando...</title>
 
-    <script>
-      function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(";").shift();
-        return null;
+  <!-- ============================================================
+    REDIRECT OTIMIZADO v4 — Utmify + Tracking-Save
+    
+    Fluxo:
+    1. Gera start_param local (0ms)
+    2. Intercepta fetch() nativo para detectar quando a Utmify
+       completar o POST para /tracking/v1/events
+    3. Carrega script da Utmify (ela faz tudo: PageView, IP, pixel Meta)
+    4. Em paralelo, envia tracking data pro nosso Edge Function
+    5. Redireciona quando AMBOS completarem (ou timeout 3s)
+    
+    A Utmify já cuida de: Meta Pixel, fbp, fbc, CAPI, geo, IP
+    Nosso Edge Function cuida de: salvar lead no Supabase
+  ============================================================ -->
+
+  <!-- STEP 1: Gera start_param + URL Telegram (síncrono, 0ms) -->
+  <script>
+    var _sp = '';
+    var _c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var _a = new Uint8Array(12);
+    crypto.getRandomValues(_a);
+    for (var i = 0; i < 12; i++) _sp += _c[_a[i] % _c.length];
+    var _tgURL = 'https://t.me/Caiolotti_bot?start=' + _sp;
+  </script>
+
+  <!-- STEP 2: Intercepta fetch para detectar conclusão da Utmify -->
+  <script>
+    (function () {
+      var redirected = false;
+      var utmifyDone = false;
+      var trackingSaveDone = false;
+
+      function doRedirect() {
+        if (redirected) return;
+        redirected = true;
+        window.location.replace(_tgURL);
       }
 
-      function getAllTrackingParams() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const trackingParams = {};
-        const utmKeys = [
-          "utm_source",
-          "utm_medium",
-          "utm_campaign",
-          "utm_term",
-          "utm_content",
-        ];
+      // Timeout de segurança: redireciona em no máximo 3s
+      var fallbackTimer = setTimeout(doRedirect, 3000);
 
-        if (urlParams.has("fbclid")) {
-          trackingParams.fbclid = urlParams.get("fbclid");
+      function checkAndRedirect() {
+        if (utmifyDone && trackingSaveDone) {
+          clearTimeout(fallbackTimer);
+          doRedirect();
         }
-
-        utmKeys.forEach((key) => {
-          if (urlParams.has(key)) {
-            trackingParams[key] = urlParams.get(key);
-          }
-        });
-
-        const fbpCookie = getCookie("_fbp");
-        if (fbpCookie) {
-          trackingParams.fbp = fbpCookie;
-        }
-
-        return trackingParams;
       }
 
-      function redirect() {
-        const baseURL = "https://trackingtg.com.br/r/viradinha-saldo";
-        const trackingParams = getAllTrackingParams();
+      // --- Intercepta fetch() nativo para escutar a Utmify ---
+      var originalFetch = window.fetch;
+      window.fetch = function () {
+        var url = arguments[0];
+        var urlStr = (typeof url === 'string') ? url : (url && url.url ? url.url : '');
 
-        // Dispara evento Lead antes de redirecionar
-        if (typeof fbq !== "undefined") {
-          fbq("track", "Lead");
+        // Detecta a chamada da Utmify para /events
+        if (urlStr.indexOf('tracking.utmify.com.br/tracking/v1/events') !== -1) {
+          return originalFetch.apply(this, arguments)
+            .then(function (response) {
+              utmifyDone = true;
+              checkAndRedirect();
+              return response;
+            })
+            .catch(function (err) {
+              utmifyDone = true;
+              checkAndRedirect();
+              throw err;
+            });
         }
 
-        let finalURL = baseURL;
-        if (Object.keys(trackingParams).length > 0) {
-          finalURL = `${baseURL}?${new URLSearchParams(trackingParams).toString()}`;
-        }
+        return originalFetch.apply(this, arguments);
+      };
 
-        window.location.href = finalURL;
+      // --- Envia dados pro nosso Edge Function (tracking-save) ---
+      var p = new URLSearchParams(window.location.search);
+      var d = { start_param: _sp };
+      var keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid'];
+      for (var i = 0; i < keys.length; i++) {
+        if (p.has(keys[i])) d[keys[i]] = p.get(keys[i]);
       }
 
-      // Aguarda 500ms pro Meta Pixel carregar e criar o cookie _fbp, depois redireciona
-      window.addEventListener("DOMContentLoaded", () => {
-        setTimeout(redirect, 500);
-      });
-    </script>
-  </head>
-  <body>
+      var ck = '; ' + document.cookie;
+      var fb = ck.split('; _fbp=');
+      if (fb.length === 2) d.fbp = fb.pop().split(';').shift();
+      if (!d.fbp) d.fbp = 'fb.1.' + Date.now() + '.' + Math.floor(Math.random() * 10000000000);
+
+      if (d.fbclid) {
+        var fcCk = ck.split('; _fbc=');
+        if (fcCk.length === 2) {
+          d.fbc = fcCk.pop().split(';').shift();
+        } else {
+          d.fbc = 'fb.1.' + Date.now() + '.' + d.fbclid;
+        }
+      }
+
+      var trackURL = 'https://eopofvyigdokxatoijzt.supabase.co/functions/v1/tracking-save';
+
+      originalFetch(trackURL, {
+        method: 'POST',
+        body: JSON.stringify(d),
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true
+      })
+        .then(function () { trackingSaveDone = true; checkAndRedirect(); })
+        .catch(function () { trackingSaveDone = true; checkAndRedirect(); });
+
+      // Expor para debug
+      window.__redirectDebug = {
+        checkStatus: function () {
+          return { utmifyDone: utmifyDone, trackingSaveDone: trackingSaveDone, redirected: redirected };
+        }
+      };
+    })();
+  </script>
+
+  <!-- STEP 3: Utmify Pixel (ela faz tudo: Meta Pixel, CAPI, IP, etc) -->
+  <script>
+    window.pixelId = "69858677bf4a78e65736c8b0";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #4678C0 0%, #2d5aa0 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      color: white;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="loader">
+    <div class="spinner"></div>
     <p>Redirecionando...</p>
-  </body>
+  </div>
+</body>
+
 </html>

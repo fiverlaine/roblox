@@ -65,7 +65,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
     try {
       const [usersRes, leadsRes, paymentsRes] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }),
+        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }).not('telegram_id', 'is', null),
         supabase.from('payments').select('amount, created_at, status'),
       ]);
 
@@ -103,6 +103,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       let query = supabase
         .from('telegram_leads')
         .select('*, profile:profiles(*)')
+        .not('telegram_id', 'is', null)
         .order('created_at', { ascending: false });
 
       if (filters?.startDate) query = query.gte('created_at', filters.startDate);
