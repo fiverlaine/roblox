@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Coins, Check, CreditCard, Loader2 } from "lucide-react";
+import { ArrowLeft, Coins, Check, CreditCard, Loader2, QrCode } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuthStore } from "../stores/authStore";
 import { supabase } from "../lib/supabase";
@@ -30,6 +30,8 @@ export default function BuyRobux() {
   const navigate = useNavigate();
   const { refreshBalance } = useAuthStore();
   const [selectedPackage, setSelectedPackage] = useState<typeof ROBUX_PACKAGES[0] | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"pix" | "card" | null>(null);
+  const [showCardForm, setShowCardForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Card form states
@@ -132,9 +134,9 @@ export default function BuyRobux() {
           </div>
           <div>
             <p className="text-subtitle font-bold mb-xxs">
-              Pagamento com Cartão
+              Escolha seu método de pagamento
             </p>
-            <p className="text-body text-white/90">Use o cartão gerado no bot do Telegram</p>
+            <p className="text-body text-white/90">PIX ou Cartão de Crédito</p>
           </div>
         </div>
       </motion.div>
@@ -187,16 +189,106 @@ export default function BuyRobux() {
       </div>
 
       <AnimatePresence>
-        {selectedPackage && (
+        {selectedPackage && !showCardForm && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="mb-xl"
+            className="mb-xl px-2"
           >
             <h2 className="text-subtitle font-bold text-text-primary mb-md">
-              Dados do Cartão
+              Selecione o método de pagamento
             </h2>
+            
+            <div className="grid grid-cols-2 gap-md mb-lg">
+              <div 
+                onClick={() => {
+                  setPaymentMethod("pix");
+                  toast.error("O método PIX está em manutenção. Por favor, use Cartão.");
+                }}
+                className={`card card-interactive transition-all duration-300 ${paymentMethod === 'pix' ? 'ring-2 ring-brand-primary bg-brand-primary/5' : ''}`}
+              >
+                <div className="text-center py-md">
+                  <div className="w-12 h-12 mx-auto mb-sm rounded-full bg-brand-primary/10 flex items-center justify-center">
+                    <QrCode size={24} className="text-brand-primary" />
+                  </div>
+                  <p className="font-semibold text-text-primary">PIX</p>
+                  <p className="text-small text-text-secondary">Instantâneo</p>
+                </div>
+              </div>
+
+              <div 
+                onClick={() => setPaymentMethod("card")}
+                className={`card card-interactive transition-all duration-300 ${paymentMethod === 'card' ? 'ring-2 ring-brand-primary bg-brand-primary/5' : ''}`}
+              >
+                <div className="text-center py-md">
+                  <div className="w-12 h-12 mx-auto mb-sm rounded-full bg-brand-primary/10 flex items-center justify-center">
+                    <CreditCard size={24} className="text-brand-primary" />
+                  </div>
+                  <p className="font-semibold text-text-primary">Cartão</p>
+                  <p className="text-small text-text-secondary">Crédito ou Débito</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="card bg-background-secondary mb-lg shadow-sm border border-ui-divider">
+              <div className="space-y-sm">
+                <div className="flex justify-between text-body">
+                  <span className="text-text-secondary">Você vai receber:</span>
+                  <span className="font-semibold text-text-primary">
+                    {selectedPackage.robux.toLocaleString("pt-BR")} Robux
+                  </span>
+                </div>
+                <div className="flex justify-between text-subtitle">
+                  <span className="font-bold text-text-primary">Total:</span>
+                  <span className="font-bold text-brand-primary">
+                    R${" "}
+                    {selectedPackage.price.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                if (paymentMethod === 'card') {
+                  setShowCardForm(true);
+                } else if (paymentMethod === 'pix') {
+                  toast.error("O método PIX está em manutenção. Por favor, use Cartão.");
+                } else {
+                  toast.error("Selecione um método de pagamento");
+                }
+              }}
+              className={`btn btn-primary h-[52px] px-xl w-full flex items-center justify-center gap-2 ${!paymentMethod ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {!paymentMethod ? 'Selecione o método' : 'Continuar pagamento'}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selectedPackage && showCardForm && (
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            className="mb-xl px-2"
+          >
+            <div className="flex items-center gap-md mb-md">
+              <button 
+                onClick={() => setShowCardForm(false)}
+                className="p-xs rounded-full hover:bg-background-secondary"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <h2 className="text-subtitle font-bold text-text-primary">
+                Dados do Cartão
+              </h2>
+            </div>
+            
             <p className="text-caption text-text-secondary mb-md">
               Insira os dados do cartão gerado pelo bot do Telegram
             </p>
@@ -226,9 +318,9 @@ export default function BuyRobux() {
                 <input
                   type="text"
                   placeholder="NOME COMPLETO"
-                  className="input w-full"
+                  className="input w-full uppercase"
                   value={holderName}
-                  onChange={(e) => setHolderName(e.target.value)}
+                  onChange={(e) => setHolderName(e.target.value.toUpperCase())}
                 />
               </div>
               <div className="grid grid-cols-2 gap-md">
@@ -294,7 +386,7 @@ export default function BuyRobux() {
                   Processando...
                 </>
               ) : (
-                `Pagar com Cartão`
+                `Finalizar Compra`
               )}
             </button>
           </motion.div>
