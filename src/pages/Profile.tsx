@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   User,
   Mail,
@@ -6,11 +7,11 @@ import {
   Coins,
   DollarSign,
   Shield,
-  ShieldCheck,
   CreditCard,
   Phone,
   Calendar,
   LogOut,
+  Award,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../stores/authStore';
@@ -97,31 +98,51 @@ export default function Profile() {
             </button>
           </div>
 
-          <div className="mb-6">
-            <div 
-              onClick={() => !profile.has_seller_pass && navigate('/licenca')}
-              className={`w-full bg-white border border-gray-200 rounded-2xl p-5 flex items-center justify-between gap-4 transition-colors ${!profile.has_seller_pass ? 'hover:border-brand-primary/30 cursor-pointer' : ''}`}
+          {profile.has_seller_pass && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
             >
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${profile.has_seller_pass ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
-                  {profile.has_seller_pass ? <ShieldCheck size={24} /> : <Shield size={24} />}
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 text-lg">
-                    {profile.has_seller_pass ? 'Licença Ativa' : 'Sem Licença Ativa'}
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    {profile.has_seller_pass ? 'Sua conta está autorizada a vender' : 'Adquira o Seller Pass para vender'}
-                  </p>
+              <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden group">
+                <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center border border-yellow-500/30 text-yellow-400">
+                    <Award size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-0.5 flex items-center gap-2">
+                      Roblox Seller Pass
+                      <span className="text-[10px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full border border-yellow-500/30 font-bold uppercase tracking-wider">Ativo</span>
+                    </h3>
+                    <p className="text-gray-400 text-sm">Membro desde {new Date(profile.created_at).toLocaleDateString('pt-BR')}</p>
+                  </div>
                 </div>
               </div>
-              {!profile.has_seller_pass && (
+            </motion.div>
+          )}
+
+          {!profile.has_seller_pass && (
+            <div className="mb-6">
+              <div 
+                onClick={() => navigate('/licenca')}
+                className="w-full bg-white border border-gray-200 rounded-2xl p-5 flex items-center justify-between gap-4 transition-colors hover:border-brand-primary/30 cursor-pointer"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-100 text-gray-400">
+                    <Shield size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-lg">Sem Licença Ativa</h3>
+                    <p className="text-gray-500 text-sm">Adquira o Seller Pass para vender</p>
+                  </div>
+                </div>
                 <div className="btn btn-primary h-10 px-md text-body flex items-center justify-center cursor-pointer">
                   Adquirir
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
             <div className="flex items-center gap-2 mb-6 pb-4 border-b border-gray-100">

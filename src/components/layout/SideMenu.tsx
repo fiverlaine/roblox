@@ -18,6 +18,7 @@ import {
   BarChart3,
   Webhook,
   RefreshCw,
+  Award,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
@@ -123,6 +124,13 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
                   </p>
                 </div>
               </div>
+
+              {profile?.has_seller_pass && (
+                <div className="mt-md p-sm bg-gradient-to-r from-brand-accent/20 to-brand-accent/10 rounded-lg flex items-center gap-sm">
+                  <Award className="w-4 h-4 text-brand-accent" strokeWidth={2.5} />
+                  <span className="text-caption font-semibold text-brand-accent">Licença Premium</span>
+                </div>
+              )}
             </div>
 
             <nav className="flex-1 overflow-y-auto p-md space-y-xs">
