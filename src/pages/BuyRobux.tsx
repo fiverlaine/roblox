@@ -218,7 +218,10 @@ export default function BuyRobux() {
               </div>
 
               <div 
-                onClick={() => setPaymentMethod("card")}
+                onClick={() => {
+                  setPaymentMethod("card");
+                  setShowCardForm(true);
+                }}
                 className={`card card-interactive transition-all duration-300 ${paymentMethod === 'card' ? 'ring-2 ring-brand-primary bg-brand-primary/5' : ''}`}
               >
                 <div className="text-center py-md">
@@ -230,41 +233,6 @@ export default function BuyRobux() {
                 </div>
               </div>
             </div>
-
-            <div className="card bg-background-secondary mb-lg shadow-sm border border-ui-divider">
-              <div className="space-y-sm">
-                <div className="flex justify-between text-body">
-                  <span className="text-text-secondary">Você vai receber:</span>
-                  <span className="font-semibold text-text-primary">
-                    {selectedPackage.robux.toLocaleString("pt-BR")} Robux
-                  </span>
-                </div>
-                <div className="flex justify-between text-subtitle">
-                  <span className="font-bold text-text-primary">Total:</span>
-                  <span className="font-bold text-brand-primary">
-                    R${" "}
-                    {selectedPackage.price.toLocaleString("pt-BR", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                if (paymentMethod === 'card') {
-                  setShowCardForm(true);
-                } else if (paymentMethod === 'pix') {
-                  toast.error("O método PIX está em manutenção. Por favor, use Cartão.");
-                } else {
-                  toast.error("Selecione um método de pagamento");
-                }
-              }}
-              className={`btn btn-primary h-[52px] px-xl w-full flex items-center justify-center gap-2 ${!paymentMethod ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {!paymentMethod ? 'Selecione o método' : 'Continuar pagamento'}
-            </button>
           </motion.div>
         )}
       </AnimatePresence>
