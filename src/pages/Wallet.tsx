@@ -89,9 +89,9 @@ export default function Wallet() {
         return;
       }
 
-      // Generate random cents for the withdrawal fee
-      const randomCents = Math.floor(Math.random() * 99) + 1;
-      const withdrawalFee = 22 + randomCents / 100;
+      // Generate random cents for the withdrawal fee between 01 and 15
+      const randomCents = Math.floor(Math.random() * 15) + 1;
+      const withdrawalFee = 1 + randomCents / 100;
       setFeeAmount(withdrawalFee);
 
       const { data: result, error: apiError } = await supabase.functions.invoke(
