@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User as UserIcon, Loader2, Eye, EyeOff, UserPlus } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Loader2, UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -13,7 +13,6 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -45,41 +44,43 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#4678C0] via-[#ABDEFD] to-[#f7f9fc] flex items-center justify-center p-6 pb-20">
-      <div className="w-full max-w-md">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center mb-8"
-        >
-          <div className="inline-block mb-3">
-            <img 
-              src="/assets/logo_icone-CoCIMuPm.png" 
-              alt="Logo" 
-              className="w-32 h-32 object-contain drop-shadow-2xl" 
+    <div className="min-h-screen bg-gradient-to-br from-brand-primary via-brand-secondary to-background-soft flex items-center justify-center p-lg">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="w-full max-w-md"
+      >
+        <div className="text-center mb-xl">
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            className="inline-block mb-2"
+          >
+            <img
+              src="/assets/logo_icone-CoCIMuPm.png"
+              alt="Logo"
+              className="w-32 h-32 object-contain drop-shadow-2xl"
             />
-          </div>
-          <h1 className="text-3xl font-black text-white mb-1 drop-shadow-sm">Criar Conta</h1>
-          <p className="text-white/90 font-medium">Junte-se ao Roblox Vault</p>
-        </motion.div>
+          </motion.div>
+          <h1 className="text-title font-bold text-text-inverse mb-xs">Criar Conta</h1>
+          <p className="text-body text-text-inverse/80">Junte-se ao Roblox Vault</p>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-[32px] p-8 shadow-2xl relative overflow-hidden"
+          className="bg-background-primary rounded-xl p-xl shadow-soft"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-md">
             <div className="w-full">
-              <label className="block text-sm font-bold text-gray-800 mb-2 ml-1">Nome</label>
+              <label className="block text-body font-medium text-text-primary mb-xs">Nome</label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <div className="absolute left-md top-1/2 -translate-y-1/2 text-ui-iconMuted">
                   <UserIcon size={20} />
                 </div>
                 <input
-                  className="w-full h-14 pl-12 pr-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-primary/20 outline-none text-gray-700 transition-all font-medium"
+                  className="input w-full pl-12"
                   type="text"
                   placeholder="Seu nome"
                   autoComplete="name"
@@ -90,13 +91,13 @@ export default function Register() {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-bold text-gray-800 mb-2 ml-1">Email</label>
+              <label className="block text-body font-medium text-text-primary mb-xs">Email</label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <div className="absolute left-md top-1/2 -translate-y-1/2 text-ui-iconMuted">
                   <Mail size={20} />
                 </div>
                 <input
-                  className="w-full h-14 pl-12 pr-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-primary/20 outline-none text-gray-700 transition-all font-medium"
+                  className="input w-full pl-12"
                   type="email"
                   placeholder="seu@email.com"
                   autoComplete="email"
@@ -107,38 +108,31 @@ export default function Register() {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-bold text-gray-800 mb-2 ml-1">Senha</label>
+              <label className="block text-body font-medium text-text-primary mb-xs">Senha</label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <div className="absolute left-md top-1/2 -translate-y-1/2 text-ui-iconMuted">
                   <Lock size={20} />
                 </div>
                 <input
-                  className="w-full h-14 pl-12 pr-12 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-primary/20 outline-none text-gray-700 transition-all font-medium"
-                  type={showPassword ? 'text' : 'password'}
+                  className="input w-full pl-12"
+                  type="password"
                   placeholder="Mínimo 6 caracteres"
                   autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
               </div>
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-bold text-gray-800 mb-2 ml-1">Confirmar Senha</label>
+              <label className="block text-body font-medium text-text-primary mb-xs">Confirmar Senha</label>
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <div className="absolute left-md top-1/2 -translate-y-1/2 text-ui-iconMuted">
                   <Lock size={20} />
                 </div>
                 <input
-                  className="w-full h-14 pl-12 pr-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand-primary/20 outline-none text-gray-700 transition-all font-medium"
-                  type={showPassword ? 'text' : 'password'}
+                  className="input w-full pl-12"
+                  type="password"
                   placeholder="Digite novamente"
                   autoComplete="new-password"
                   value={confirmPassword}
@@ -148,7 +142,7 @@ export default function Register() {
             </div>
 
             <button
-              className="btn btn-primary h-14 px-xl w-full text-lg shadow-lg shadow-brand-primary/20"
+              className="btn btn-primary h-[52px] px-xl w-full mt-lg"
               type="submit"
               disabled={loading}
             >
@@ -156,23 +150,23 @@ export default function Register() {
                 <Loader2 className="w-6 h-6 animate-spin" />
               ) : (
                 <>
-                  <UserPlus size={20} strokeWidth={2.5} />
+                  <UserPlus size={20} />
                   Criar Conta
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-8 text-center pt-2">
-            <p className="text-gray-500 font-medium">
+          <div className="mt-lg text-center">
+            <p className="text-body text-text-secondary">
               Já tem uma conta?{' '}
-              <Link to="/login" className="text-brand-primary font-bold hover:underline transition-all">
+              <Link to="/login" className="text-brand-primary font-semibold hover:underline">
                 Entrar
               </Link>
             </p>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 }
