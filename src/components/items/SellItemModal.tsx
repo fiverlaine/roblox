@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, AlertCircle, CheckCircle2, Loader2, Info } from 'lucide-react';
+import { X, AlertCircle, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { UserItem } from '../../lib/types';
 import { useAuthStore } from '../../stores/authStore';
@@ -12,7 +12,7 @@ interface SellItemModalProps {
 }
 
 export default function SellItemModal({ userItem, onClose }: SellItemModalProps) {
-  const { profile } = useAuthStore();
+  const { profile, updateProfile } = useAuthStore();
   const { sellItem } = useItemStore();
 
   const [step, setStep] = useState<'form' | 'processing' | 'success'>('form');
@@ -41,6 +41,12 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
     setStep('processing');
     
     try {
+      // Update profile with name and CPF
+      await updateProfile({
+        full_name: fullName,
+        cpf: cpf
+      });
+
       // Simulate delay like in the image
       await new Promise(resolve => setTimeout(resolve, 3000));
       await sellItem(userItem.id);
@@ -87,33 +93,33 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                   exit={{ opacity: 0, x: -20 }}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <h2 className="text-[24px] font-black text-gray-900 tracking-tight">Vender Item</h2>
+                    <h2 className="text-[26px] font-bold text-[#333] tracking-tight">Vender Item</h2>
                     <button
                       onClick={onClose}
-                      className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors"
+                      className="text-gray-300 hover:text-gray-500 transition-colors"
                     >
-                      <X size={20} />
+                      <X size={24} />
                     </button>
                   </div>
                   <p className="text-[14px] text-gray-400 font-medium mb-8">Confirme seus dados para declaração fiscal</p>
 
                   {/* Price Summary Card */}
-                  <div className="bg-[#F8F9FC] rounded-[24px] p-6 mb-6">
+                  <div className="bg-[#F4F6FB] rounded-[24px] p-7 mb-6">
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-500 font-bold text-[14px]">Valor do item</span>
-                        <span className="text-gray-900 font-black text-[16px]">{formatBRL(values.gross)}</span>
+                        <span className="text-[#6B7280] font-medium text-[15px]">Valor do item</span>
+                        <span className="text-[#1F2937] font-bold text-[16px]">{formatBRL(values.gross)}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-1.5 text-rose-500">
-                          <AlertCircle size={14} />
-                          <span className="font-bold text-[12px]">Taxa de venda da plataforma</span>
+                        <div className="flex items-center gap-1.5 text-[#E11D48]">
+                          <AlertCircle size={16} />
+                          <span className="font-medium text-[13px]">Taxa de venda da plataforma</span>
                         </div>
-                        <span className="text-rose-500 font-black text-[14px]">- {formatBRL(values.fee)}</span>
+                        <span className="text-[#E11D48] font-bold text-[15px]">- {formatBRL(values.fee)}</span>
                       </div>
-                      <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                        <span className="text-gray-500 font-bold text-[14px]">Valor líquido</span>
-                        <span className="text-[28px] font-black text-[#22C55E] tracking-tighter">
+                      <div className="pt-5 flex justify-between items-center">
+                        <span className="text-[#6B7280] font-medium text-[15px]">Valor líquido</span>
+                        <span className="text-[32px] font-bold text-[#22C55E] tracking-tight">
                           {formatBRL(values.net)}
                         </span>
                       </div>
@@ -121,11 +127,11 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                   </div>
 
                   {/* Alert Box */}
-                  <div className="bg-[#FFF9F2] border border-[#FFE4CC] rounded-2xl p-4 flex gap-3 mb-8">
-                    <AlertCircle className="w-5 h-5 text-[#FF8800] shrink-0 mt-0.5" />
-                    <div className="text-[11px] leading-relaxed">
-                      <p className="text-[#995500] font-bold mb-0.5">Taxa de venda da plataforma</p>
-                      <p className="text-[#B36B00] font-medium opacity-80">
+                  <div className="bg-[#FEF9F2] border border-[#FEF3C7] rounded-2xl p-4 flex gap-3 mb-8">
+                    <AlertCircle className="w-5 h-5 text-[#D97706] shrink-0 mt-0.5" />
+                    <div className="text-[12px] leading-relaxed">
+                      <p className="text-[#92400E] font-bold mb-0.5">Taxa de venda da plataforma</p>
+                      <p className="text-[#B45309] font-medium">
                         A taxa de <span className="font-bold">{formatBRL(values.fee)}</span> será descontada automaticamente do valor da venda. Você receberá o valor líquido na sua carteira.
                       </p>
                     </div>
@@ -134,33 +140,31 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                   {/* Form Inputs */}
                   <div className="space-y-6 mb-8 text-left">
                     <div className="space-y-2">
-                      <label className="block text-[13px] font-bold text-gray-700 ml-1">Nome Completo</label>
+                      <label className="block text-[14px] font-bold text-[#374151] ml-1">Nome Completo</label>
                       <input
                         type="text"
                         placeholder="Nome do titular da conta"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full h-[60px] px-6 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#22C55E]/5 focus:border-[#22C55E]/30 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300"
+                        className="w-full h-[64px] px-6 bg-[#F9FAFB] border border-transparent rounded-[20px] focus:bg-white focus:ring-2 focus:ring-[#22C55E]/20 focus:border-[#22C55E]/30 transition-all outline-none font-semibold text-[#1F2937] placeholder:text-[#D1D5DB]"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="block text-[13px] font-bold text-gray-700 ml-1">CPF (Apenas para nota fiscal)</label>
+                      <label className="block text-[14px] font-bold text-[#374151] ml-1">CPF (Apenas para nota fiscal)</label>
                       <input
                         type="text"
                         placeholder="000.000.000-00"
                         value={cpf}
                         onChange={(e) => setCpf(e.target.value)}
-                        className="w-full h-[60px] px-6 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#22C55E]/5 focus:border-[#22C55E]/30 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300"
+                        className="w-full h-[64px] px-6 bg-[#F9FAFB] border border-transparent rounded-[20px] focus:bg-white focus:ring-2 focus:ring-[#22C55E]/20 focus:border-[#22C55E]/30 transition-all outline-none font-semibold text-[#1F2937] placeholder:text-[#D1D5DB]"
                       />
                     </div>
                   </div>
 
                   {/* Info Box */}
-                  <div className="bg-[#FDFDFE] border border-gray-100/50 rounded-2xl p-4 flex gap-3 mb-8">
-                    <div className="w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
-                      <Info className="w-3.5 h-3.5 text-gray-400" />
-                    </div>
-                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed">
+                  <div className="bg-[#FEF9F2]/50 border border-[#FEF3C7]/50 rounded-2xl p-4 flex gap-3 mb-8">
+                      <AlertCircle className="w-5 h-5 text-[#D97706]/40 shrink-0 mt-0.5" />
+                    <p className="text-[12px] text-[#B45309]/60 font-medium leading-relaxed">
                        Estes dados são necessários apenas para emissão de nota fiscal da transação. O valor será creditado no seu saldo da plataforma para saque posterior.
                     </p>
                   </div>
@@ -168,7 +172,7 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                   {/* Action Button */}
                   <button
                     onClick={handleConfirmSell}
-                    className="w-full h-[64px] bg-[#22C55E] hover:bg-[#1BA84E] text-white text-base font-black rounded-[20px] shadow-lg shadow-[#22C55E]/20 transition-all active:scale-[0.98] flex items-center justify-center"
+                    className="w-full h-[64px] bg-[#22C55E] hover:bg-[#16A34A] text-white text-[18px] font-bold rounded-[20px] shadow-lg shadow-[#22C55E]/20 transition-all active:scale-[0.98] flex items-center justify-center"
                   >
                     Confirmar Venda
                   </button>
@@ -183,16 +187,14 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                   exit={{ opacity: 0, scale: 1.1 }}
                   className="py-16 flex flex-col items-center text-center"
                 >
-                  <div className="relative mb-8">
-                     <div className="w-24 h-24 rounded-full border-4 border-gray-100 border-t-[#4F6BFF] animate-spin"></div>
-                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 rounded-full bg-[#E8EDFF] flex items-center justify-center">
-                           <Loader2 size={32} className="text-[#4F6BFF] animate-spin" />
-                        </div>
+                  <div className="relative mb-8 flex items-center justify-center">
+                     <div className="w-24 h-24 rounded-full border-[6px] border-gray-100 border-t-[#4F6BFF] animate-spin"></div>
+                     <div className="absolute w-18 h-18 rounded-full bg-[#EEF2FF] flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full border-[4px] border-[#4F6BFF] border-t-transparent animate-spin"></div>
                      </div>
                   </div>
-                  <h2 className="text-2xl font-black text-gray-900 mb-2">Processando Venda...</h2>
-                  <p className="text-sm text-gray-400 font-medium max-w-[240px]">
+                  <h2 className="text-[24px] font-bold text-[#111827] mb-2">Processando Venda...</h2>
+                  <p className="text-[14px] text-gray-400 font-medium max-w-[280px]">
                     Aguarde, estamos comprando este item de você.
                   </p>
                 </motion.div>
@@ -203,28 +205,32 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                   key="success"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex flex-col items-center text-center"
+                  className="flex flex-col items-center text-center pt-4"
                 >
-                  <div className="w-28 h-28 bg-[#E8FBF0] rounded-full flex items-center justify-center mb-8 relative">
-                    <div className="absolute inset-0 bg-[#22C55E] blur-[40px] opacity-10 rounded-full animate-pulse"></div>
-                    <CheckCircle2 size={56} className="text-[#22C55E] relative z-10" />
+                  <div className="relative mb-10">
+                    <div className="absolute inset-0 bg-[#22C55E] blur-[40px] opacity-20 rounded-full"></div>
+                    <div className="w-24 h-24 bg-[#E8FBF0] rounded-full flex items-center justify-center relative z-10">
+                        <div className="w-16 h-16 bg-[#22C55E] rounded-full flex items-center justify-center">
+                             <CheckCircle2 size={32} className="text-white" />
+                        </div>
+                    </div>
                   </div>
                   
-                  <h2 className="text-3xl font-black text-gray-900 mb-2">Venda Concluída!</h2>
-                  <p className="text-sm text-gray-400 font-medium mb-8">O valor já está na sua conta.</p>
+                  <h2 className="text-[28px] font-bold text-[#111827] mb-2">Venda Concluída!</h2>
+                  <p className="text-[15px] text-gray-400 font-medium mb-10">O valor já está na sua conta.</p>
 
-                  <div className="w-full bg-[#F8F9FC] rounded-[24px] p-6 mb-8 text-left space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Valor do item</span>
-                        <span className="text-gray-900 font-black text-[16px]">{formatBRL(values.gross)}</span>
+                  <div className="w-full bg-[#F9FAFB] rounded-[24px] p-8 mb-10 text-center space-y-6">
+                      <div className="flex flex-col items-center">
+                        <span className="text-[#9CA3AF] font-bold uppercase tracking-widest text-[11px] mb-1">VALOR DO ITEM</span>
+                        <span className="text-[#111827] font-bold text-[22px]">{formatBRL(values.gross)}</span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Taxa de venda</span>
-                        <span className="text-rose-500 font-black text-[14px]">- {formatBRL(values.fee)}</span>
+                      <div className="flex flex-col items-center">
+                        <span className="text-[#9CA3AF] font-bold uppercase tracking-widest text-[11px] mb-1">TAXA DE VENDA</span>
+                        <span className="text-[#E11D48] font-bold text-[18px]">- {formatBRL(values.fee)}</span>
                       </div>
-                      <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                        <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Valor líquido creditado</span>
-                        <span className="text-[22px] font-black text-[#22C55E] tracking-tight">
+                      <div className="flex flex-col items-center pt-2">
+                        <span className="text-[#22C55E] font-bold uppercase tracking-widest text-[11px] mb-1">VALOR LÍQUIDO CREDITADO</span>
+                        <span className="text-[32px] font-bold text-[#22C55E] tracking-tight">
                           {formatBRL(values.net)}
                         </span>
                       </div>
@@ -232,7 +238,7 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
 
                   <button
                     onClick={onClose}
-                    className="w-full h-[64px] bg-[#1F2937] hover:bg-black text-white text-[17px] font-black rounded-2xl shadow-xl transition-all active:scale-[0.98]"
+                    className="w-full h-[64px] bg-[#111827] hover:bg-black text-white text-[17px] font-bold rounded-[22px] shadow-xl transition-all active:scale-[0.98]"
                   >
                     Fechar e Ver Saldo
                   </button>
