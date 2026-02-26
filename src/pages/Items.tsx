@@ -13,7 +13,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useItemStore } from '../stores/itemStore';
 import { useAuthStore } from '../stores/authStore';
 import { formatRobux } from '../lib/utils';
-import { toast } from 'react-hot-toast';
+import SellItemModal from '../components/items/SellItemModal';
+import type { UserItem } from '../lib/types';
 
 export default function Items() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function Items() {
   const { userItems, loading, fetchUserItems } = useItemStore();
   const [redeemModalOpen, setRedeemModalOpen] = useState(false);
   const [sellerModalOpen, setSellerModalOpen] = useState(false);
+  const [selectedUserItem, setSelectedUserItem] = useState<UserItem | null>(null);
   const [skinCode, setSkinCode] = useState('');
 
   useEffect(() => {
@@ -29,16 +31,11 @@ export default function Items() {
 
   const activeItems = userItems.filter((ui) => ui.status === 'active');
 
-  const handleSellClick = async (userItemId: number) => {
+  const handleSellClick = async (userItem: UserItem) => {
     if (!profile?.has_seller_pass) {
       setSellerModalOpen(true);
     } else {
-      try {
-        await useItemStore.getState().sellItem(userItemId);
-        toast.success("Item colocado à venda com sucesso!");
-      } catch (error) {
-        toast.error("Erro ao vender item. Tente novamente.");
-      }
+      setSelectedUserItem(userItem);
     }
   };
 
@@ -159,7 +156,7 @@ export default function Items() {
                           Transferir p/ conta
                         </button>
                         <button 
-                          onClick={() => handleSellClick(userItem.id)}
+                          onClick={() => handleSellClick(userItem)}
                           className="btn btn-ghost h-10 px-md text-body w-full bg-white hover:bg-green-50 text-gray-600 hover:text-green-700 border border-gray-200 hover:border-green-200 py-2.5 rounded-xl text-sm font-medium transition-all hover:shadow-sm"
                         >
                           <DollarSign size={16} className="mr-2" />
@@ -317,6 +314,11 @@ export default function Items() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Modal Vender Item */}
+      <SellItemModal 
+        userItem={selectedUserItem}
+        onClose={() => setSelectedUserItem(null)}
+      />
     </>
   );
 }
