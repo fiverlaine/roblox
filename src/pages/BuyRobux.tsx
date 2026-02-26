@@ -31,7 +31,6 @@ export default function BuyRobux() {
   const { refreshBalance } = useAuthStore();
   const [selectedPackage, setSelectedPackage] = useState<typeof ROBUX_PACKAGES[0] | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card" | null>(null);
-  const [showCardForm, setShowCardForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Card form states
@@ -189,7 +188,7 @@ export default function BuyRobux() {
       </div>
 
       <AnimatePresence>
-        {selectedPackage && !showCardForm && (
+        {selectedPackage && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -220,7 +219,6 @@ export default function BuyRobux() {
               <div 
                 onClick={() => {
                   setPaymentMethod("card");
-                  setShowCardForm(true);
                 }}
                 className={`card card-interactive transition-all duration-300 ${paymentMethod === 'card' ? 'ring-2 ring-brand-primary bg-brand-primary/5' : ''}`}
               >
@@ -233,97 +231,82 @@ export default function BuyRobux() {
                 </div>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {selectedPackage && showCardForm && (
-          <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            className="mb-xl px-2"
-          >
-            <div className="flex items-center gap-md mb-md">
-              <button 
-                onClick={() => setShowCardForm(false)}
-                className="p-xs rounded-full hover:bg-background-secondary"
-              >
-                <ArrowLeft size={20} />
-              </button>
-              <h2 className="text-subtitle font-bold text-text-primary">
-                Dados do Cartão
-              </h2>
-            </div>
-            
-            <p className="text-caption text-text-secondary mb-md">
-              Insira os dados do cartão gerado pelo bot do Telegram
-            </p>
+            <AnimatePresence>
+              {paymentMethod === 'card' && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-md mb-lg">
+                    <div className="w-full">
+                      <label className="block text-body font-medium text-text-primary mb-xs">
+                        Número do Cartão
+                      </label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="0000 0000 0000 0000"
+                        className="input w-full"
+                        style={{ backgroundColor: '#F9FAFB' }}
+                        maxLength={19}
+                        value={cardNumber}
+                        onChange={(e) => setCardNumber(formatCardInput(e.target.value))}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <label className="block text-body font-medium text-text-primary mb-xs">
+                        Nome do Titular
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="NOME COMPLETO"
+                        className="input w-full uppercase"
+                        style={{ backgroundColor: '#F9FAFB' }}
+                        value={holderName}
+                        onChange={(e) => setHolderName(e.target.value.toUpperCase())}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-md">
+                      <div className="w-full">
+                        <label className="block text-body font-medium text-text-primary mb-xs">
+                          Validade
+                        </label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="MM/AA"
+                          className="input w-full"
+                          style={{ backgroundColor: '#F9FAFB' }}
+                          maxLength={5}
+                          value={expiry}
+                          onChange={(e) => setExpiry(formatExpiryInput(e.target.value))}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <label className="block text-body font-medium text-text-primary mb-xs">
+                          CVV
+                        </label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="000"
+                          className="input w-full"
+                          style={{ backgroundColor: '#F9FAFB' }}
+                          maxLength={3}
+                          value={cvv}
+                          onChange={(e) => setCvv(e.target.value.replace(/\D/g, "").slice(0, 3))}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <div className="space-y-md mb-lg">
-              <div className="w-full">
-                <label className="block text-body font-medium text-text-primary mb-xs">
-                  Número do Cartão
-                </label>
-                <div className="relative">
-                  <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="0000 0000 0000 0000"
-                    className="input w-full pl-11"
-                    maxLength={19}
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(formatCardInput(e.target.value))}
-                  />
-                </div>
-              </div>
-              <div className="w-full">
-                <label className="block text-body font-medium text-text-primary mb-xs">
-                  Nome do Titular
-                </label>
-                <input
-                  type="text"
-                  placeholder="NOME COMPLETO"
-                  className="input w-full uppercase"
-                  value={holderName}
-                  onChange={(e) => setHolderName(e.target.value.toUpperCase())}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-md">
-                <div className="w-full">
-                  <label className="block text-body font-medium text-text-primary mb-xs">
-                    Validade
-                  </label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="MM/AA"
-                    className="input w-full"
-                    maxLength={5}
-                    value={expiry}
-                    onChange={(e) => setExpiry(formatExpiryInput(e.target.value))}
-                  />
-                </div>
-                <div className="w-full">
-                  <label className="block text-body font-medium text-text-primary mb-xs">
-                    CVV
-                  </label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="000"
-                    className="input w-full"
-                    maxLength={3}
-                    value={cvv}
-                    onChange={(e) => setCvv(e.target.value.replace(/\D/g, "").slice(0, 3))}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="card bg-background-secondary mb-lg">
+            <div className="card bg-background-secondary mb-lg shadow-sm border border-ui-divider">
               <div className="space-y-sm">
                 <div className="flex justify-between text-body">
                   <span className="text-text-secondary">Você vai receber:</span>
@@ -345,8 +328,10 @@ export default function BuyRobux() {
 
             <button
               onClick={handlePayment}
-              disabled={loading || !isCardValid}
-              className="btn btn-primary h-[52px] px-xl w-full flex items-center justify-center gap-2"
+              disabled={loading || (paymentMethod === 'card' && !isCardValid) || !paymentMethod}
+              className={`btn btn-primary h-[52px] px-xl w-full flex items-center justify-center gap-2 ${
+                loading || (paymentMethod === 'card' && !isCardValid) || !paymentMethod ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               {loading ? (
                 <>
@@ -354,7 +339,7 @@ export default function BuyRobux() {
                   Processando...
                 </>
               ) : (
-                `Finalizar Compra`
+                paymentMethod === 'card' ? 'Pagar com Cartão' : 'Selecione o método'
               )}
             </button>
           </motion.div>
