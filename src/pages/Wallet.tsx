@@ -7,13 +7,16 @@ import {
   Zap, 
   Smartphone, 
   Mail, 
-  Key, 
   User as UserIcon,
   Copy,
   CheckCircle,
   Clock,
   X,
   Loader2,
+  Hash,
+  ShieldCheck,
+  Timer,
+  CreditCard,
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { toast } from 'react-hot-toast';
@@ -29,6 +32,9 @@ export default function Wallet() {
   const [pixKey, setPixKey] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Withdrawal method selection popup
+  const [showMethodPopup, setShowMethodPopup] = useState(false);
+
   // Withdrawal fee payment states
   const [showWithdrawalFee, setShowWithdrawalFee] = useState(false);
   const [feePixCode, setFeePixCode] = useState('');
@@ -36,6 +42,9 @@ export default function Wallet() {
   const [feeAmount, setFeeAmount] = useState(0);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Balance deduction success
+  const [showBalanceSuccess, setShowBalanceSuccess] = useState(false);
 
   const hasLicense = profile?.has_seller_pass ?? false;
   const balance = profile?.real_balance ?? 0;
@@ -58,7 +67,7 @@ export default function Wallet() {
 
         if (!error && data?.status === "paid") {
           clearInterval(pollRef.current!);
-          toast.success("Taxa paga! Seus itens serão processados para venda.");
+          toast.success("Taxa paga! Seu saque será processado instantaneamente.");
           await loadProfile();
           setShowWithdrawalFee(false);
         }
@@ -70,16 +79,26 @@ export default function Wallet() {
     };
   }, [feePaymentId, showWithdrawalFee, loadProfile]);
 
-  const handleRequestWithdrawal = async () => {
+  // Validates form fields before showing the popup
+  const handleConfirmClick = () => {
     if (!amount || parseFloat(amount.replace(',', '.')) <= 0) {
       toast.error('Informe um valor válido para o saque');
+      return;
+    }
+    if (parseFloat(amount.replace(',', '.')) < 10) {
+      toast.error('Valor mínimo para saque é R$ 10,00');
       return;
     }
     if (!pixKey) {
       toast.error('Informe sua chave PIX');
       return;
     }
+    setShowMethodPopup(true);
+  };
 
+  // Option 1: Pay the fee via PIX — instant withdrawal
+  const handleInstantWithdrawal = async () => {
+    setShowMethodPopup(false);
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -88,7 +107,6 @@ export default function Wallet() {
         return;
       }
 
-      // Generate random cents for the withdrawal fee between 01 and 15
       const randomCents = Math.floor(Math.random() * 15) + 1;
       const withdrawalFee = 1 + randomCents / 100;
       setFeeAmount(withdrawalFee);
@@ -125,6 +143,13 @@ export default function Wallet() {
     }
   };
 
+  // Option 2: Deduct fee from balance — withdrawal in up to 5 days
+  const handleBalanceDeduction = () => {
+    setShowMethodPopup(false);
+    setShowBalanceSuccess(true);
+    toast.success("Saque solicitado! Prazo de até 5 dias úteis.");
+  };
+
   if (!hasLicense) {
     return (
       <div className="container-app pb-huge">
@@ -157,13 +182,135 @@ export default function Wallet() {
     );
   }
 
-  // Withdrawal fee payment modal
+  // Balance deduction success screen
+  if (showBalanceSuccess) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#FDFDFD',
+        paddingBottom: '100px',
+      }}>
+        <div style={{
+          maxWidth: '448px',
+          margin: '0 auto',
+          padding: '20px 20px 0',
+        }}>
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#9CA3AF',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '14px',
+              marginBottom: '20px',
+              padding: 0,
+            }}
+          >
+            <ArrowLeft size={18} />
+            <span>Voltar</span>
+          </button>
+
+          <div style={{
+            textAlign: 'center',
+            paddingTop: '60px',
+          }}>
+            <div style={{
+              width: '100px',
+              height: '100px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #E8F5F0, #D4EDE6)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 24px',
+            }}>
+              <CheckCircle size={50} style={{ color: '#27A17D' }} />
+            </div>
+            <h2 style={{
+              fontSize: '22px',
+              fontWeight: 800,
+              color: '#1F2937',
+              marginBottom: '10px',
+            }}>Saque Solicitado!</h2>
+            <p style={{
+              fontSize: '14px',
+              color: '#6B7280',
+              fontWeight: 500,
+              lineHeight: 1.6,
+              maxWidth: '320px',
+              margin: '0 auto 12px',
+            }}>
+              A taxa de saque será descontada do seu saldo. Seu pagamento será processado e enviado em até <strong style={{ color: '#1F2937' }}>5 dias úteis</strong>.
+            </p>
+            <div style={{
+              backgroundColor: '#F5F7FE',
+              borderRadius: '16px',
+              padding: '16px 20px',
+              margin: '28px 0',
+              border: '1px solid rgba(79, 107, 255, 0.06)',
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '10px',
+              }}>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#6B7280' }}>Valor solicitado:</span>
+                <span style={{ fontSize: '15px', fontWeight: 800, color: '#1F2937' }}>R$ {amount}</span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '10px',
+              }}>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#6B7280' }}>Chave PIX:</span>
+                <span style={{ fontSize: '13px', fontWeight: 700, color: '#1F2937' }}>{pixKey}</span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#6B7280' }}>Prazo:</span>
+                <span style={{ fontSize: '13px', fontWeight: 700, color: '#F59E0B' }}>Até 5 dias úteis</span>
+              </div>
+            </div>
+            <button
+              onClick={() => { setShowBalanceSuccess(false); setAmount(''); setPixKey(''); }}
+              style={{
+                width: '100%',
+                height: '56px',
+                background: 'linear-gradient(135deg, #4F6BFF 0%, #5B7AFF 100%)',
+                color: '#FFFFFF',
+                fontSize: '15px',
+                fontWeight: 800,
+                borderRadius: '16px',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 8px 24px rgba(79, 107, 255, 0.25)',
+              }}
+            >
+              Voltar para Carteira
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Withdrawal fee payment screen (instant method)
   if (showWithdrawalFee) {
     return (
       <div className="container-app pb-huge">
         <div className="pt-xl mb-xl">
           <div className="flex items-center justify-between mb-md">
-            <h1 className="text-title font-bold text-text-primary">Taxa de Venda</h1>
+            <h1 className="text-title font-bold text-text-primary">Taxa de Saque</h1>
             <button
               onClick={() => { setShowWithdrawalFee(false); if (pollRef.current) clearInterval(pollRef.current); }}
               className="p-sm rounded-lg hover:bg-background-secondary transition-colors"
@@ -201,7 +348,7 @@ export default function Wallet() {
                 )}
               </div>
             </div>
-            <p className="text-body text-text-secondary">Pague a taxa para liberar a venda dos seus itens</p>
+            <p className="text-body text-text-secondary">Pague a taxa para liberar o saque instantâneo</p>
           </div>
 
           {feePixCode && (
@@ -233,7 +380,7 @@ export default function Wallet() {
 
           <div className="card bg-background-secondary">
             <div className="flex justify-between items-center">
-              <span className="text-body text-text-secondary">Taxa de venda:</span>
+              <span className="text-body text-text-secondary">Taxa de saque:</span>
               <span className="text-title font-bold text-brand-primary">
                 R$ {feeAmount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
@@ -245,138 +392,430 @@ export default function Wallet() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] pb-24">
-      <div className="container mx-auto px-6 pt-6 max-w-md">
-        {/* Header Navigation */}
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#FDFDFD',
+      paddingBottom: '100px',
+    }}>
+      <div style={{
+        maxWidth: '448px',
+        margin: '0 auto',
+        padding: '20px 20px 0',
+      }}>
+        {/* Header - Voltar */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-gray-400 hover:text-gray-900 transition-colors mb-6 font-semibold text-sm group"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            color: '#9CA3AF',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontWeight: 600,
+            fontSize: '14px',
+            marginBottom: '20px',
+            padding: 0,
+            transition: 'color 0.2s',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#374151')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#9CA3AF')}
         >
-          <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+          <ArrowLeft size={18} />
           <span>Voltar</span>
         </button>
 
-        <h1 className="text-xl font-bold text-gray-800 mb-6 px-1">Central de Saques</h1>
+        {/* Title */}
+        <h1 style={{
+          fontSize: '20px',
+          fontWeight: 700,
+          color: '#1F2937',
+          marginBottom: '20px',
+          paddingLeft: '2px',
+        }}>
+          Central de Saques
+        </h1>
 
-        {/* Saldo Disponível Card */}
-        <div className="relative overflow-hidden rounded-[24px] bg-[#E8F5F2] p-7 mb-8">
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 text-[#4A7D71] mb-2 font-bold text-xs opacity-70">
-              <Clock size={16} className="text-[#4A7D71]" />
+        {/* ========== SALDO CARD ========== */}
+        <div style={{
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: '20px',
+          background: 'linear-gradient(135deg, #E8F5F0 0%, #D4EDE6 100%)',
+          padding: '28px 28px 24px',
+          marginBottom: '28px',
+        }}>
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#4A7D71',
+              fontWeight: 700,
+              fontSize: '11px',
+              opacity: 0.7,
+              marginBottom: '6px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+            }}>
+              <WalletIcon size={15} style={{ color: '#4A7D71' }} />
               <span>Saldo Disponível</span>
             </div>
-            <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-xl font-bold text-[#27A17D] mr-1">R$</span>
-              <span className="text-4xl font-black text-[#27A17D] tracking-tight">
+
+            <div style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: '4px',
+              marginTop: '2px',
+            }}>
+              <span style={{
+                fontSize: '18px',
+                fontWeight: 700,
+                color: '#27A17D',
+                marginRight: '4px',
+              }}>R$</span>
+              <span style={{
+                fontSize: '38px',
+                fontWeight: 900,
+                color: '#27A17D',
+                letterSpacing: '-1px',
+                lineHeight: 1,
+              }}>
                 {balanceParts[0]}
               </span>
-              <span className="text-2xl font-bold text-[#27A17D] opacity-80">
+              <span style={{
+                fontSize: '22px',
+                fontWeight: 700,
+                color: '#27A17D',
+                opacity: 0.75,
+              }}>
                 ,{balanceParts[1]}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-[#4A7D71] mt-5 opacity-60">
-              <Zap size={14} className="fill-[#27A17D] text-[#27A17D] opacity-40" />
-              <span className="text-[10px] font-bold">Saques processados via PIX instantâneo</span>
+
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '7px',
+              color: '#4A7D71',
+              marginTop: '18px',
+              opacity: 0.55,
+            }}>
+              <Zap size={13} style={{ fill: '#27A17D', color: '#27A17D' }} />
+              <span style={{ fontSize: '10px', fontWeight: 700 }}>
+                Saques processados via PIX instantâneo
+              </span>
             </div>
           </div>
-          {/* Background Wallet Icon */}
-          <div className="absolute right-[-15px] bottom-[-15px] opacity-[0.05] pointer-events-none">
-            <WalletIcon size={160} className="text-[#27A17D]" />
+
+          <div style={{
+            position: 'absolute',
+            right: '-20px',
+            bottom: '-20px',
+            opacity: 0.04,
+            pointerEvents: 'none',
+          }}>
+            <WalletIcon size={150} style={{ color: '#27A17D' }} />
           </div>
         </div>
 
-        {/* Form Solicitar Retirada */}
-        <div className="space-y-6 px-1">
-          <div>
-            <h2 className="text-md font-bold text-gray-800 mb-1">Solicitar Retirada</h2>
-            <p className="text-xs text-gray-400 font-medium tracking-tight">Preencha os dados para receber seu pagamento</p>
+        {/* ========== DIVIDER LINE ========== */}
+        <div style={{
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, #E5E7EB, transparent)',
+          marginBottom: '24px',
+        }} />
+
+        {/* ========== FORM SECTION ========== */}
+        <div style={{ paddingLeft: '2px', paddingRight: '2px' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <h2 style={{
+              fontSize: '15px',
+              fontWeight: 700,
+              color: '#1F2937',
+              marginBottom: '3px',
+            }}>Solicitar Retirada</h2>
+            <p style={{
+              fontSize: '12px',
+              color: '#9CA3AF',
+              fontWeight: 500,
+              letterSpacing: '-0.2px',
+            }}>Preencha os dados para receber seu pagamento</p>
           </div>
 
-          <div className="space-y-5">
-            <div className="space-y-2.5">
-              <label className="block text-[13px] font-bold text-gray-600">Valor do Saque</label>
-              <div className="relative">
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300">
-                  <WalletIcon size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="0,00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full pl-14 pr-5 py-5 bg-[#F9FAFB] border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#4F6BFF]/5 focus:border-[#4F6BFF]/10 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300 shadow-sm shadow-black/[0.01]"
-                />
+          {/* Valor do Saque */}
+          <div style={{ marginBottom: '22px' }}>
+            <label style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: 700,
+              color: '#4B5563',
+              marginBottom: '10px',
+            }}>Valor do Saque</label>
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                position: 'absolute',
+                left: '18px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#C9CDD3',
+                display: 'flex',
+                alignItems: 'center',
+              }}>
+                <WalletIcon size={19} />
               </div>
+              <input
+                type="text"
+                placeholder="0,00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                style={{
+                  width: '100%',
+                  paddingLeft: '50px',
+                  paddingRight: '18px',
+                  paddingTop: '18px',
+                  paddingBottom: '18px',
+                  backgroundColor: '#F6F7F9',
+                  border: '2px solid transparent',
+                  borderRadius: '16px',
+                  outline: 'none',
+                  fontWeight: 700,
+                  fontSize: '15px',
+                  color: '#1F2937',
+                  transition: 'all 0.2s',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                  e.currentTarget.style.borderColor = 'rgba(79, 107, 255, 0.15)';
+                  e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 107, 255, 0.05)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.backgroundColor = '#F6F7F9';
+                  e.currentTarget.style.borderColor = 'transparent';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              />
             </div>
+          </div>
 
-            <div className="space-y-4 pt-1">
-              <label className="block text-[13px] font-bold text-gray-600">Tipo de Chave PIX</label>
-              <div className="grid grid-cols-2 gap-3.5">
-                {[
-                  { id: 'cpf', label: 'CPF', icon: <UserIcon size={22} /> },
-                  { id: 'email', label: 'E-mail', icon: <Mail size={22} /> },
-                  { id: 'phone', label: 'Tel', icon: <Smartphone size={22} /> },
-                  { id: 'random', label: 'Chave', icon: <Key size={22} /> }
-                ].map((type) => (
+          {/* Tipo de Chave PIX */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: 700,
+              color: '#4B5563',
+              marginBottom: '12px',
+            }}>Tipo de Chave PIX</label>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '12px',
+            }}>
+              {[
+                { id: 'cpf' as PixKeyType, label: 'CPF', icon: <UserIcon size={22} /> },
+                { id: 'email' as PixKeyType, label: 'E-mail', icon: <Mail size={22} /> },
+                { id: 'phone' as PixKeyType, label: 'Tel', icon: <Smartphone size={22} /> },
+                { id: 'random' as PixKeyType, label: 'Chave', icon: <Hash size={22} /> },
+              ].map((type) => {
+                const isActive = pixKeyType === type.id;
+                return (
                   <button
                     key={type.id}
-                    onClick={() => setPixKeyType(type.id as PixKeyType)}
-                    className={`flex flex-col items-center justify-center gap-2 p-5 rounded-[20px] border-2 transition-all duration-200 ${
-                      pixKeyType === type.id
-                        ? 'bg-[#F2F5FF] border-[#4F6BFF] text-[#4F6BFF] shadow-sm transform scale-[1.02]'
-                        : 'bg-[#F9FAFB] border-transparent text-gray-300 hover:bg-gray-100/50'
-                    }`}
+                    onClick={() => setPixKeyType(type.id)}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '20px 12px',
+                      borderRadius: '18px',
+                      border: `2px solid ${isActive ? '#4F6BFF' : 'transparent'}`,
+                      background: isActive ? '#F0F3FF' : '#F6F7F9',
+                      color: isActive ? '#4F6BFF' : '#B0B5C0',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                    }}
                   >
-                    <div className={`${pixKeyType === type.id ? 'text-[#4F6BFF]' : 'text-gray-300'}`}>
+                    <div style={{ color: isActive ? '#4F6BFF' : '#C0C5D0' }}>
                       {type.icon}
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.1em]">{type.label}</span>
+                    <span style={{
+                      fontSize: '10px',
+                      fontWeight: 800,
+                      textTransform: 'uppercase',
+                      letterSpacing: '1.2px',
+                      color: isActive ? '#4F6BFF' : '#B0B5C0',
+                    }}>{type.label}</span>
                   </button>
-                ))}
-              </div>
+                );
+              })}
+            </div>
+          </div>
 
-              <div className="space-y-2.5 pt-2">
-                 <label className="block text-[13px] font-bold text-gray-600">Chave PIX</label>
-                <input
-                  type="text"
-                  placeholder={pixKeyType === 'cpf' ? '000.000.000-00' : `Informe seu ${pixKeyType === 'random' ? 'Chave Aleatória' : pixKeyType.toUpperCase()}`}
-                  value={pixKey}
-                  onChange={(e) => setPixKey(e.target.value)}
-                  className="w-full px-6 py-5 bg-[#F9FAFB] border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-[#4F6BFF]/5 focus:border-[#4F6BFF]/10 transition-all outline-none font-bold text-gray-800 placeholder:text-gray-300 shadow-sm shadow-black/[0.01]"
-                />
+          {/* Chave PIX Input */}
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: 700,
+              color: '#4B5563',
+              marginBottom: '10px',
+            }}>Chave PIX</label>
+            <input
+              type="text"
+              placeholder={
+                pixKeyType === 'cpf' ? '000.000.000-00' :
+                pixKeyType === 'email' ? 'seu@email.com' :
+                pixKeyType === 'phone' ? '(00) 00000-0000' :
+                'Chave aleatória'
+              }
+              value={pixKey}
+              onChange={(e) => setPixKey(e.target.value)}
+              style={{
+                width: '100%',
+                paddingLeft: '20px',
+                paddingRight: '20px',
+                paddingTop: '18px',
+                paddingBottom: '18px',
+                backgroundColor: '#F6F7F9',
+                border: '2px solid transparent',
+                borderRadius: '16px',
+                outline: 'none',
+                fontWeight: 700,
+                fontSize: '15px',
+                color: '#1F2937',
+                transition: 'all 0.2s',
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.backgroundColor = '#FFFFFF';
+                e.currentTarget.style.borderColor = 'rgba(79, 107, 255, 0.15)';
+                e.currentTarget.style.boxShadow = '0 0 0 4px rgba(79, 107, 255, 0.05)';
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.backgroundColor = '#F6F7F9';
+                e.currentTarget.style.borderColor = 'transparent';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            />
+          </div>
+
+          {/* ========== INFO BOX ========== */}
+          <div style={{
+            backgroundColor: '#F5F7FE',
+            borderRadius: '20px',
+            padding: '22px 24px',
+            border: '1px solid rgba(79, 107, 255, 0.06)',
+            marginBottom: '24px',
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '16px',
+            }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                backgroundColor: '#E8EDFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <Zap size={17} style={{ color: '#4F6BFF', fill: '#4F6BFF' }} />
+              </div>
+              <span style={{
+                fontSize: '14px',
+                fontWeight: 700,
+                color: '#1F2937',
+              }}>Informações do Saque:</span>
+            </div>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              marginLeft: '4px',
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: '#6B7280',
+              }}>
+                <CheckCircle size={14} style={{ color: '#27A17D', opacity: 0.7, flexShrink: 0 }} />
+                <span>Valor mínimo: R$ 10,00</span>
+              </div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: '#6B7280',
+              }}>
+                <Zap size={14} style={{ color: '#F59E0B', fill: '#F59E0B', opacity: 0.8, flexShrink: 0 }} />
+                <span>Prazo: Instantâneo (24/7)</span>
+              </div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: '#6B7280',
+              }}>
+                <CheckCircle size={14} style={{ color: '#27A17D', opacity: 0.7, flexShrink: 0 }} />
+                <span>Taxa zero para saques</span>
               </div>
             </div>
           </div>
 
-          {/* Info Box */}
-          <div className="bg-[#F8F9FE] rounded-[24px] p-6 border border-[#4F6BFF]/5">
-             <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 rounded-full bg-[#EBF0FF] flex items-center justify-center">
-                   <Zap size={18} className="text-[#4F6BFF] fill-[#4F6BFF]" />
-                </div>
-                <span className="text-sm font-bold text-gray-800">Informações do Saque:</span>
-             </div>
-             <div className="space-y-3.5 ml-1">
-                <div className="flex items-center gap-3 text-xs font-semibold text-gray-500">
-                   <CheckCircle size={14} className="text-[#27A17D] opacity-60" />
-                   <span>Valor mínimo: R$ 10,00</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs font-semibold text-gray-500">
-                   <Zap size={14} className="text-orange-400 fill-orange-400 opacity-80" />
-                   <span>Prazo: Instantâneo (24/7)</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs font-semibold text-gray-500">
-                   <CheckCircle size={14} className="text-[#27A17D] opacity-60" />
-                   <span>Taxa zero para saques</span>
-                </div>
-             </div>
-          </div>
-
-          <div className="pt-2 pb-10">
+          {/* ========== CONFIRM BUTTON ========== */}
+          <div style={{ paddingBottom: '20px' }}>
             <button
-              onClick={handleRequestWithdrawal}
+              onClick={handleConfirmClick}
               disabled={loading}
-              className="w-full h-[64px] bg-[#4F6BFF] hover:bg-[#3D55D9] text-white text-base font-black rounded-[20px] shadow-xl shadow-[#4F6BFF]/15 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
+              style={{
+                width: '100%',
+                height: '60px',
+                background: 'linear-gradient(135deg, #4F6BFF 0%, #5B7AFF 100%)',
+                color: '#FFFFFF',
+                fontSize: '16px',
+                fontWeight: 800,
+                borderRadius: '18px',
+                border: 'none',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                boxShadow: '0 8px 24px rgba(79, 107, 255, 0.25)',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                opacity: loading ? 0.7 : 1,
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 12px 28px rgba(79, 107, 255, 0.3)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(79, 107, 255, 0.25)';
+              }}
+              onMouseDown={(e) => {
+                if (!loading) e.currentTarget.style.transform = 'scale(0.98)';
+              }}
+              onMouseUp={(e) => {
+                if (!loading) e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
             >
               {loading ? (
                 <Loader2 size={24} className="animate-spin" />
@@ -387,6 +826,264 @@ export default function Wallet() {
           </div>
         </div>
       </div>
+
+      {/* ========== POPUP: ESCOLHER MÉTODO DE SAQUE ========== */}
+      {showMethodPopup && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={() => setShowMethodPopup(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 999,
+              animation: 'fadeIn 0.2s ease',
+            }}
+          />
+
+          {/* Modal */}
+          <div style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+            animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}>
+            <div style={{
+              maxWidth: '448px',
+              margin: '0 auto',
+              backgroundColor: '#FFFFFF',
+              borderTopLeftRadius: '28px',
+              borderTopRightRadius: '28px',
+              padding: '28px 24px 36px',
+              boxShadow: '0 -10px 40px rgba(0,0,0,0.12)',
+            }}>
+              {/* Drag Handle */}
+              <div style={{
+                width: '40px',
+                height: '4px',
+                borderRadius: '99px',
+                backgroundColor: '#E5E7EB',
+                margin: '0 auto 24px',
+              }} />
+
+              {/* Close button */}
+              <button
+                onClick={() => setShowMethodPopup(false)}
+                style={{
+                  position: 'absolute',
+                  top: '20px',
+                  right: '20px',
+                  background: '#F3F4F6',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={16} style={{ color: '#6B7280' }} />
+              </button>
+
+              {/* Title */}
+              <div style={{
+                textAlign: 'center',
+                marginBottom: '8px',
+              }}>
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #EBF0FF, #D6DFFF)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 16px',
+                }}>
+                  <ShieldCheck size={28} style={{ color: '#4F6BFF' }} />
+                </div>
+                <h3 style={{
+                  fontSize: '19px',
+                  fontWeight: 800,
+                  color: '#1F2937',
+                  marginBottom: '6px',
+                }}>Taxa de Saque</h3>
+                <p style={{
+                  fontSize: '13px',
+                  color: '#9CA3AF',
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                  maxWidth: '320px',
+                  margin: '0 auto',
+                }}>
+                  Escolha como deseja pagar a taxa de processamento do saque
+                </p>
+              </div>
+
+              {/* Options */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                marginTop: '24px',
+              }}>
+                {/* Option 1: Instant */}
+                <button
+                  onClick={handleInstantWithdrawal}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    padding: '20px',
+                    borderRadius: '18px',
+                    border: '2px solid #4F6BFF',
+                    background: 'linear-gradient(135deg, #F5F7FF 0%, #EBF0FF 100%)',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {/* Recommended badge */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '0',
+                    right: '0',
+                    backgroundColor: '#4F6BFF',
+                    color: '#FFFFFF',
+                    fontSize: '9px',
+                    fontWeight: 800,
+                    padding: '4px 12px',
+                    borderBottomLeftRadius: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}>
+                    Recomendado
+                  </div>
+
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '14px',
+                    background: 'linear-gradient(135deg, #4F6BFF, #5B7AFF)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <Zap size={24} style={{ color: '#FFFFFF', fill: '#FFFFFF' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontSize: '15px',
+                      fontWeight: 800,
+                      color: '#1F2937',
+                      marginBottom: '4px',
+                    }}>Saque Instantâneo</div>
+                    <div style={{
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#6B7280',
+                      lineHeight: 1.4,
+                    }}>
+                      Pague a taxa via PIX e receba em <strong style={{ color: '#27A17D' }}>menos de 1 minuto</strong>
+                    </div>
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    backgroundColor: '#E8F5F0',
+                    padding: '6px 10px',
+                    borderRadius: '10px',
+                    flexShrink: 0,
+                  }}>
+                    <Timer size={12} style={{ color: '#27A17D' }} />
+                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#27A17D' }}>~1min</span>
+                  </div>
+                </button>
+
+                {/* Option 2: Balance deduction */}
+                <button
+                  onClick={handleBalanceDeduction}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    padding: '20px',
+                    borderRadius: '18px',
+                    border: '2px solid #E5E7EB',
+                    background: '#FAFAFA',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '14px',
+                    background: '#F3F4F6',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <CreditCard size={24} style={{ color: '#9CA3AF' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontSize: '15px',
+                      fontWeight: 800,
+                      color: '#1F2937',
+                      marginBottom: '4px',
+                    }}>Descontar do Saldo</div>
+                    <div style={{
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#6B7280',
+                      lineHeight: 1.4,
+                    }}>
+                      Taxa descontada do saldo, saque cai em <strong style={{ color: '#F59E0B' }}>até 5 dias úteis</strong>
+                    </div>
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    backgroundColor: '#FEF3C7',
+                    padding: '6px 10px',
+                    borderRadius: '10px',
+                    flexShrink: 0,
+                  }}>
+                    <Clock size={12} style={{ color: '#F59E0B' }} />
+                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#F59E0B' }}>5 dias</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Animations */}
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes slideUp {
+              from { transform: translateY(100%); }
+              to { transform: translateY(0); }
+            }
+          `}</style>
+        </>
+      )}
     </div>
   );
 }
