@@ -167,7 +167,6 @@ export default function Wallet() {
 
       // Deduct balance from user account
       const parsedAmount = parseFloat(amount.replace(',', '.'));
-      await supabase.rpc('', {}).catch(() => {}); // no-op
       const { error: balanceError } = await supabase
         .from('profiles')
         .update({ real_balance: balance - parsedAmount })
