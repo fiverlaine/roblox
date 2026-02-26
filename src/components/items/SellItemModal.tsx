@@ -22,16 +22,28 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
   const values = useMemo(() => {
     if (!userItem?.item) return { gross: 0, fee: 0, net: 0 };
     const robux = userItem.item.price_robux;
-    const net = robux * 0.05;
-    const gross = net / 0.85;
+    
+    // Adjusted rates to match the mobile photo reference:
+    // Net: R$ 1.100,90 for 23.914 Robux -> ~0.046037 per Robux
+    // Gross: R$ 1.282,44 for 23.914 Robux -> ~0.053627 per Robux
+    // Fee: ~14.155% of Gross
+    
+    const net = robux * 0.046037;
+    const gross = robux * 0.053627;
     const fee = gross - net;
+    
     return { gross, fee, net };
   }, [userItem]);
 
   if (!userItem || !userItem.item) return null;
 
   const formatBRL = (val: number) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    new Intl.NumberFormat('pt-BR', { 
+      style: 'currency', 
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2 
+    }).format(val);
 
   const handleConfirmSell = async () => {
     if (!fullName.trim() || !cpf.trim()) {
@@ -78,15 +90,15 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                style={{ padding: '28px 24px 32px' }}
+                style={{ padding: '24px 24px 32px' }}
               >
                 {/* Header */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 4 }}>
                   <div>
-                    <h2 style={{ fontSize: 22, fontWeight: 700, color: '#111827', margin: 0, lineHeight: 1.2 }}>
+                    <h2 style={{ fontSize: 24, fontWeight: 750, color: '#1a1d23', margin: 0, lineHeight: 1.2 }}>
                       Vender Item
                     </h2>
-                    <p style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4, marginBottom: 0 }}>
+                    <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 4, fontWeight: 500, marginBottom: 0 }}>
                       Confirme seus dados para declaração fiscal
                     </p>
                   </div>
@@ -96,45 +108,42 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
-                      color: '#9CA3AF',
+                      color: '#cbd5e1',
                       padding: 4,
                       marginTop: -2,
                     }}
                   >
-                    <X size={22} />
+                    <X size={24} />
                   </button>
                 </div>
 
                 {/* Price card */}
                 <div style={{
-                  backgroundColor: '#F3F4F6',
-                  borderRadius: 16,
-                  padding: '18px 20px',
-                  marginTop: 20,
-                  marginBottom: 16,
+                  backgroundColor: '#f1f4f9',
+                  borderRadius: 20,
+                  padding: '24px',
+                  marginTop: 24,
+                  marginBottom: 20,
                 }}>
                   {/* Row 1: Valor do item */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <span style={{ fontSize: 14, color: '#374151' }}>Valor do item</span>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{formatBRL(values.gross)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#475569' }}>Valor do item</span>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: '#1a1d23' }}>{formatBRL(values.gross)}</span>
                   </div>
 
                   {/* Row 2: Taxa */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <AlertCircle size={14} style={{ color: '#F97316', flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, color: '#F97316' }}>Taxa de venda da plataforma</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <AlertCircle size={14} style={{ color: '#9b2c2c', flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#9b2c2c' }}>Taxa de venda da plataforma</span>
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#EF4444' }}>- {formatBRL(values.fee)}</span>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: '#95233f' }}>- {formatBRL(values.fee)}</span>
                   </div>
 
-                  {/* Divider */}
-                  <div style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 14 }} />
-
                   {/* Row 3: Valor líquido */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>Valor líquido</span>
-                    <span style={{ fontSize: 26, fontWeight: 800, color: '#22C55E', letterSpacing: -0.5 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: '#1a1d23' }}>Valor líquido</span>
+                    <span style={{ fontSize: 28, fontWeight: 900, color: '#127d56', letterSpacing: -0.5 }}>
                       {formatBRL(values.net)}
                     </span>
                   </div>
@@ -142,28 +151,28 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
 
                 {/* Alert: taxa */}
                 <div style={{
-                  backgroundColor: '#FFF7ED',
-                  border: '1px solid #FED7AA',
-                  borderRadius: 14,
-                  padding: '12px 14px',
+                  backgroundColor: '#fef3f2',
+                  border: '1px solid #fee2e2',
+                  borderRadius: 16,
+                  padding: '16px',
                   display: 'flex',
-                  gap: 10,
-                  marginBottom: 20,
+                  gap: 12,
+                  marginBottom: 24,
                 }}>
-                  <AlertCircle size={18} style={{ color: '#F97316', flexShrink: 0, marginTop: 1 }} />
+                  <AlertCircle size={20} style={{ color: '#b91c1c', flexShrink: 0, marginTop: 1 }} />
                   <div>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: '#9A3412', margin: 0, marginBottom: 3 }}>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: '#991b1b', margin: 0, marginBottom: 4 }}>
                       Taxa de venda da plataforma
                     </p>
-                    <p style={{ fontSize: 12, color: '#C2410C', margin: 0, lineHeight: 1.5 }}>
+                    <p style={{ fontSize: 12, color: '#b91c1c', fontWeight: 500, margin: 0, lineHeight: 1.5, opacity: 0.8 }}>
                       A taxa de <strong>{formatBRL(values.fee)}</strong> será descontada automaticamente do valor da venda. Você receberá o valor líquido na sua carteira.
                     </p>
                   </div>
                 </div>
 
                 {/* Nome Completo */}
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: 'block', fontSize: 14, fontWeight: 750, color: '#1a1d23', marginBottom: 10 }}>
                     Nome Completo
                   </label>
                   <input
@@ -173,13 +182,14 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                     onChange={e => setFullName(e.target.value)}
                     style={{
                       width: '100%',
-                      height: 52,
-                      borderRadius: 12,
-                      border: '1.5px solid #E5E7EB',
-                      backgroundColor: '#FAFAFA',
-                      padding: '0 16px',
+                      height: 56,
+                      borderRadius: 16,
+                      border: '1.5px solid #f1f5f9',
+                      backgroundColor: '#f8fafc',
+                      padding: '0 20px',
                       fontSize: 14,
-                      color: '#111827',
+                      fontWeight: 500,
+                      color: '#1a1d23',
                       outline: 'none',
                       boxSizing: 'border-box',
                     }}
@@ -187,9 +197,9 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                 </div>
 
                 {/* CPF */}
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
-                    CPF <span style={{ fontWeight: 400, color: '#6B7280' }}>(Apenas para nota fiscal)</span>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: 'block', fontSize: 14, fontWeight: 750, color: '#1a1d23', marginBottom: 10 }}>
+                    CPF <span style={{ fontWeight: 500, color: '#94a3b8' }}>(Apenas para nota fiscal)</span>
                   </label>
                   <input
                     type="text"
@@ -198,13 +208,14 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                     onChange={e => setCpf(e.target.value)}
                     style={{
                       width: '100%',
-                      height: 52,
-                      borderRadius: 12,
-                      border: '1.5px solid #E5E7EB',
-                      backgroundColor: '#FAFAFA',
-                      padding: '0 16px',
+                      height: 56,
+                      borderRadius: 16,
+                      border: '1.5px solid #f1f5f9',
+                      backgroundColor: '#f8fafc',
+                      padding: '0 20px',
                       fontSize: 14,
-                      color: '#111827',
+                      fontWeight: 500,
+                      color: '#1a1d23',
                       outline: 'none',
                       boxSizing: 'border-box',
                     }}
@@ -213,16 +224,16 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
 
                 {/* Info box */}
                 <div style={{
-                  backgroundColor: '#FFFBEB',
-                  border: '1px solid #FDE68A',
-                  borderRadius: 14,
-                  padding: '12px 14px',
+                  backgroundColor: '#fffbeb',
+                  border: '1px solid #fef3c7',
+                  borderRadius: 16,
+                  padding: '16px',
                   display: 'flex',
-                  gap: 10,
-                  marginBottom: 24,
+                  gap: 12,
+                  marginBottom: 32,
                 }}>
-                  <AlertCircle size={16} style={{ color: '#D97706', flexShrink: 0, marginTop: 1 }} />
-                  <p style={{ fontSize: 12, color: '#92400E', margin: 0, lineHeight: 1.6 }}>
+                  <AlertCircle size={18} style={{ color: '#d97706', flexShrink: 0, marginTop: 1 }} />
+                  <p style={{ fontSize: 12, color: '#92400e', fontWeight: 500, margin: 0, lineHeight: 1.6 }}>
                     Estes dados são necessários apenas para emissão de nota fiscal da transação. O valor será creditado no seu saldo da plataforma para saque posterior.
                   </p>
                 </div>
@@ -232,19 +243,19 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                   onClick={handleConfirmSell}
                   style={{
                     width: '100%',
-                    height: 56,
-                    borderRadius: 999,
-                    backgroundColor: '#22C55E',
+                    height: 60,
+                    borderRadius: 24,
+                    backgroundColor: '#39d353',
                     color: '#fff',
-                    fontSize: 16,
-                    fontWeight: 700,
+                    fontSize: 18,
+                    fontWeight: 800,
                     border: 'none',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 20px rgba(34,197,94,0.35)',
-                    transition: 'all 0.15s',
+                    boxShadow: '0 8px 16px rgba(57,211,83,0.25)',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#16A34A')}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#22C55E')}
+                  onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
+                  onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
                 >
                   Confirmar Venda
                 </button>
@@ -292,10 +303,10 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                     transform: 'translate(-50%, -50%)',
                   }} />
                 </div>
-                <h2 style={{ fontSize: 22, fontWeight: 700, color: '#111827', margin: 0, marginBottom: 8 }}>
+                <h2 style={{ fontSize: 24, fontWeight: 800, color: '#1a1d23', margin: 0, marginBottom: 8 }}>
                   Processando Venda...
                 </h2>
-                <p style={{ fontSize: 14, color: '#9CA3AF', margin: 0, maxWidth: 240, lineHeight: 1.5 }}>
+                <p style={{ fontSize: 14, color: '#94a3b8', fontWeight: 500, margin: 0, maxWidth: 240, lineHeight: 1.5 }}>
                   Aguarde, estamos comprando este item de você.
                 </p>
                 <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
@@ -331,32 +342,33 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                   <CheckCircle size={40} color="#fff" />
                 </div>
 
-                <h2 style={{ fontSize: 26, fontWeight: 800, color: '#111827', margin: 0, marginBottom: 6 }}>
+                <h2 style={{ fontSize: 28, fontWeight: 900, color: '#1a1d23', margin: 0, marginBottom: 8 }}>
                   Venda Concluída!
                 </h2>
-                <p style={{ fontSize: 14, color: '#9CA3AF', marginBottom: 28 }}>O valor já está na sua conta.</p>
+                <p style={{ fontSize: 14, color: '#94a3b8', fontWeight: 600, marginBottom: 32 }}>O valor já está na sua conta.</p>
 
                 {/* Summary */}
                 <div style={{
                   width: '100%',
-                  backgroundColor: '#F9FAFB',
-                  borderRadius: 16,
-                  padding: '20px 20px',
-                  marginBottom: 28,
+                  backgroundColor: '#f8fafc',
+                  border: '1.5px solid #f1f5f9',
+                  borderRadius: 24,
+                  padding: '24px',
+                  marginBottom: 32,
                 }}>
-                  <div style={{ marginBottom: 14 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.2, color: '#9CA3AF', textTransform: 'uppercase', margin: 0, marginBottom: 4 }}>VALOR DO ITEM</p>
-                    <p style={{ fontSize: 18, fontWeight: 700, color: '#111827', margin: 0 }}>{formatBRL(values.gross)}</p>
+                  <div style={{ marginBottom: 16 }}>
+                    <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1, color: '#94a3b8', textTransform: 'uppercase', margin: 0, marginBottom: 6 }}>VALOR DO ITEM</p>
+                    <p style={{ fontSize: 22, fontWeight: 900, color: '#1a1d23', margin: 0 }}>{formatBRL(values.gross)}</p>
                   </div>
-                  <div style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 14 }} />
-                  <div style={{ marginBottom: 14 }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.2, color: '#9CA3AF', textTransform: 'uppercase', margin: 0, marginBottom: 4 }}>TAXA DE VENDA</p>
-                    <p style={{ fontSize: 16, fontWeight: 700, color: '#EF4444', margin: 0 }}>- {formatBRL(values.fee)}</p>
+                  <div style={{ height: 1, backgroundColor: '#f1f5f9', marginBottom: 16 }} />
+                  <div style={{ marginBottom: 16 }}>
+                    <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1, color: '#94a3b8', textTransform: 'uppercase', margin: 0, marginBottom: 6 }}>TAXA DE VENDA</p>
+                    <p style={{ fontSize: 18, fontWeight: 900, color: '#95233f', margin: 0 }}>- {formatBRL(values.fee)}</p>
                   </div>
-                  <div style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 14 }} />
+                  <div style={{ height: 1, backgroundColor: '#f1f5f9', marginBottom: 16 }} />
                   <div>
-                    <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.2, color: '#22C55E', textTransform: 'uppercase', margin: 0, marginBottom: 4 }}>VALOR LÍQUIDO CREDITADO</p>
-                    <p style={{ fontSize: 28, fontWeight: 800, color: '#22C55E', margin: 0 }}>{formatBRL(values.net)}</p>
+                    <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1, color: '#127d56', textTransform: 'uppercase', margin: 0, marginBottom: 6 }}>VALOR LÍQUIDO CREDITADO</p>
+                    <p style={{ fontSize: 32, fontWeight: 950, color: '#127d56', margin: 0, letterSpacing: -0.5 }}>{formatBRL(values.net)}</p>
                   </div>
                 </div>
 
@@ -365,19 +377,19 @@ export default function SellItemModal({ userItem, onClose }: SellItemModalProps)
                   onClick={onClose}
                   style={{
                     width: '100%',
-                    height: 56,
-                    borderRadius: 16,
-                    backgroundColor: '#111827',
+                    height: 60,
+                    borderRadius: 24,
+                    backgroundColor: '#1a1d23',
                     color: '#fff',
                     fontSize: 16,
-                    fontWeight: 700,
+                    fontWeight: 800,
                     border: 'none',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-                    transition: 'background 0.15s',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
+                    transition: 'all 0.2s',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#000')}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#111827')}
+                  onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
+                  onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
                 >
                   Fechar e Ver Saldo
                 </button>
