@@ -1,10 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User as UserIcon, Loader2, Eye, EyeOff, Send } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Loader2, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../stores/authStore';
-import { supabase } from '../../lib/supabase';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -15,7 +14,6 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [telegramUsername, setTelegramUsername] = useState('');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -37,32 +35,6 @@ export default function Register() {
 
     try {
       await signUp(email, password, fullName);
-
-      // If telegram username was provided, update profile
-      if (telegramUsername.trim()) {
-        const cleanUsername = telegramUsername.trim().replace(/^@/, '');
-        // Wait briefly for profile to be created by trigger
-        await new Promise((r) => setTimeout(r, 1500));
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          // Look up the telegram lead by username to get telegram_id
-          const { data: lead } = await supabase
-            .from('telegram_leads')
-            .select('telegram_id')
-            .eq('telegram_username', cleanUsername)
-            .maybeSingle();
-
-          const updateData: Record<string, unknown> = {
-            telegram_username: cleanUsername,
-          };
-          if (lead?.telegram_id) {
-            updateData.telegram_id = lead.telegram_id;
-          }
-
-          await supabase.from('profiles').update(updateData).eq('id', user.id);
-        }
-      }
-
       toast.success('Conta criada com sucesso!');
       navigate('/', { replace: true });
     } catch (err: unknown) {
@@ -195,23 +167,6 @@ export default function Register() {
               </div>
             </div>
 
-            <div>
-              <label className="text-sm font-semibold text-gray-700 mb-1.5 block">
-                Telegram (opcional)
-              </label>
-              <div className="relative">
-                <Send className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 pointer-events-none" />
-                <input
-                  type="text"
-                  value={telegramUsername}
-                  onChange={(e) => setTelegramUsername(e.target.value)}
-                  placeholder="@seu_usuario"
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all outline-none text-gray-700 text-sm"
-                />
-              </div>
-              <p className="text-xs text-gray-400 mt-1 px-1">Informe seu @ do Telegram para vincular sua conta</p>
-            </div>
-
             <button
               type="submit"
               disabled={loading}
@@ -244,4 +199,3 @@ export default function Register() {
     </div>
   );
 }
-

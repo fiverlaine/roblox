@@ -28,7 +28,7 @@ function formatExpiryInput(value: string): string {
 
 export default function BuyRobux() {
   const navigate = useNavigate();
-  const { profile, refreshBalance } = useAuthStore();
+  const { refreshBalance } = useAuthStore();
   const [selectedPackage, setSelectedPackage] = useState<typeof ROBUX_PACKAGES[0] | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -52,10 +52,6 @@ export default function BuyRobux() {
       return;
     }
 
-    if (!profile?.telegram_id) {
-      toast.error("Vincule seu Telegram ao perfil antes de comprar. Acesse seu Perfil e informe seu @ do Telegram.");
-      return;
-    }
 
     setLoading(true);
     try {
@@ -125,28 +121,7 @@ export default function BuyRobux() {
         </div>
       </div>
 
-      {!profile?.telegram_id && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card bg-orange-50 border border-orange-200 mb-lg"
-        >
-          <div className="flex items-start gap-md">
-            <div className="p-sm rounded-lg bg-orange-100">
-              <CreditCard size={20} className="text-orange-600" />
-            </div>
-            <div>
-              <p className="text-body font-semibold text-orange-800 mb-xxs">
-                Vincule seu Telegram
-              </p>
-              <p className="text-caption text-orange-700">
-                Para comprar Robux, você precisa vincular seu Telegram ao perfil.
-                Acesse <button onClick={() => navigate("/perfil")} className="font-bold underline">seu Perfil</button> e informe seu @ do Telegram.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      )}
+
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

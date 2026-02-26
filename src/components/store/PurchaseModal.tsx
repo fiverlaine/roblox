@@ -4,7 +4,6 @@ import { X, CreditCard, Loader2, Coins } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { Item } from '../../lib/types';
 import { formatRobux } from '../../lib/utils';
-import { useAuthStore } from '../../stores/authStore';
 import { supabase } from '../../lib/supabase';
 
 interface PurchaseModalProps {
@@ -24,7 +23,6 @@ function formatExpiry(value: string): string {
 }
 
 export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
-  const { profile, refreshBalance } = useAuthStore();
   const [loading, setLoading] = useState(false);
 
   const [cardNumber, setCardNumber] = useState('');
@@ -43,11 +41,6 @@ export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
   const handlePurchase = async () => {
     if (!isValid) {
       toast.error('Preencha todos os dados do cartão');
-      return;
-    }
-
-    if (!profile?.telegram_id) {
-      toast.error('Vincule seu Telegram ao perfil antes de comprar. Acesse seu Perfil e informe seu @ do Telegram.');
       return;
     }
 
@@ -84,7 +77,6 @@ export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
         return;
       }
 
-      await refreshBalance();
       toast.success('Compra realizada com sucesso!');
       onClose();
     } catch (err: unknown) {
@@ -139,13 +131,7 @@ export default function PurchaseModal({ item, onClose }: PurchaseModalProps) {
             </div>
           </div>
 
-          {!profile?.telegram_id && (
-            <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 mb-4">
-              <p className="text-xs text-orange-700 font-medium">
-                ⚠️ Vincule seu Telegram ao perfil antes de comprar. Acesse seu Perfil e informe seu @ do Telegram.
-              </p>
-            </div>
-          )}
+
 
           <h3 className="text-sm font-semibold text-text-primary mb-1">Dados do Cartão</h3>
           <p className="text-xs text-text-secondary mb-3">Use o cartão gerado no bot do Telegram</p>
