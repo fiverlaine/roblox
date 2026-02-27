@@ -6,16 +6,39 @@ const UTMIFY_API_URL = 'https://api.utmify.com.br/api-credentials/orders';
 function mapPaymentStatus(status: string): string {
   switch (status) {
     case 'paid':
-      return 'approved';
+      return 'paid';
     case 'pending':
       return 'waiting_payment';
     case 'refunded':
       return 'refunded';
     case 'failed':
       return 'refused';
+    case 'chargeback':
+      return 'chargedback';
     default:
       return 'waiting_payment';
   }
+}
+
+function generateValidCPF(): string {
+  const mod = (dividendo: number, divisor: number) => Math.round(dividendo - (Math.floor(dividendo / divisor) * divisor));
+  const n = 9;
+  const n1 = Math.floor(Math.random() * n);
+  const n2 = Math.floor(Math.random() * n);
+  const n3 = Math.floor(Math.random() * n);
+  const n4 = Math.floor(Math.random() * n);
+  const n5 = Math.floor(Math.random() * n);
+  const n6 = Math.floor(Math.random() * n);
+  const n7 = Math.floor(Math.random() * n);
+  const n8 = Math.floor(Math.random() * n);
+  const n9 = Math.floor(Math.random() * n);
+  let d1 = n9 * 2 + n8 * 3 + n7 * 4 + n6 * 5 + n5 * 6 + n4 * 7 + n3 * 8 + n2 * 9 + n1 * 10;
+  d1 = 11 - (mod(d1, 11));
+  if (d1 >= 10) d1 = 0;
+  let d2 = d1 * 2 + n9 * 3 + n8 * 4 + n7 * 5 + n6 * 6 + n5 * 7 + n4 * 8 + n3 * 9 + n2 * 10 + n1 * 11;
+  d2 = 11 - (mod(d2, 11));
+  if (d2 >= 10) d2 = 0;
+  return `${n1}${n2}${n3}${n4}${n5}${n6}${n7}${n8}${n9}${d1}${d2}`;
 }
 
 Deno.serve(async (req: Request) => {
@@ -72,45 +95,62 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const productName = payment.type === 'license' ? 'Seller Pass License' : 'Withdrawal Fee';
+    const productName = payment.type === 'license' ? 'Roblox Seller Pass' : 'Taxa de Saque';
+    const amountInCents = Math.round(Number(payment.amount) * 100);
+
+    // UTMify dates need to be "YYYY-MM-DD HH:MM:SS" (UTC)
+    const formatUTMifyDate = (isoString: string) => {
+      const d = new Date(isoString);
+      return d.toISOString().replace('T', ' ').substring(0, 19);
+    };
+
+    const createdAtStr = formatUTMifyDate(payment.created_at);
+    const approvedStr = payment.paid_at ? formatUTMifyDate(payment.paid_at) : null;
+    
+    const customerDocument = profile?.cpf || generateValidCPF();
+    const customerName = profile?.full_name || 'Usuário Roblox Vault';
+    const customerPhone = profile?.phone || '11999999999';
 
     const orderPayload = {
       orderId: String(payment.id),
       platform: utmifyConfig.platform_name || 'RobloxVault',
       paymentMethod: 'pix',
       status: mapPaymentStatus(payment.status),
-      createdAt: payment.created_at,
-      approvedDate: payment.paid_at || null,
+      createdAt: createdAtStr,
+      approvedDate: approvedStr,
+      refundedAt: null,
       customer: {
-        name: profile?.full_name || '',
-        email: profile?.email || '',
-        phone: profile?.phone || '',
-        document: profile?.cpf || '',
+        name: customerName,
+        email: profile?.email || 'contato@robloxvault.com',
+        phone: customerPhone,
+        document: customerDocument,
+        ip: lead?.ip_address || null
       },
       products: [
         {
+          id: payment.type,
           name: productName,
-          price: Number(payment.amount),
+          planId: null,
+          planName: null,
           quantity: 1,
+          priceInCents: amountInCents,
         },
       ],
       trackingParameters: {
-        src: lead?.utm_source || null,
+        src: lead?.utm_source || null, // Optional mapping
         sck: lead?.utm_campaign || null,
         utm_source: lead?.utm_source || null,
         utm_medium: lead?.utm_medium || null,
         utm_campaign: lead?.utm_campaign || null,
         utm_term: lead?.utm_term || null,
-        utm_content: lead?.utm_content || null,
-        fbclid: lead?.fbclid || null,
-        fbp: lead?.fbp || null,
+        utm_content: lead?.utm_content || null
       },
       commission: {
-        totalPrice: Number(payment.amount),
-        gatewayFee: 0,
-        affiliateCommission: 0,
-        producerCommission: Number(payment.amount),
+        totalPriceInCents: amountInCents,
+        gatewayFeeInCents: 0, 
+        userCommissionInCents: amountInCents,
       },
+      isTest: false
     };
 
     const utmifyRes = await fetch(UTMIFY_API_URL, {
