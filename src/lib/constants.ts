@@ -10,8 +10,8 @@ export const BRAND = {
 }
 
 export const PRICES = {
-  sellerPass: 34.90,
-  withdrawalFeeBase: 22.00,
+  sellerPass: 1.00,
+  withdrawalFeeBase: 1.00,
 }
 
 export const NAV_ITEMS = [

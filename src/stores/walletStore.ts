@@ -42,7 +42,7 @@ export const useWalletStore = create<WalletState>()((set) => ({
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Não autenticado')
 
-      const amount = 34.90
+      const amount = 1.00
       const externalId = `lic_${user.id}_${Date.now()}`
 
       const { data, error } = await supabase
@@ -73,8 +73,7 @@ export const useWalletStore = create<WalletState>()((set) => ({
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Não autenticado')
 
-      const randomCents = Math.floor(Math.random() * 99) + 1
-      const amount = 22 + randomCents / 100
+      const amount = 1.00
       const externalId = `wfee_${user.id}_${Date.now()}`
 
       const { data, error } = await supabase
