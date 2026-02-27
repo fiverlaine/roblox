@@ -69,24 +69,16 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', payment.user_id)
-      .single();
+    // Fetch profile, lead, and utmify config IN PARALLEL
+    const [profileResult, leadResult, utmifyResult] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', payment.user_id).single(),
+      supabase.from('telegram_leads').select('*').eq('user_id', payment.user_id).maybeSingle(),
+      supabase.from('utmify_configs').select('*').eq('is_active', true).limit(1).single(),
+    ]);
 
-    const { data: lead } = await supabase
-      .from('telegram_leads')
-      .select('*')
-      .eq('user_id', payment.user_id)
-      .maybeSingle();
-
-    const { data: utmifyConfig } = await supabase
-      .from('utmify_configs')
-      .select('*')
-      .eq('is_active', true)
-      .limit(1)
-      .single();
+    const profile = profileResult.data;
+    const lead = leadResult.data;
+    const utmifyConfig = utmifyResult.data;
 
     if (!utmifyConfig?.api_token) {
       return new Response(
@@ -124,7 +116,8 @@ Deno.serve(async (req: Request) => {
         email: profile?.email || 'contato@robloxvault.com',
         phone: customerPhone,
         document: customerDocument,
-        ip: lead?.ip_address || null
+        country: 'BR',
+        ip: lead?.ip_address || '0.0.0.0',
       },
       products: [
         {

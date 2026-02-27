@@ -39,32 +39,26 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 1. Fetch user profile
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user_id)
-      .single();
-      
-    const payerName = profile?.full_name || profile?.email || "Usuario Roblox Vault";
-    const payerDocument = profile?.cpf || generateValidCPF();
+    // 1. Fetch profile AND gateway IN PARALLEL for speed
+    const [profileResult, gatewayResult] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', user_id).single(),
+      supabase.from('gateway_configs').select('*').eq('gateway_name', 'bspay').eq('is_active', true).single(),
+    ]);
 
-    // 2. Fetch Gateway Config
-    const { data: gateway, error: gwError } = await supabase
-      .from('gateway_configs')
-      .select('*')
-      .eq('gateway_name', 'bspay')
-      .eq('is_active', true)
-      .single();
+    const profile = profileResult.data;
+    const gateway = gatewayResult.data;
 
-    if (gwError || !gateway) {
+    if (!gateway) {
       return new Response(
         JSON.stringify({ error: 'Payment gateway not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
-    // 3. Authenticate Gateway
+    const payerName = profile?.full_name || profile?.email || 'Usuario Roblox Vault';
+    const payerDocument = profile?.cpf || generateValidCPF();
+
+    // 2. Authenticate Gateway
     const credentials = btoa(`${gateway.client_id}:${gateway.client_secret}`);
     const tokenRes = await fetch(`${gateway.api_url}/oauth/token`, {
       method: 'POST',
@@ -86,7 +80,7 @@ Deno.serve(async (req: Request) => {
     const { access_token } = await tokenRes.json();
     const externalId = randomBytes(16).toString('hex');
 
-    // 4. Generate PIX
+    // 3. Generate PIX
     const pixRes = await fetch(`${gateway.api_url}/pix/qrcode`, {
       method: 'POST',
       headers: {
@@ -99,8 +93,8 @@ Deno.serve(async (req: Request) => {
         postbackUrl: gateway.webhook_url,
         payer: {
           name: payerName,
-          document: payerDocument
-        }
+          document: payerDocument,
+        },
       }),
     });
 
@@ -116,7 +110,7 @@ Deno.serve(async (req: Request) => {
     const expiration = new Date(Date.now() + 30 * 60 * 1000).toISOString();
     const transactionId = pixData.transactionId ?? pixData.transaction_id ?? null;
 
-    // 5. Save payment
+    // 4. Save payment
     const { data: payment, error: payError } = await supabase
       .from('payments')
       .upsert(
@@ -143,40 +137,19 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 6. 🔥 Send Pending/waiting_payment Event to UTMIFY asynchronously
+    // 5. Return IMMEDIATELY — trigger UTMify fully in background
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    const triggerUtmify = async () => {
-      try {
-        const res = await fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${serviceKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ payment_id: payment.id }),
-        });
-        const resText = await res.text();
-        
-        // Log to capi_logs for debugging UTMify
-        await supabase.from('capi_logs').insert({
-          event_name: 'utmify_trigger',
-          status: res.ok ? 'success' : 'error',
-          request_payload: { payment_id: payment.id },
-          response_payload: { status: res.status, body: resText },
-          error_message: res.ok ? null : `Utmify failed: ${resText}`,
-        });
-      } catch (err) {
-        console.error('Failed to trigger utmify-event:', err);
-      }
-    };
-
-    if (typeof (globalThis as any).EdgeRuntime !== 'undefined' && typeof (globalThis as any).EdgeRuntime.waitUntil === 'function') {
-      (globalThis as any).EdgeRuntime.waitUntil(triggerUtmify());
-    } else {
-      triggerUtmify(); // Fire and forget fallback
-    }
+    // Fire and forget — do NOT await
+    fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payment_id: payment.id }),
+    }).catch((err) => console.error('utmify-event fire-and-forget failed:', err));
 
     return new Response(JSON.stringify({ payment }), {
       status: 200,
