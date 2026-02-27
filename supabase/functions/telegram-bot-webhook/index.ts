@@ -15,26 +15,20 @@ interface TelegramUpdate {
   };
 }
 
-async function getBotToken(): Promise<string | null> {
+async function getBotConfig(): Promise<{ token: string; group_link: string; group_chat_id: string | null } | null> {
   const { data } = await supabase
     .from('bot_configs')
-    .select('token')
+    .select('token, group_link, group_chat_id')
     .eq('bot_type', 'funnel')
     .eq('is_active', true)
     .single();
 
-  return data?.token ?? null;
-}
-
-async function getGroupLink(): Promise<string> {
-  const { data } = await supabase
-    .from('bot_configs')
-    .select('group_link')
-    .eq('bot_type', 'funnel')
-    .eq('is_active', true)
-    .single();
-
-  return data?.group_link ?? 'https://t.me/+default';
+  if (!data?.token) return null;
+  return {
+    token: data.token,
+    group_link: data.group_link ?? 'https://t.me/+default',
+    group_chat_id: data.group_chat_id ?? null,
+  };
 }
 
 async function sendMessage(
@@ -74,6 +68,49 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/**
+ * Generates a unique invite link for the group via Telegram API.
+ * The link name contains the start_param for attribution tracking.
+ * If it fails, falls back to the static group link.
+ */
+async function generateUniqueInviteLink(
+  token: string,
+  groupChatId: string,
+  startParam: string,
+): Promise<string | null> {
+  try {
+    // Link name: "v_{start_param}" — max 32 chars, used for attribution
+    const linkName = `v_${startParam}`.substring(0, 32);
+
+    const response = await fetch(
+      `https://api.telegram.org/bot${token}/createChatInviteLink`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: groupChatId,
+          name: linkName,
+          member_limit: 1, // One-time use link for precise tracking
+          creates_join_request: false,
+        }),
+      },
+    );
+
+    const result = await response.json();
+
+    if (result.ok && result.result?.invite_link) {
+      console.log(`[Bot] ✅ Invite link gerado: ${result.result.invite_link} (name: ${linkName})`);
+      return result.result.invite_link;
+    } else {
+      console.error('[Bot] ❌ Erro ao criar invite link:', result.description || result);
+      return null;
+    }
+  } catch (err) {
+    console.error('[Bot] ❌ Erro de rede ao criar invite link:', err);
+    return null;
+  }
+}
+
 async function handleStart(
   token: string,
   chatId: number,
@@ -81,7 +118,10 @@ async function handleStart(
   telegramUsername: string | undefined,
   firstName: string | undefined,
   startParam: string,
+  groupLink: string,
+  groupChatId: string | null,
 ): Promise<void> {
+  // 1. Update lead with telegram_id
   if (startParam) {
     await supabase
       .from('telegram_leads')
@@ -95,6 +135,7 @@ async function handleStart(
 
   const name = firstName || telegramUsername || 'amigo';
 
+  // 2. Send conversation messages
   await sendMessage(
     token,
     chatId,
@@ -135,14 +176,24 @@ async function handleStart(
 
   await delay(1000);
 
-  const groupLink = await getGroupLink();
+  // 3. Generate unique invite link OR use static link
+  let finalGroupLink = groupLink;
+
+  if (groupChatId && startParam) {
+    const uniqueLink = await generateUniqueInviteLink(token, groupChatId, startParam);
+    if (uniqueLink) {
+      finalGroupLink = uniqueLink;
+    } else {
+      console.warn('[Bot] ⚠️ Fallback para link estático do grupo');
+    }
+  }
 
   await sendMessage(token, chatId, 'Clica no botão abaixo 👇', {
     inline_keyboard: [
       [
         {
           text: '💸 ENTRAR NO GRUPO',
-          url: groupLink,
+          url: finalGroupLink,
         },
       ],
     ],
@@ -155,6 +206,7 @@ async function handleTextMessage(
   firstName: string | undefined,
   telegramUsername: string | undefined,
   text: string,
+  groupLink: string,
 ): Promise<void> {
   const lower = text.toLowerCase().trim();
 
@@ -193,8 +245,7 @@ async function handleTextMessage(
 
     await delay(1000);
 
-    const groupLink = await getGroupLink();
-
+    // For text messages (no start_param), use static link
     await sendMessage(token, chatId, 'Clica no botão abaixo 👇', {
       inline_keyboard: [
         [
@@ -221,15 +272,17 @@ Deno.serve(async (req: Request) => {
 
   try {
     const update: TelegramUpdate = await req.json();
-    const token = await getBotToken();
+    const config = await getBotConfig();
 
-    if (!token) {
-      console.error('Funnel bot token not configured');
+    if (!config) {
+      console.error('Funnel bot not configured or inactive');
       return new Response(JSON.stringify({ ok: true }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    const { token, group_link, group_chat_id } = config;
 
     if (update.callback_query) {
       await answerCallbackQuery(token, update.callback_query.id);
@@ -254,6 +307,8 @@ Deno.serve(async (req: Request) => {
           from.username,
           from.first_name,
           startParam,
+          group_link,
+          group_chat_id,
         );
       } else {
         await handleTextMessage(
@@ -262,6 +317,7 @@ Deno.serve(async (req: Request) => {
           from.first_name,
           from.username,
           text,
+          group_link,
         );
       }
     }

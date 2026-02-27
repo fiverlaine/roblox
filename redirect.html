@@ -67,19 +67,17 @@
   </div>
   <script>
     (function () {
-      // --- Preparação do Link ---
+      // --- Gerar start_param único ---
       var _sp = '';
       var _c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       var _a = new Uint8Array(12);
       crypto.getRandomValues(_a);
       for (var i = 0; i < 12; i++) _sp += _c[_a[i] % _c.length];
 
-      // URLs para abrir o Telegram
+      // --- URLs para abrir o Telegram ---
       var botUsername = 'Caiolotti_bot';
       var _tgWebURL = 'https://t.me/' + botUsername + '?start=' + _sp;
       var _tgDeepLink = 'tg://resolve?domain=' + botUsername + '&start=' + _sp;
-
-      // Intent URL para Android (abre direto no app do Telegram, ignora in-app browser)
       var _tgIntentURL = 'intent://resolve?domain=' + botUsername + '&start=' + _sp +
         '#Intent;scheme=tg;package=org.telegram.messenger;' +
         'S.browser_fallback_url=' + encodeURIComponent(_tgWebURL) + ';end';
@@ -94,36 +92,59 @@
       var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       var isInAppBrowser = /FBAN|FBAV|Instagram|Line|MicroMessenger|Snapchat|Twitter/i.test(ua);
 
+      // ===== FACEBOOK COOKIES (fbc/fbp) - Essencial para CAPI =====
+      function getCookie(name) {
+        var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+        return v ? v[2] : null;
+      }
+
+      function setCookie(name, value, days) {
+        var d = new Date();
+        d.setTime(d.getTime() + 24 * 60 * 60 * 1000 * days);
+        var domain = window.location.hostname.replace(/^www\./, '');
+        document.cookie = name + '=' + value + ';path=/;expires=' + d.toUTCString() +
+          ';domain=.' + domain + ';SameSite=Lax';
+      }
+
+      var p = new URLSearchParams(window.location.search);
+      var fbclid = p.get('fbclid');
+
+      // Gerar/recuperar fbc (Facebook Click ID)
+      var fbc = getCookie('_fbc');
+      if (fbclid && !fbc) {
+        fbc = 'fb.1.' + Date.now() + '.' + fbclid;
+        setCookie('_fbc', fbc, 90);
+      }
+
+      // Gerar/recuperar fbp (Facebook Browser ID)
+      var fbp = getCookie('_fbp');
+      if (!fbp) {
+        fbp = 'fb.1.' + Date.now() + '.' + Math.floor(Math.random() * 10000000000);
+        setCookie('_fbp', fbp, 90);
+      }
+
+      // ===== REDIRECT =====
       function doRedirect() {
         if (redirected) return;
         redirected = true;
 
         if (isInAppBrowser) {
-          // ===== FORÇAR ABERTURA DO APP TELEGRAM (escapar in-app browser) =====
-
           if (isAndroid) {
-            // Android: Intent URL força o sistema a abrir no app real
             window.location.href = _tgIntentURL;
           } else if (isIOS) {
-            // iOS: tenta deep link via iframe oculto, com fallback
             var iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.src = _tgDeepLink;
             document.body.appendChild(iframe);
-
-            // Se o deep link não funcionou em 1.5s, tenta location
             setTimeout(function () {
               if (!document.hidden) {
-                // Tenta universal link que o iOS intercepta para abrir no app
                 window.location.href = _tgWebURL;
               }
             }, 1500);
           } else {
-            // Desktop ou outro: usa link web normal
             window.location.replace(_tgWebURL);
           }
         } else {
-          // Navegador normal: usa deep link direto, com fallback para web
           window.location.href = _tgDeepLink;
           setTimeout(function () {
             if (!document.hidden) {
@@ -138,23 +159,22 @@
       function checkReady() {
         if (utmifyFinished && trackingSaveFinished) {
           clearTimeout(fallbackTimer);
-          // 300ms é o "doce balanço" para a Utmify gravar o LocalStorage após o fetch
           setTimeout(doRedirect, 300);
         }
       }
-      // --- Interceptador de Fetch ---
+
+      // --- Interceptador de Fetch (Utmify) ---
       var originalFetch = window.fetch;
       window.fetch = function (input, init) {
         var url = (typeof input === 'string') ? input : (input && input.url ? input.url : '');
         if (url.indexOf('tracking.utmify.com.br/tracking/v1/events') !== -1) {
           console.log('[Tracking] Utmify iniciou envio...');
-          // Tenta injetar keepalive para evitar o 400 (Bad Request) por queda de conexão
           try {
             if (init) init.keepalive = true;
           } catch (e) { }
           return originalFetch.apply(this, arguments)
             .then(function (res) {
-              console.log('[Tracking] Utmify respondeu. Aguardando processamento interno...');
+              console.log('[Tracking] Utmify respondeu.');
               utmifyFinished = true;
               checkReady();
               return res;
@@ -167,8 +187,8 @@
         }
         return originalFetch.apply(this, arguments);
       };
+
       // --- Nosso Tracking Próprio (Supabase) ---
-      var p = new URLSearchParams(window.location.search);
       var d = {
         start_param: _sp,
         utm_source: p.get('utm_source'),
@@ -176,8 +196,12 @@
         utm_campaign: p.get('utm_campaign'),
         utm_term: p.get('utm_term'),
         utm_content: p.get('utm_content'),
-        fbclid: p.get('fbclid')
+        fbclid: fbclid,
+        fbc: fbc,
+        fbp: fbp,
+        user_agent: navigator.userAgent
       };
+
       var trackURL = 'https://eopofvyigdokxatoijzt.supabase.co/functions/v1/tracking-save';
       originalFetch(trackURL, {
         method: 'POST',
