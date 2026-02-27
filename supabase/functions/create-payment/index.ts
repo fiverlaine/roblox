@@ -62,6 +62,10 @@ Deno.serve(async (req: Request) => {
         amount: Number(amount),
         external_id: externalId,
         postbackUrl: gateway.webhook_url,
+        payer: {
+          name: "Usuario Roblox Vault",
+          document: "00000000000"
+        }
       }),
     });
 
