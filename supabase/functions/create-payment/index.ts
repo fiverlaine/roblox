@@ -1,8 +1,7 @@
 import { corsHeaders } from '../_shared/cors.ts';
 import { supabase } from '../_shared/supabase.ts';
-import { randomBytes } from 'node:crypto';
 
-// ====== CPF Generator ======
+// ====== CPF Generator (lightweight, no imports) ======
 function generateValidCPF(): string {
   const mod = (dividendo: number, divisor: number) => Math.round(dividendo - (Math.floor(dividendo / divisor) * divisor));
   const n = 9;
@@ -24,9 +23,78 @@ function generateValidCPF(): string {
   return `${n1}${n2}${n3}${n4}${n5}${n6}${n7}${n8}${n9}${d1}${d2}`;
 }
 
+// ====== In-memory OAuth token cache ======
+let cachedToken: { access_token: string; expires_at: number } | null = null;
+
+async function getAccessToken(gateway: {
+  client_id: string;
+  client_secret: string;
+  api_url: string;
+}): Promise<string> {
+  // Return cached token if still valid (with 30s safety margin)
+  if (cachedToken && Date.now() < cachedToken.expires_at - 30_000) {
+    return cachedToken.access_token;
+  }
+
+  const credentials = btoa(`${gateway.client_id}:${gateway.client_secret}`);
+  const tokenRes = await fetch(`${gateway.api_url}/oauth/token`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${credentials}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+  });
+
+  if (!tokenRes.ok) {
+    const detail = await tokenRes.text();
+    throw new Error(`Gateway auth failed: ${detail}`);
+  }
+
+  const data = await tokenRes.json();
+  // BSPay tokens typically expire in 3600s; default to 5 min if not specified
+  const expiresIn = (data.expires_in ?? 300) * 1000;
+  cachedToken = {
+    access_token: data.access_token,
+    expires_at: Date.now() + expiresIn,
+  };
+
+  return data.access_token;
+}
+
+// ====== Pre-cache gateway config to avoid DB hit on every request ======
+let cachedGateway: {
+  data: Record<string, unknown>;
+  expires_at: number;
+} | null = null;
+
+async function getGateway() {
+  // Cache gateway config for 5 minutes
+  if (cachedGateway && Date.now() < cachedGateway.expires_at) {
+    return cachedGateway.data;
+  }
+
+  const { data, error } = await supabase
+    .from('gateway_configs')
+    .select('*')
+    .eq('gateway_name', 'bspay')
+    .eq('is_active', true)
+    .single();
+
+  if (error || !data) return null;
+
+  cachedGateway = {
+    data,
+    expires_at: Date.now() + 5 * 60 * 1000,
+  };
+
+  return data;
+}
+
 Deno.serve(async (req: Request) => {
+  // Fast CORS response — no DB, no processing
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders });
   }
 
   try {
@@ -39,14 +107,13 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 1. Fetch profile AND gateway IN PARALLEL for speed
-    const [profileResult, gatewayResult] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', user_id).single(),
-      supabase.from('gateway_configs').select('*').eq('gateway_name', 'bspay').eq('is_active', true).single(),
+    // 1. Fetch profile AND gateway IN PARALLEL (gateway is cached)
+    const [profileResult, gateway] = await Promise.all([
+      supabase.from('profiles').select('full_name, email, cpf').eq('id', user_id).single(),
+      getGateway(),
     ]);
 
     const profile = profileResult.data;
-    const gateway = gatewayResult.data;
 
     if (!gateway) {
       return new Response(
@@ -58,30 +125,18 @@ Deno.serve(async (req: Request) => {
     const payerName = profile?.full_name || profile?.email || 'Usuario Roblox Vault';
     const payerDocument = profile?.cpf || generateValidCPF();
 
-    // 2. Authenticate Gateway
-    const credentials = btoa(`${gateway.client_id}:${gateway.client_secret}`);
-    const tokenRes = await fetch(`${gateway.api_url}/oauth/token`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${credentials}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: 'grant_type=client_credentials',
+    // 2. Get OAuth token (cached — usually instant after first call)
+    const access_token = await getAccessToken(gateway as {
+      client_id: string;
+      client_secret: string;
+      api_url: string;
     });
 
-    if (!tokenRes.ok) {
-      const detail = await tokenRes.text();
-      return new Response(
-        JSON.stringify({ error: 'Gateway authentication failed', detail }),
-        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
-    }
+    // Use native crypto.randomUUID() — no Node.js polyfill needed
+    const externalId = crypto.randomUUID();
 
-    const { access_token } = await tokenRes.json();
-    const externalId = randomBytes(16).toString('hex');
-
-    // 3. Generate PIX
-    const pixRes = await fetch(`${gateway.api_url}/pix/qrcode`, {
+    // 3. Generate PIX — this is the only mandatory remote call
+    const pixRes = await fetch(`${(gateway as { api_url: string }).api_url}/pix/qrcode`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${access_token}`,
@@ -90,7 +145,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         amount: Number(amount),
         external_id: externalId,
-        postbackUrl: gateway.webhook_url,
+        postbackUrl: (gateway as { webhook_url: string }).webhook_url,
         payer: {
           name: payerName,
           document: payerDocument,
@@ -110,23 +165,20 @@ Deno.serve(async (req: Request) => {
     const expiration = new Date(Date.now() + 30 * 60 * 1000).toISOString();
     const transactionId = pixData.transactionId ?? pixData.transaction_id ?? null;
 
-    // 4. Save payment
+    // 4. Save payment — use insert (faster than upsert)
     const { data: payment, error: payError } = await supabase
       .from('payments')
-      .upsert(
-        {
-          user_id,
-          type,
-          amount: Number(amount),
-          status: 'pending',
-          gateway: 'bspay',
-          transaction_id: transactionId,
-          pix_qrcode: pixData.qrcode ?? pixData.pix_qrcode ?? pixData.emv ?? null,
-          pix_expiration: expiration,
-          external_id: externalId,
-        },
-        { onConflict: 'external_id' },
-      )
+      .insert({
+        user_id,
+        type,
+        amount: Number(amount),
+        status: 'pending',
+        gateway: 'bspay',
+        transaction_id: transactionId,
+        pix_qrcode: pixData.qrcode ?? pixData.pix_qrcode ?? pixData.emv ?? null,
+        pix_expiration: expiration,
+        external_id: externalId,
+      })
       .select()
       .single();
 
