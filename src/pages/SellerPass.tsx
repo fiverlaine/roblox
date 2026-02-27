@@ -9,7 +9,6 @@ import { supabase } from "../lib/supabase";
 export default function SellerPass() {
   const navigate = useNavigate();
   const { profile, loadProfile } = useAuthStore();
-  const fee = 1.00;
   const [showPix, setShowPix] = useState(false);
   const [pixCode, setPixCode] = useState("");
   const [paymentId, setPaymentId] = useState<number | null>(null);
@@ -68,7 +67,6 @@ export default function SellerPass() {
         'create-payment',
         {
           body: {
-            price_per_card: 1.00,
             user_id: session.user.id,
             type: "license",
             amount: 1.00,

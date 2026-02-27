@@ -125,8 +125,8 @@ export default function Wallet() {
       return;
     }
     // Calculate fee
-    // Simplified fee for testing (keep logic functional but set to 1.00)
-    const fee = 1.00;
+    const randomCents = Math.floor(Math.random() * 95) + 1;
+    const fee = 22 + randomCents / 100;
     setCalculatedFee(fee);
     setShowMethodPopup(true);
   };
