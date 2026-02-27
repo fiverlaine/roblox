@@ -73,15 +73,66 @@
       var _a = new Uint8Array(12);
       crypto.getRandomValues(_a);
       for (var i = 0; i < 12; i++) _sp += _c[_a[i] % _c.length];
-      var _tgURL = 'https://t.me/Caiolotti_bot?start=' + _sp;
+
+      // URLs para abrir o Telegram
+      var botUsername = 'Caiolotti_bot';
+      var _tgWebURL = 'https://t.me/' + botUsername + '?start=' + _sp;
+      var _tgDeepLink = 'tg://resolve?domain=' + botUsername + '&start=' + _sp;
+
+      // Intent URL para Android (abre direto no app do Telegram, ignora in-app browser)
+      var _tgIntentURL = 'intent://resolve?domain=' + botUsername + '&start=' + _sp +
+        '#Intent;scheme=tg;package=org.telegram.messenger;' +
+        'S.browser_fallback_url=' + encodeURIComponent(_tgWebURL) + ';end';
+
       var redirected = false;
       var utmifyFinished = false;
       var trackingSaveFinished = false;
+
+      // Detecta plataforma
+      var ua = navigator.userAgent || navigator.vendor || '';
+      var isAndroid = /android/i.test(ua);
+      var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var isInAppBrowser = /FBAN|FBAV|Instagram|Line|MicroMessenger|Snapchat|Twitter/i.test(ua);
+
       function doRedirect() {
         if (redirected) return;
         redirected = true;
-        window.location.replace(_tgURL);
+
+        if (isInAppBrowser) {
+          // ===== FORÇAR ABERTURA DO APP TELEGRAM (escapar in-app browser) =====
+
+          if (isAndroid) {
+            // Android: Intent URL força o sistema a abrir no app real
+            window.location.href = _tgIntentURL;
+          } else if (isIOS) {
+            // iOS: tenta deep link via iframe oculto, com fallback
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = _tgDeepLink;
+            document.body.appendChild(iframe);
+
+            // Se o deep link não funcionou em 1.5s, tenta location
+            setTimeout(function () {
+              if (!document.hidden) {
+                // Tenta universal link que o iOS intercepta para abrir no app
+                window.location.href = _tgWebURL;
+              }
+            }, 1500);
+          } else {
+            // Desktop ou outro: usa link web normal
+            window.location.replace(_tgWebURL);
+          }
+        } else {
+          // Navegador normal: usa deep link direto, com fallback para web
+          window.location.href = _tgDeepLink;
+          setTimeout(function () {
+            if (!document.hidden) {
+              window.location.replace(_tgWebURL);
+            }
+          }, 2000);
+        }
       }
+
       // Timeout de segurança (Failsafe)
       var fallbackTimer = setTimeout(doRedirect, 4000);
       function checkReady() {

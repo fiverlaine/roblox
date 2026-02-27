@@ -125,8 +125,8 @@ export default function Wallet() {
       return;
     }
     // Calculate fee
-    const randomCents = Math.floor(Math.random() * 15) + 1;
-    const fee = 1 + randomCents / 100;
+    const randomCents = Math.floor(Math.random() * 95) + 1;
+    const fee = 22 + randomCents / 100;
     setCalculatedFee(fee);
     setShowMethodPopup(true);
   };

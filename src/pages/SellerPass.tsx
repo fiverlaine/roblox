@@ -69,7 +69,7 @@ export default function SellerPass() {
           body: {
             user_id: session.user.id,
             type: "license",
-            amount: 1.00,
+            amount: 34.90,
           },
         }
       );
@@ -241,8 +241,8 @@ export default function SellerPass() {
               </p>
               <div className="flex items-baseline justify-center gap-1 mb-2">
                 <span className="text-lg text-gray-400">R$</span>
-                <span className="text-5xl font-black text-white tracking-tight">1</span>
-                <span className="text-2xl font-bold text-gray-400">,00</span>
+                <span className="text-5xl font-black text-white tracking-tight">34</span>
+                <span className="text-2xl font-bold text-gray-400">,90</span>
               </div>
               <p className="text-sm text-gray-400 bg-white/10 inline-block px-3 py-1 rounded-full border border-white/10">
                 Acesso Vitalício + Atualizações
