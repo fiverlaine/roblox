@@ -143,21 +143,39 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 6. 🔥 Send Pending/waiting_payment Event to UTMIFY
+    // 6. 🔥 Send Pending/waiting_payment Event to UTMIFY asynchronously
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    try {
-      await fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${serviceKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ payment_id: payment.id }), // utmify-event handles everything based on payment_id
-      });
-    } catch (err) {
-      console.error('Failed to trigger utmify-event:', err);
+    const triggerUtmify = async () => {
+      try {
+        const res = await fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${serviceKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ payment_id: payment.id }),
+        });
+        const resText = await res.text();
+        
+        // Log to capi_logs for debugging UTMify
+        await supabase.from('capi_logs').insert({
+          event_name: 'utmify_trigger',
+          status: res.ok ? 'success' : 'error',
+          request_payload: { payment_id: payment.id },
+          response_payload: { status: res.status, body: resText },
+          error_message: res.ok ? null : `Utmify failed: ${resText}`,
+        });
+      } catch (err) {
+        console.error('Failed to trigger utmify-event:', err);
+      }
+    };
+
+    if (typeof (globalThis as any).EdgeRuntime !== 'undefined' && typeof (globalThis as any).EdgeRuntime.waitUntil === 'function') {
+      (globalThis as any).EdgeRuntime.waitUntil(triggerUtmify());
+    } else {
+      triggerUtmify(); // Fire and forget fallback
     }
 
     return new Response(JSON.stringify({ payment }), {
