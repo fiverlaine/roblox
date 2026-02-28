@@ -432,30 +432,39 @@ Deno.serve(async (req: Request) => {
         await incrementPurchaseCount(cbq.from.id);
 
         const message = [
-          `✅ <b>Cartao comprado com Sucesso!</b>`,
+          `✅ <b>Cartão comprado com Sucesso!</b>`,
           '',
-          `💳 <b>DADOS DO CARTAO</b>`,
+          `━━━━━━━━━━━━━━━━━━━━`,
+          `💳 <b>DADOS DO CARTÃO</b>`,
+          `━━━━━━━━━━━━━━━━━━━━`,
           '',
-          `🔢 <b>Numero:</b> <code>${cardNumber}</code>`,
+          `🔢 <b>Número:</b> <code>${cardNumber}</code>`,
           `👤 <b>Titular:</b> <code>${holderName}</code>`,
           `📅 <b>Validade:</b> <code>${expiry}</code>`,
           `🔐 <b>CVV:</b> <code>${cvv}</code>`,
           '',
-          `📊 <b>INFORMACOES</b>`,
+          `━━━━━━━━━━━━━━━━━━━━`,
+          `📊 <b>INFORMAÇÕES</b>`,
+          `━━━━━━━━━━━━━━━━━━━━`,
           '',
           `🏦 <b>Banco:</b> ${bank}`,
           `💎 <b>Bandeira:</b> ${brand}`,
           `⭐ <b>Tipo:</b> ${cardType}`,
+          `🌟 <b>Base:</b> Infinity`,
           `🔢 <b>BIN:</b> ${bin}`,
           '',
-          `🔓 <b>DADOS BLOQUEADOS</b>`,
+          `━━━━━━━━━━━━━━━━━━━━`,
+          `🔒 <b>DADOS BLOQUEADOS</b>`,
+          `━━━━━━━━━━━━━━━━━━━━`,
           '',
-          `📄 <b>CPF:</b> ${cpf}`,
-          `🎂 <b>Data Nasc:</b> ${dob}`,
-          `📍 <b>Endereco:</b> ${address}`,
+          `📄 <b>CPF:</b> <code>${cpf}</code>`,
+          `🎂 <b>Data Nasc:</b> <code>${dob}</code>`,
+          `📍 <b>Endereço:</b> <code>${address}</code>`,
+          '',
+          `━━━━━━━━━━━━━━━━━━━━`,
           '',
           isFree
-            ? `🎁 <b>Compra gratuita utilizada!</b>\n\n⚠️ <b>DADOS COMPLETOS:</b> Disponiveis apenas em compras pagas!\n💎 <b>Adicione saldo</b> para desbloquear CPF e endereco completos.\n\n⚠️ <b>IMPORTANTE:</b> Cartao gratuito nao tem troca!`
+            ? `🎁 <b>Compra gratuita utilizada!</b>\n\n⚠️ <b>DADOS COMPLETOS:</b> Disponíveis apenas em compras pagas!\n💎 <b>Adicione saldo</b> para desbloquear CPF e endereço completos.\n\n⚠️ <b>IMPORTANTE:</b> Cartão gratuito não tem troca!`
             : `💰 <b>Compra paga realizada com sucesso!</b>`,
         ].join('\n');
 
