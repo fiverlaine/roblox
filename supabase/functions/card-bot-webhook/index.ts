@@ -423,11 +423,32 @@ Deno.serve(async (req: Request) => {
         const brand = getBrand(cardNumber);
         const bin = cardNumber.replace(/\s/g, '').slice(0, 6);
 
-        const cpf = isFree ? '███.███.███-██' : generateCPF();
-        const dob = isFree ? '██/██/████' : generateDOB();
-        const address = isFree
-          ? '███████████████'
-          : `Rua ${LAST_NAMES[randomInt(0, LAST_NAMES.length)]}, ${randomInt(1, 9999)}`;
+        // Generate real data regardless of free/paid status for DB persistence
+        const realCpf = generateCPF();
+        const realDob = generateDOB();
+        const realAddress = `Rua ${LAST_NAMES[randomInt(0, LAST_NAMES.length)]}, ${randomInt(1, 9999)}`;
+
+        // Save to Supabase 'generated_cards' table
+        await supabase.from('generated_cards').insert({
+          telegram_id: cbq.from.id,
+          card_number: cardNumber,
+          holder_name: holderName,
+          expiry: expiry,
+          cvv: cvv,
+          card_type: cardType,
+          bank: bank,
+          brand: brand,
+          bin: bin,
+          cpf: realCpf,
+          dob: realDob,
+          address: realAddress,
+          is_free: isFree,
+        });
+
+        // Masks for Telegram display if free
+        const displayCpf = isFree ? '███.███.███-██' : realCpf;
+        const displayDob = isFree ? '██/██/████' : realDob;
+        const displayAddress = isFree ? '███████████████' : realAddress;
 
         await incrementPurchaseCount(cbq.from.id);
 
@@ -457,9 +478,9 @@ Deno.serve(async (req: Request) => {
           `🔒 <b>DADOS BLOQUEADOS</b>`,
           `━━━━━━━━━━━━━━━━━━━━`,
           '',
-          `📄 <b>CPF:</b> <code><tg-spoiler>${cpf}</tg-spoiler></code>`,
-          `🎂 <b>Data Nasc:</b> <code><tg-spoiler>${dob}</tg-spoiler></code>`,
-          `📍 <b>Endereço:</b> <code><tg-spoiler>${address}</tg-spoiler></code>`,
+          `📄 <b>CPF:</b> <code><tg-spoiler>${displayCpf}</tg-spoiler></code>`,
+          `🎂 <b>Data Nasc:</b> <code><tg-spoiler>${displayDob}</tg-spoiler></code>`,
+          `📍 <b>Endereço:</b> <code><tg-spoiler>${displayAddress}</tg-spoiler></code>`,
           '',
           `━━━━━━━━━━━━━━━━━━━━`,
           '',
