@@ -130,7 +130,7 @@ Deno.serve(async (req: Request) => {
         },
       ],
       trackingParameters: {
-        src: lead?.utm_source || null, // Optional mapping
+        src: lead?.utm_source || null, 
         sck: lead?.utm_campaign || null,
         utm_source: lead?.utm_source || null,
         utm_medium: lead?.utm_medium || null,
