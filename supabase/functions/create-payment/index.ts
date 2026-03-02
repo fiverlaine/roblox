@@ -81,7 +81,15 @@ async function getGateway() {
     .eq('is_active', true)
     .single();
 
-  if (error || !data) return null;
+  if (error) {
+    console.error('[create-payment] Error fetching gateway config:', error);
+    return null;
+  }
+  
+  if (!data) {
+    console.error('[create-payment] Gateway config "bspay" not found or inactive');
+    return null;
+  }
 
   cachedGateway = {
     data,
