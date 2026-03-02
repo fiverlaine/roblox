@@ -189,19 +189,23 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 5. Return IMMEDIATELY — trigger UTMify fully in background
+    // 5. Trigger UTMify fully in background (awaiting safely to guarantee execution in Edge Runtime)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    // Fire and forget — do NOT await
-    fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${serviceKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ payment_id: payment.id }),
-    }).catch((err) => console.error('utmify-event fire-and-forget failed:', err));
+    try {
+      // Usamos await para que o runtime não mate a função antes de enviar
+      await fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ payment_id: payment.id }),
+      });
+    } catch (err) {
+      console.error('utmify-event failed:', err);
+    }
 
     return new Response(JSON.stringify({ payment }), {
       status: 200,
