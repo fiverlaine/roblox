@@ -73,6 +73,7 @@ export interface TelegramLead {
   id: number
   telegram_id: number | null
   telegram_username: string | null
+  telegram_name: string | null
   start_param: string
   utm_source: string | null
   utm_medium: string | null

@@ -266,7 +266,7 @@ export default function TelegramAnalytics() {
                       <td className="py-6 px-6 align-top">
                         <div className="min-w-[140px]">
                           <p className="text-white text-sm font-bold group-hover:text-blue-400 transition-colors">
-                            @{lead.telegram_username ?? 'sem_username'}
+                            {lead.telegram_username ? `@${lead.telegram_username}` : (lead.telegram_name || 'Usuário sem nome')}
                           </p>
                           <p className="text-[10px] text-gray-600 font-mono mt-1">ID: {lead.telegram_id ?? '-'}</p>
                         </div>

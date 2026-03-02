@@ -5,22 +5,22 @@ import { supabase } from '../_shared/supabase.ts';
 interface TelegramUpdate {
   message?: {
     chat: { id: number };
-    from: { id: number; username?: string; first_name?: string };
+    from: { id: number; username?: string; first_name?: string; last_name?: string };
     text?: string;
   };
   callback_query?: {
     id: string;
-    from: { id: number; username?: string; first_name?: string };
+    from: { id: number; username?: string; first_name?: string; last_name?: string };
     message: { chat: { id: number } };
     data: string;
   };
   chat_member?: {
     chat: { id: number; title?: string };
-    from: { id: number; username?: string; first_name?: string };
+    from: { id: number; username?: string; first_name?: string; last_name?: string };
     old_chat_member: { status: string };
     new_chat_member: {
       status: string;
-      user?: { id: number; username?: string; first_name?: string };
+      user?: { id: number; username?: string; first_name?: string; last_name?: string };
     };
     invite_link?: { name?: string; invite_link: string };
   };
@@ -227,16 +227,20 @@ async function handleStart(
   telegramId: number,
   telegramUsername: string | undefined,
   firstName: string | undefined,
+  lastName: string | undefined,
   startParam: string,
   groupLink: string,
   groupChatId: string | null,
 ): Promise<void> {
+  const telegramName = [firstName, lastName].filter(Boolean).join(' ');
+
   if (startParam) {
     await supabase
       .from('telegram_leads')
       .update({
         telegram_id: telegramId,
         telegram_username: telegramUsername || null,
+        telegram_name: telegramName || null,
         status: 'registered',
       })
       .eq('start_param', startParam);
@@ -299,6 +303,9 @@ async function handleChatMember(chatMember: NonNullable<TelegramUpdate['chat_mem
   const oldStatus = chatMember.old_chat_member?.status;
   const telegramUserId = chatMember.new_chat_member?.user?.id || chatMember.from?.id;
   const telegramUsername = chatMember.new_chat_member?.user?.username || chatMember.from?.username;
+  const firstName = chatMember.new_chat_member?.user?.first_name || chatMember.from?.first_name;
+  const lastName = chatMember.new_chat_member?.user?.last_name || chatMember.from?.last_name;
+  const telegramName = [firstName, lastName].filter(Boolean).join(' ');
   const inviteLink = chatMember.invite_link;
   const inviteName = inviteLink?.name;
 
@@ -340,6 +347,7 @@ async function handleChatMember(chatMember: NonNullable<TelegramUpdate['chat_mem
           qualified_at: new Date().toISOString(),
           telegram_id: telegramUserId,
           telegram_username: telegramUsername || lead.telegram_username,
+          telegram_name: telegramName || lead.telegram_name,
         })
         .eq('id', lead.id);
 
@@ -393,7 +401,7 @@ Deno.serve(async (req: Request) => {
       const { text, chat, from } = update.message;
       if (text.startsWith('/start')) {
         const startParam = text.split(' ')[1] || '';
-        await handleStart(token, chat.id, from.id, from.username, from.first_name, startParam, group_link, group_chat_id);
+        await handleStart(token, chat.id, from.id, from.username, from.first_name, from.last_name, startParam, group_link, group_chat_id);
       } else {
         await handleTextMessage(token, chat.id, from.first_name, from.username, text, group_link);
       }
