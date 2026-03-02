@@ -109,25 +109,6 @@ Deno.serve(async (req: Request) => {
         .eq('id', lead.id);
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    try {
-      console.log(`[Webhook] Disparando utmify-event para payment ${payment.id}`);
-      // Aguarda a promessa para garantir a execução no Edge Runtime
-      await fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${serviceKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ payment_id: payment.id }),
-      });
-      console.log(`[Webhook] utmify-event disparado com sucesso.`);
-    } catch (err) {
-      console.error('[Webhook] Erro ao chamar utmify-event:', err);
-    }
-
     return new Response(JSON.stringify({ received: true }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

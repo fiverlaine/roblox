@@ -15,6 +15,8 @@ function mapPaymentStatus(status: string): string {
       return 'refused';
     case 'chargeback':
       return 'chargedback';
+    case 'refunded':
+      return 'refunded';
     default:
       return 'waiting_payment';
   }
@@ -47,22 +49,35 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { payment_id } = await req.json();
+    const body = await req.json();
+    console.log('[Utmify] Received payload:', JSON.stringify(body));
 
-    if (!payment_id) {
+    // Handle both direct {payment_id} and Supabase Webhook payload
+    let paymentId = body.payment_id;
+    let paymentData = null;
+
+    if (!paymentId && body.record) {
+      // It's a Supabase Webhook
+      paymentId = body.record.id;
+      paymentData = body.record;
+    }
+
+    if (!paymentId) {
       return new Response(
-        JSON.stringify({ error: 'payment_id is required' }),
+        JSON.stringify({ error: 'payment_id or webhook record is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
+    // Always fetch fresh payment data if not provided or to ensure we have everything
     const { data: payment, error: payErr } = await supabase
       .from('payments')
       .select('*')
-      .eq('id', payment_id)
+      .eq('id', paymentId)
       .single();
 
     if (payErr || !payment) {
+      console.error('[Utmify] Payment not found:', paymentId, payErr);
       return new Response(
         JSON.stringify({ error: 'Payment not found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
@@ -77,6 +92,14 @@ Deno.serve(async (req: Request) => {
     
     const profile = profileResult.data;
     const utmifyConfig = utmifyResult.data;
+
+    if (!utmifyConfig?.api_token) {
+      console.error('[Utmify] Utmify not configured or inactive');
+      return new Response(
+        JSON.stringify({ error: 'Utmify not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
 
     // Fetch lead with fallback: first by user_id, then by telegram_id
     let lead = null;
@@ -99,18 +122,12 @@ Deno.serve(async (req: Request) => {
       lead = leadByTelegramId;
     }
 
-    if (!utmifyConfig?.api_token) {
-      return new Response(
-        JSON.stringify({ error: 'Utmify not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
-    }
-
     const productName = payment.type === 'license' ? 'Roblox Seller Pass' : 'Taxa de Saque';
     const amountInCents = Math.round(Number(payment.amount) * 100);
 
     // UTMify dates need to be "YYYY-MM-DD HH:MM:SS" (UTC)
     const formatUTMifyDate = (isoString: string) => {
+      if (!isoString) return null;
       const d = new Date(isoString);
       return d.toISOString().replace('T', ' ').substring(0, 19);
     };
@@ -122,11 +139,13 @@ Deno.serve(async (req: Request) => {
     const customerName = profile?.full_name || 'Usuário Roblox Vault';
     const customerPhone = profile?.phone || '11999999999';
 
+    const status = mapPaymentStatus(payment.status);
+
     const orderPayload = {
-      orderId: String(payment.id),
+      orderId: payment.external_id || String(payment.id),
       platform: utmifyConfig.platform_name || 'RobloxVault',
       paymentMethod: 'pix',
-      status: mapPaymentStatus(payment.status),
+      status: status,
       createdAt: createdAtStr,
       approvedDate: approvedStr,
       refundedAt: null,
@@ -165,7 +184,7 @@ Deno.serve(async (req: Request) => {
       isTest: false
     };
 
-    console.log(`[Utmify] Sending order ${payment.id} to UTMify...`);
+    console.log(`[Utmify] Sending order ${payment.id} (Status: ${status}) to UTMify...`);
 
     let utmifyRes;
     let utmifyResultBody;
@@ -182,10 +201,12 @@ Deno.serve(async (req: Request) => {
 
       utmifyResultBody = await utmifyRes.json();
       
+      console.log(`[Utmify] Response:`, JSON.stringify(utmifyResultBody));
+
       // Log interaction to capi_logs for debugging
       await supabase.from('capi_logs').insert({
         lead_id: lead?.id || null,
-        event_name: `UTMify_${orderPayload.status}`,
+        event_name: `UTMify_${status}`,
         status: utmifyRes.ok ? 'success' : 'error',
         request_payload: orderPayload,
         response_payload: utmifyResultBody,
@@ -196,7 +217,7 @@ Deno.serve(async (req: Request) => {
       console.error('[Utmify] Fetch error:', fetchErr);
       await supabase.from('capi_logs').insert({
         lead_id: lead?.id || null,
-        event_name: `UTMify_${orderPayload.status}`,
+        event_name: `UTMify_${status}`,
         status: 'error',
         request_payload: orderPayload,
         error_message: String(fetchErr),
@@ -205,7 +226,6 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!utmifyRes.ok) {
-      console.error('Utmify API error:', utmifyResultBody);
       return new Response(
         JSON.stringify({ error: 'Utmify API request failed', detail: utmifyResultBody }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },

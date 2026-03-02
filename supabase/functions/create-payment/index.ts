@@ -99,6 +99,16 @@ async function getGateway() {
   return data;
 }
 
+// @ts-ignore: EdgeRuntime
+const _waitUntil = (promise: Promise<any>) => {
+  try {
+    // @ts-ignore: EdgeRuntime
+    EdgeRuntime.waitUntil(promise);
+  } catch (e) {
+    console.warn('waitUntil not supported in this environment');
+  }
+};
+
 Deno.serve(async (req: Request) => {
   // Fast CORS response — no DB, no processing
   if (req.method === 'OPTIONS') {
@@ -197,24 +207,17 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 5. Trigger UTMify in background - using waitUntil so the PIX response IS NOT blocked
-    // but the background task is guaranteed to finish even after response is sent.
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    const utmifyPromise = fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${serviceKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ payment_id: payment.id }),
-    }).catch((err) => console.error('utmify-event background failed:', err));
-
-    // @ts-ignore: EdgeRuntime is available in Supabase environment
-    EdgeRuntime.waitUntil(utmifyPromise);
-
-    return new Response(JSON.stringify({ payment }), {
+    return new Response(JSON.stringify({ 
+      success: true,
+      payment: {
+        id: payment.id,
+        external_id: payment.external_id,
+        status: payment.status,
+        pix_qrcode: payment.pix_qrcode,
+        pix_expiration: payment.pix_expiration,
+        amount: payment.amount
+      }
+    }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
