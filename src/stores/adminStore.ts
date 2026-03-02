@@ -104,6 +104,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
         .from('telegram_leads')
         .select('*, profile:profiles(*)')
         .not('telegram_id', 'is', null)
+        .not('user_id', 'is', null)
         .order('created_at', { ascending: false });
 
       if (filters?.startDate) query = query.gte('created_at', filters.startDate);

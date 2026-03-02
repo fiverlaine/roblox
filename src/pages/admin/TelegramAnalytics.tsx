@@ -277,17 +277,17 @@ export default function TelegramAnalytics() {
                           {lead.profile ? (
                             <>
                               <p className="text-white/90 text-sm font-medium leading-tight">{lead.profile.full_name}</p>
-                              <p className="text-xs text-gray-500 mt-1">{lead.profile.email}</p>
+                              <p className="text-xs text-gray-400 mt-1">{lead.profile.email}</p>
                             </>
                           ) : (
-                            <span className="inline-block px-2 py-0.5 rounded-md bg-gray-800/30 text-gray-600 text-[10px] font-bold uppercase tracking-wider italic">Não vinculado</span>
+                            <span className="text-gray-600 text-xs italic">Perfil não encontrado</span>
                           )}
                         </div>
                       </td>
                       {/* Personal Data */}
                       <td className="py-6 px-6 align-top">
                         <div className="min-w-[220px]">
-                          {lead.profile ? (
+                          {lead.profile && (
                             <div className="space-y-1 text-xs text-gray-400 font-medium leading-relaxed">
                               <p className="text-gray-300">{lead.profile.full_name}</p>
                               <p>{lead.profile.email}</p>
@@ -295,8 +295,6 @@ export default function TelegramAnalytics() {
                               {lead.profile.cpf && <p className="font-mono text-[11px] bg-gray-800/20 inline-block px-1 rounded">CPF: {lead.profile.cpf}</p>}
                               {lead.profile.city && <p className="text-gray-500">{lead.profile.city} / {lead.profile.state}</p>}
                             </div>
-                          ) : (
-                            <span className="text-gray-700 text-xs">—</span>
                           )}
                         </div>
                       </td>
