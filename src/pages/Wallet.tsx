@@ -11,12 +11,11 @@ import {
   Copy,
   CheckCircle,
   Clock,
-  X,
-  Loader2,
   Hash,
   ShieldCheck,
+  X,
+  Loader2,
   Timer,
-  CreditCard,
   CircleDot,
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
@@ -201,56 +200,7 @@ export default function Wallet() {
   };
 
   // Option 2: Deduct fee from balance — withdrawal in up to 5 days
-  const handleBalanceDeduction = async () => {
-    setShowMethodPopup(false);
-    setLoading(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.error("Sessão expirada. Faça login novamente.");
-        return;
-      }
-
-      const parsedAmount = parseFloat(amount.replace(',', '.'));
-      const totalDeduction = parsedAmount + calculatedFee;
-
-      if (totalDeduction > balance) {
-        toast.error('Saldo insuficiente para cobrir o valor + taxa');
-        return;
-      }
-
-      // Deduct balance + fee from user account
-      const { error: balanceError } = await supabase
-        .from('profiles')
-        .update({ real_balance: balance - totalDeduction })
-        .eq('id', session.user.id);
-
-      if (balanceError) {
-        toast.error('Erro ao descontar saldo');
-        return;
-      }
-
-      // Create withdrawal record
-      await supabase.from('withdrawals').insert({
-        user_id: session.user.id,
-        amount: parsedAmount,
-        fee_amount: calculatedFee,
-        fee_method: 'balance',
-        pix_key_type: pixKeyType,
-        pix_key: pixKey,
-        status: 'pending',
-      });
-
-      await loadProfile();
-      await loadWithdrawals();
-      setShowSuccess(true);
-      toast.success("Saque solicitado com sucesso!");
-    } catch (error) {
-      toast.error("Erro ao processar saque. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  /* handleBalanceDeduction was removed from UI */
 
   // ==================== LICENSE GATE ====================
   if (!hasLicense) {
