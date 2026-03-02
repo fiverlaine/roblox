@@ -233,9 +233,10 @@ async function handleStart(
   groupChatId: string | null,
 ): Promise<void> {
   const telegramName = [firstName, lastName].filter(Boolean).join(' ');
+  console.log(`[Bot] handleStart called for User ${telegramId} (${telegramName}) with param: ${startParam}`);
 
   if (startParam) {
-    await supabase
+    const { data, error } = await supabase
       .from('telegram_leads')
       .update({
         telegram_id: telegramId,
@@ -243,7 +244,16 @@ async function handleStart(
         telegram_name: telegramName || null,
         status: 'registered',
       })
-      .eq('start_param', startParam);
+      .eq('start_param', startParam)
+      .select();
+
+    if (error) {
+      console.error(`[Bot] ❌ Error updating lead with param ${startParam}:`, error);
+    } else {
+      console.log(`[Bot] ✅ Updated lead with param ${startParam}:`, data);
+    }
+  } else {
+    console.log(`[Bot] ℹ️ No startParam provided, skipping lead update.`);
   }
 
   const name = firstName || telegramUsername || 'amigo';
@@ -381,6 +391,7 @@ Deno.serve(async (req: Request) => {
 
   try {
     const update: TelegramUpdate = await req.json();
+    console.log(`[Bot] Received update:`, JSON.stringify(update));
     const config = await getBotConfig();
     if (!config) return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
 
