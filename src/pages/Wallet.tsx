@@ -832,72 +832,72 @@ export default function Wallet() {
               {/* Options */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {/* Option 1: Instant */}
-                <button
-                  onClick={handleInstantWithdrawal}
+                <div
                   style={{
-                    display: 'flex', alignItems: 'center', gap: '16px', padding: '20px',
-                    borderRadius: '18px', border: '2px solid #4F6BFF',
-                    background: 'linear-gradient(135deg, #F5F7FF 0%, #EBF0FF 100%)',
-                    cursor: 'pointer', textAlign: 'left', position: 'relative', overflow: 'hidden',
-                    transition: 'all 0.2s ease',
+                    display: 'flex', flexDirection: 'column', gap: '12px',
                   }}
                 >
-                  <div style={{
-                    position: 'absolute', top: '0', right: '0', backgroundColor: '#4F6BFF',
-                    color: '#FFFFFF', fontSize: '9px', fontWeight: 800, padding: '4px 12px',
-                    borderBottomLeftRadius: '10px', textTransform: 'uppercase', letterSpacing: '0.5px',
-                  }}>Recomendado</div>
-                  <div style={{
-                    width: '48px', height: '48px', borderRadius: '14px',
-                    background: 'linear-gradient(135deg, #4F6BFF, #5B7AFF)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}>
-                    <Zap size={24} style={{ color: '#FFFFFF', fill: '#FFFFFF' }} />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1F2937', marginBottom: '4px' }}>Saque Instantâneo</div>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#6B7280', lineHeight: 1.4 }}>
-                      Pague a taxa via PIX e receba em <strong style={{ color: '#27A17D' }}>menos de 1 minuto</strong>
+                  <button
+                    onClick={handleInstantWithdrawal}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '16px', padding: '20px',
+                      borderRadius: '18px', border: '2px solid #4F6BFF',
+                      background: 'linear-gradient(135deg, #F5F7FF 0%, #EBF0FF 100%)',
+                      cursor: 'pointer', textAlign: 'left', position: 'relative', overflow: 'hidden',
+                      transition: 'all 0.2s ease',
+                      width: '100%',
+                    }}
+                  >
+                    <div style={{
+                      position: 'absolute', top: '0', right: '0', backgroundColor: '#EF4444',
+                      color: '#FFFFFF', fontSize: '10px', fontWeight: 900, padding: '5px 14px',
+                      borderBottomLeftRadius: '12px', textTransform: 'uppercase', letterSpacing: '0.8px',
+                      boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)',
+                    }}>Obrigatório</div>
+                    <div style={{
+                      width: '48px', height: '48px', borderRadius: '14px',
+                      background: 'linear-gradient(135deg, #4F6BFF, #5B7AFF)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    }}>
+                      <Zap size={24} style={{ color: '#FFFFFF', fill: '#FFFFFF' }} />
                     </div>
-                  </div>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#E8F5F0',
-                    padding: '6px 10px', borderRadius: '10px', flexShrink: 0,
-                  }}>
-                    <Timer size={12} style={{ color: '#27A17D' }} />
-                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#27A17D' }}>~1min</span>
-                  </div>
-                </button>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#1F2937', marginBottom: '4px' }}>Liberação Imediata</div>
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: '#6B7280', lineHeight: 1.4 }}>
+                        Pague a taxa via PIX e receba seu saldo em <strong style={{ color: '#27A17D' }}>menos de 1 minuto</strong>
+                      </div>
+                    </div>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#E8F5F0',
+                      padding: '6px 10px', borderRadius: '10px', flexShrink: 0,
+                    }}>
+                      <Timer size={12} style={{ color: '#27A17D' }} />
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: '#27A17D' }}>~1min</span>
+                    </div>
+                  </button>
 
-                {/* Option 2: Balance */}
-                <button
-                  onClick={handleBalanceDeduction}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '16px', padding: '20px',
-                    borderRadius: '18px', border: '2px solid #E5E7EB', background: '#FAFAFA',
-                    cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s ease',
-                  }}
-                >
+                  {/* Informative message about reimbursement */}
                   <div style={{
-                    width: '48px', height: '48px', borderRadius: '14px', background: '#F3F4F6',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    backgroundColor: '#F0F9FF',
+                    borderRadius: '14px',
+                    padding: '16px',
+                    border: '1px dashed #7DD3FC',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '12px',
                   }}>
-                    <CreditCard size={24} style={{ color: '#9CA3AF' }} />
+                    <ShieldCheck size={20} style={{ color: '#0284C7', flexShrink: 0, marginTop: '2px' }} />
+                    <p style={{
+                      fontSize: '12px',
+                      color: '#0369A1',
+                      fontWeight: 600,
+                      lineHeight: 1.5,
+                      margin: 0,
+                    }}>
+                      <span style={{ color: '#0284C7', fontWeight: 800 }}>GARANTIA DE REEMBOLSO:</span> A taxa de processamento é simbólica para verificação da conta e <strong style={{ color: '#0284C7' }}>será devolvida integralmente</strong> junto com o valor do seu saque. Você não perderá nem um centavo!
+                    </p>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1F2937', marginBottom: '4px' }}>Descontar do Saldo</div>
-                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#6B7280', lineHeight: 1.4 }}>
-                      Taxa descontada do saldo, saque cai em <strong style={{ color: '#F59E0B' }}>até 5 dias úteis</strong>
-                    </div>
-                  </div>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#FEF3C7',
-                    padding: '6px 10px', borderRadius: '10px', flexShrink: 0,
-                  }}>
-                    <Clock size={12} style={{ color: '#F59E0B' }} />
-                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#F59E0B' }}>5 dias</span>
-                  </div>
-                </button>
+                </div>
               </div>
             </div>
           </div>
