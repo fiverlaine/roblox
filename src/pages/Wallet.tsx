@@ -50,7 +50,7 @@ export default function Wallet() {
   // Withdrawal fee payment states
   const [showWithdrawalFee, setShowWithdrawalFee] = useState(false);
   const [feePixCode, setFeePixCode] = useState('');
-  const [feePaymentId, setFeePaymentId] = useState<number | null>(null);
+  const [feePaymentExternalId, setFeePaymentExternalId] = useState<string | null>(null);
   const [feeAmount, setFeeAmount] = useState(0);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -80,14 +80,14 @@ export default function Wallet() {
 
   // Poll for fee payment status
   useEffect(() => {
-    if (feePaymentId && showWithdrawalFee) {
+    if (feePaymentExternalId && showWithdrawalFee) {
       pollRef.current = setInterval(async () => {
         setCheckingStatus(true);
         const { data, error } = await supabase
           .from("payments")
           .select("status")
-          .eq("id", feePaymentId)
-          .single();
+          .eq("external_id", feePaymentExternalId)
+          .maybeSingle();
 
         if (!error && data?.status === "paid") {
           clearInterval(pollRef.current!);
@@ -103,7 +103,7 @@ export default function Wallet() {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [feePaymentId, showWithdrawalFee, loadProfile]);
+  }, [feePaymentExternalId, showWithdrawalFee, loadProfile]);
 
   // Validates form fields before showing the popup
   const handleConfirmClick = () => {
@@ -189,7 +189,7 @@ export default function Wallet() {
       });
 
       setFeePixCode(result.payment.pix_qrcode || '');
-      setFeePaymentId(result.payment.id);
+      setFeePaymentExternalId(result.payment.external_id);
       setShowWithdrawalFee(true);
       await loadProfile();
       toast.success("PIX da taxa gerado com sucesso!");

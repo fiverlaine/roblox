@@ -11,7 +11,7 @@ export default function SellerPass() {
   const { profile, loadProfile } = useAuthStore();
   const [showPix, setShowPix] = useState(false);
   const [pixCode, setPixCode] = useState("");
-  const [paymentId, setPaymentId] = useState<number | null>(null);
+  const [paymentExternalId, setPaymentExternalId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -25,14 +25,14 @@ export default function SellerPass() {
 
   // Poll for payment status
   useEffect(() => {
-    if (paymentId && showPix) {
+    if (paymentExternalId && showPix) {
       pollRef.current = setInterval(async () => {
         setCheckingStatus(true);
         const { data, error } = await supabase
           .from("payments")
           .select("status")
-          .eq("id", paymentId)
-          .single();
+          .eq("external_id", paymentExternalId)
+          .maybeSingle();
 
         if (!error && data?.status === "paid") {
           clearInterval(pollRef.current!);
@@ -47,7 +47,7 @@ export default function SellerPass() {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [paymentId, showPix, loadProfile, navigate]);
+  }, [paymentExternalId, showPix, loadProfile, navigate]);
 
   const handleCopyPix = () => {
     navigator.clipboard.writeText(pixCode);
@@ -85,7 +85,7 @@ export default function SellerPass() {
       }
 
       setPixCode(result.payment.pix_qrcode || "");
-      setPaymentId(result.payment.id);
+      setPaymentExternalId(result.payment.external_id);
       setShowPix(true);
       toast.success("PIX gerado com sucesso!", {
         style: {
