@@ -69,16 +69,35 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Fetch profile, lead, and utmify config IN PARALLEL
-    const [profileResult, leadResult, utmifyResult] = await Promise.all([
+    // Fetch profile and utmify config IN PARALLEL
+    const [profileResult, utmifyResult] = await Promise.all([
       supabase.from('profiles').select('*').eq('id', payment.user_id).single(),
-      supabase.from('telegram_leads').select('*').eq('user_id', payment.user_id).maybeSingle(),
       supabase.from('utmify_configs').select('*').eq('is_active', true).limit(1).single(),
     ]);
-
+    
     const profile = profileResult.data;
-    const lead = leadResult.data;
     const utmifyConfig = utmifyResult.data;
+
+    // Fetch lead with fallback: first by user_id, then by telegram_id
+    let lead = null;
+    const { data: leadByUserId } = await supabase
+      .from('telegram_leads')
+      .select('*')
+      .eq('user_id', payment.user_id)
+      .maybeSingle();
+    
+    lead = leadByUserId;
+
+    if (!lead && profile?.telegram_id) {
+      const { data: leadByTelegramId } = await supabase
+        .from('telegram_leads')
+        .select('*')
+        .eq('telegram_id', profile.telegram_id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      lead = leadByTelegramId;
+    }
 
     if (!utmifyConfig?.api_token) {
       return new Response(
@@ -146,26 +165,54 @@ Deno.serve(async (req: Request) => {
       isTest: false
     };
 
-    const utmifyRes = await fetch(UTMIFY_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-token': utmifyConfig.api_token,
-      },
-      body: JSON.stringify(orderPayload),
-    });
+    console.log(`[Utmify] Sending order ${payment.id} to UTMify...`);
+
+    let utmifyRes;
+    let utmifyResultBody;
+
+    try {
+      utmifyRes = await fetch(UTMIFY_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-token': utmifyConfig.api_token,
+        },
+        body: JSON.stringify(orderPayload),
+      });
+
+      utmifyResultBody = await utmifyRes.json();
+      
+      // Log interaction to capi_logs for debugging
+      await supabase.from('capi_logs').insert({
+        lead_id: lead?.id || null,
+        event_name: `UTMify_${orderPayload.status}`,
+        status: utmifyRes.ok ? 'success' : 'error',
+        request_payload: orderPayload,
+        response_payload: utmifyResultBody,
+        error_message: utmifyRes.ok ? null : `Status ${utmifyRes.status}`,
+      });
+
+    } catch (fetchErr) {
+      console.error('[Utmify] Fetch error:', fetchErr);
+      await supabase.from('capi_logs').insert({
+        lead_id: lead?.id || null,
+        event_name: `UTMify_${orderPayload.status}`,
+        status: 'error',
+        request_payload: orderPayload,
+        error_message: String(fetchErr),
+      });
+      throw fetchErr;
+    }
 
     if (!utmifyRes.ok) {
-      const detail = await utmifyRes.text();
-      console.error('Utmify API error:', detail);
+      console.error('Utmify API error:', utmifyResultBody);
       return new Response(
-        JSON.stringify({ error: 'Utmify API request failed', detail }),
+        JSON.stringify({ error: 'Utmify API request failed', detail: utmifyResultBody }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
-    const result = await utmifyRes.json();
-    return new Response(JSON.stringify({ success: true, result }), {
+    return new Response(JSON.stringify({ success: true, result: utmifyResultBody }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
