@@ -197,23 +197,22 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 5. Trigger UTMify fully in background (awaiting safely to guarantee execution in Edge Runtime)
+    // 5. Trigger UTMify in background - using waitUntil so the PIX response IS NOT blocked
+    // but the background task is guaranteed to finish even after response is sent.
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    try {
-      // Usamos await para que o runtime não mate a função antes de enviar
-      await fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${serviceKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ payment_id: payment.id }),
-      });
-    } catch (err) {
-      console.error('utmify-event failed:', err);
-    }
+    const utmifyPromise = fetch(`${supabaseUrl}/functions/v1/utmify-event`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ payment_id: payment.id }),
+    }).catch((err) => console.error('utmify-event background failed:', err));
+
+    // @ts-ignore: EdgeRuntime is available in Supabase environment
+    EdgeRuntime.waitUntil(utmifyPromise);
 
     return new Response(JSON.stringify({ payment }), {
       status: 200,
