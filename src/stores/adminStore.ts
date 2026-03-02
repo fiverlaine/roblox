@@ -65,7 +65,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
     try {
       const [usersRes, leadsRes, paymentsRes] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }).not('telegram_id', 'is', null),
+        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }).not('user_id', 'is', null).neq('user_id', ''),
         supabase.from('payments').select('amount, created_at, status'),
       ]);
 
@@ -114,7 +114,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
 
       const { data, error } = await query;
       if (error) throw error;
-      let leads = (data ?? []) as TelegramLead[];
+      let leads = (data ?? []).filter((l: any) => l.user_id !== null && l.user_id !== '') as TelegramLead[];
 
       // Fetch payments for these leads
       const userIds = leads.map((l) => l.user_id).filter(Boolean) as string[];
