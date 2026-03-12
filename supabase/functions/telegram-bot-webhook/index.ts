@@ -8,6 +8,8 @@ interface TelegramUpdate {
     from: { id: number; username?: string; first_name?: string; last_name?: string };
     text?: string;
     voice?: { file_id: string; duration: number };
+    audio?: { file_id: string; duration: number; file_name?: string };
+    document?: { file_id: string; file_name?: string; mime_type?: string };
     photo?: Array<{ file_id: string; width: number; height: number }>;
     video?: { file_id: string; duration: number };
     sticker?: { file_id: string };
@@ -416,12 +418,23 @@ async function handleAdmin(
   // If admin sends media, capture the file_id
   if (message.voice) {
     const fileId = message.voice.file_id;
-    await sendMessage(token, chatId, `🎤 <b>Voice file_id capturado:</b>\n\n<code>${fileId}</code>\n\nDuração: ${message.voice.duration}s`);
+    await sendMessage(token, chatId, `🎤 <b>Voice file_id capturado:</b>\n\n<code>${fileId}</code>\n\nDuração: ${message.voice.duration}s\n\n💡 Use com sendVoice (mensagem de voz)`);
+    return true;
+  }
+
+  if (message.audio) {
+    const fileId = message.audio.file_id;
+    await sendMessage(token, chatId, `🎵 <b>Audio file_id capturado:</b>\n\n<code>${fileId}</code>\n\nDuração: ${message.audio.duration}s\nArquivo: ${message.audio.file_name || 'N/A'}\n\n💡 Este file_id funciona com sendVoice também!`);
+    return true;
+  }
+
+  if (message.document) {
+    const fileId = message.document.file_id;
+    await sendMessage(token, chatId, `📄 <b>Document file_id capturado:</b>\n\n<code>${fileId}</code>\n\nArquivo: ${message.document.file_name || 'N/A'}\nMIME: ${message.document.mime_type || 'N/A'}\n\n💡 Para áudio .ogg, este file_id funciona com sendVoice!`);
     return true;
   }
 
   if (message.photo) {
-    // Get highest resolution photo
     const bestPhoto = message.photo[message.photo.length - 1];
     const fileId = bestPhoto.file_id;
     await sendMessage(token, chatId, `📸 <b>Photo file_id capturado:</b>\n\n<code>${fileId}</code>\n\nResolução: ${bestPhoto.width}x${bestPhoto.height}`);
