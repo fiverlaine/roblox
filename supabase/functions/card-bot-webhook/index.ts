@@ -92,6 +92,39 @@ async function sendMessage(
   });
 }
 
+async function sendPhoto(
+  token: string,
+  chatId: number,
+  photo: string,
+  caption?: string,
+  replyMarkup?: Record<string, unknown>
+): Promise<void> {
+  const body: Record<string, unknown> = {
+    chat_id: chatId,
+    photo,
+  };
+  if (caption) {
+    body.caption = caption;
+    body.parse_mode = 'HTML';
+  }
+  if (replyMarkup) {
+    body.reply_markup = replyMarkup;
+  }
+  await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
+async function deleteMessage(token: string, chatId: number, messageId: number): Promise<void> {
+  await fetch(`https://api.telegram.org/bot${token}/deleteMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, message_id: messageId }),
+  });
+}
+
 async function editMessage(
   token: string,
   chatId: number,
@@ -99,20 +132,10 @@ async function editMessage(
   text: string,
   replyMarkup?: Record<string, unknown>,
 ): Promise<void> {
-  const body: Record<string, unknown> = {
-    chat_id: chatId,
-    message_id: messageId,
-    text,
-    parse_mode: 'HTML',
-  };
-  if (replyMarkup) {
-    body.reply_markup = replyMarkup;
-  }
-  await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+  // Delete the old message safely (so we don't crash when switching from Photo to Text)
+  await deleteMessage(token, chatId, messageId);
+  // Send a new text message
+  await sendMessage(token, chatId, text, replyMarkup);
 }
 
 async function answerCallbackQuery(
@@ -216,11 +239,19 @@ async function incrementPurchaseCount(telegramId: number): Promise<void> {
   }
 }
 
-function showMainMenu(token: string, chatId: number): Promise<void> {
-  return sendMessage(
+function showMainMenu(token: string, chatId: number, messageIdToReplace?: number): Promise<void> {
+  if (messageIdToReplace) {
+    deleteMessage(token, chatId, messageIdToReplace).catch(() => {});
+  }
+
+  const menuText = `Seja bem-vindo a maior base de ccs do Brasil!\n\n💰 <b>Saldo Atual:</b> R$ 0.00\n🎫 <b>Compras Gratuitas:</b> 3\n📊 <b>Total de Cartões Comprados:</b> 0`;
+  const photoId = 'AgACAgEAAxkBAAIIrGmyKqhCqfXIBpnmcwSNRgRXrI0pAAIHDGsb_6OQRWwGkvK2vDpLAQADAgADeQADOgQ';
+
+  return sendPhoto(
     token,
     chatId,
-    '<b>Seja bem-vindo a maior base de ccs do Brasil!</b>\n\nEscolha uma opção abaixo:',
+    photoId,
+    menuText,
     {
       inline_keyboard: [
         [{ text: '💳 Compre Aqui', callback_data: 'buy_cards' }],
@@ -332,8 +363,13 @@ Deno.serve(async (req: Request) => {
     if (update.message?.text) {
       const text = update.message.text;
       const chatId = update.message.chat.id;
+      const firstName = update.message.from?.first_name || 'amigo';
 
       if (text.startsWith('/start')) {
+        const welcomeText = `🎉 <b>BEM-VINDO AO SEVEN STORE!</b> 🎉\n\nOlá, ${firstName}! 👋\n\n━━━━━━━━━━━━━━━━━━━━━━\n🎁 <b>BÔNUS DE BOAS-VINDAS</b>\n━━━━━━━━━━━━━━━━━━━━━━\n\n✨ Você ganhou <b>3 compras GRATUITAS</b> de cartões!\n\n⚠️ <b>Lembre-se:</b>\n- Compras gratuitas vêm com CPF e endereço ofuscados\n- Para dados completos, adicione saldo\n\n💡 <b>Aproveite seu bônus e boa sorte!</b> 🍀7️⃣`;
+        await sendMessage(token, chatId, welcomeText);
+        // Add a small delay for a better feeling
+        await new Promise(r => setTimeout(r, 500));
         await showMainMenu(token, chatId);
       }
 
@@ -352,19 +388,7 @@ Deno.serve(async (req: Request) => {
       await answerCallbackQuery(token, cbq.id);
 
       if (data === 'main_menu') {
-        await editMessage(
-          token,
-          chatId,
-          messageId,
-          '<b>Seja bem-vindo a maior base de ccs do Brasil!</b>\n\nEscolha uma opção abaixo:',
-          {
-            inline_keyboard: [
-              [{ text: '💳 Compre Aqui', callback_data: 'buy_cards' }],
-              [{ text: '💎 Adicione Saldo', callback_data: 'add_balance' }],
-              [{ text: '📁 Carteira', callback_data: 'wallet' }],
-            ],
-          },
-        );
+        await showMainMenu(token, chatId, messageId);
       } else if (data === 'buy_cards') {
         const remaining = await getFreePurchasesRemaining(
           cbq.from.id,
