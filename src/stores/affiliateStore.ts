@@ -8,11 +8,19 @@ interface LeadFilters {
   endDate?: string;
   paymentType?: string;
   qualification?: string;
+  utmSource?: string;
+}
+
+interface UtmStat {
+  utm: string;
+  botStarters: number;
+  groupJoiners: number;
 }
 
 interface AffiliateStats {
   botStarters: number;
   groupJoiners: number;
+  byUtm?: UtmStat[];
 }
 
 interface AffiliateState {
@@ -50,6 +58,7 @@ export const useAffiliateStore = create<AffiliateState>()((set, get) => ({
       if (filters?.endDate) query = query.lte('created_at', filters.endDate + 'T23:59:59');
       if (filters?.qualification === 'qualified') query = query.eq('status', 'qualified');
       if (filters?.qualification === 'new') query = query.eq('status', 'new');
+      if (filters?.utmSource && filters.utmSource !== '') query = query.eq('utm_source', filters.utmSource);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -80,17 +89,38 @@ export const useAffiliateStore = create<AffiliateState>()((set, get) => ({
         );
       }
 
-      // Fetch overall stats for the UI (Bot Starters & Group Joiners)
-      const [startersRes, joinersRes] = await Promise.all([
-        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }).in('utm_source', profile.affiliate_utms),
-        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }).in('utm_source', profile.affiliate_utms).eq('status', 'qualified')
-      ]);
+      // Fetch overall stats for the UI (Bot Starters & Group Joiners) respecting filters
+      let statsQuery = supabase.from('telegram_leads').select('utm_source, status').in('utm_source', profile.affiliate_utms);
+      
+      if (filters?.startDate) statsQuery = statsQuery.gte('created_at', filters.startDate);
+      if (filters?.endDate) statsQuery = statsQuery.lte('created_at', filters.endDate + 'T23:59:59');
+      if (filters?.utmSource && filters.utmSource !== '') statsQuery = statsQuery.eq('utm_source', filters.utmSource);
+
+      const { data: statsData } = await statsQuery;
+
+      const botStarters = statsData?.length || 0;
+      const groupJoiners = statsData?.filter(s => s.status === 'qualified').length || 0;
+
+      // Calculate by UTM
+      const byUtmMap = new Map<string, { starters: number, joiners: number }>();
+      (statsData || []).forEach(row => {
+        const utm = row.utm_source || 'Desconhecida';
+        if (!byUtmMap.has(utm)) byUtmMap.set(utm, { starters: 0, joiners: 0 });
+        const obj = byUtmMap.get(utm)!;
+        obj.starters++;
+        if (row.status === 'qualified') obj.joiners++;
+      });
+      
+      const byUtm = Array.from(byUtmMap.entries())
+        .map(([utm, counts]) => ({ utm, botStarters: counts.starters, groupJoiners: counts.joiners }))
+        .sort((a, b) => b.botStarters - a.botStarters);
 
       set({ 
         leads, 
         stats: { 
-          botStarters: startersRes.count ?? 0, 
-          groupJoiners: joinersRes.count ?? 0 
+          botStarters, 
+          groupJoiners,
+          byUtm
         } 
       });
     } finally {

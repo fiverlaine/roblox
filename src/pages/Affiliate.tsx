@@ -25,6 +25,7 @@ export default function Affiliate() {
     endDate: '',
     paymentType: '',
     qualification: '',
+    utmSource: '',
   });
 
   useEffect(() => {
@@ -55,11 +56,12 @@ export default function Affiliate() {
       endDate: filters.endDate || undefined,
       paymentType: filters.paymentType || undefined,
       qualification: filters.qualification || undefined,
+      utmSource: filters.utmSource || undefined,
     });
   };
 
   const handleClearFilters = () => {
-    setFilters({ startDate: '', endDate: '', paymentType: '', qualification: '' });
+    setFilters({ startDate: '', endDate: '', paymentType: '', qualification: '', utmSource: '' });
     fetchLeads();
   };
 
@@ -81,6 +83,16 @@ export default function Affiliate() {
     {
       label: 'Iniciaram Bot',
       value: stats?.botStarters?.toLocaleString('pt-BR') || '0',
+      subtitle: stats?.byUtm && stats.byUtm.length > 0 && !filters.utmSource && profile.affiliate_utms.length > 1 ? (
+        <div className="mt-3 space-y-1.5 w-full">
+          {stats.byUtm.map(u => (
+            <div key={u.utm} className="flex justify-between items-center text-[10px] text-text-secondary font-medium">
+              <span className="truncate mr-2 px-1.5 py-0.5 bg-background-secondary rounded text-text-primary/70">{u.utm}</span>
+              <span className="text-text-primary font-bold">{u.botStarters}</span>
+            </div>
+          ))}
+        </div>
+      ) : null,
       icon: MessageSquare,
       color: 'text-indigo-400',
       bg: 'bg-indigo-500/10',
@@ -88,6 +100,16 @@ export default function Affiliate() {
     {
       label: 'Entraram Grupo',
       value: stats?.groupJoiners?.toLocaleString('pt-BR') || '0',
+      subtitle: stats?.byUtm && stats.byUtm.length > 0 && !filters.utmSource && profile.affiliate_utms.length > 1 ? (
+        <div className="mt-3 space-y-1.5 w-full">
+          {stats.byUtm.map(u => (
+            <div key={u.utm} className="flex justify-between items-center text-[10px] text-text-secondary font-medium">
+              <span className="truncate mr-2 px-1.5 py-0.5 bg-background-secondary rounded text-text-primary/70">{u.utm}</span>
+              <span className="text-text-primary font-bold">{u.groupJoiners}</span>
+            </div>
+          ))}
+        </div>
+      ) : null,
       icon: UserPlus,
       color: 'text-sky-400',
       bg: 'bg-sky-500/10',
@@ -116,7 +138,7 @@ export default function Affiliate() {
   ];
 
   return (
-    <div className="p-[15px] space-y-6 pt-4">
+    <div className="space-y-6 pt-4" style={{ margin: '15px' }}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -154,15 +176,22 @@ export default function Affiliate() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="bg-background-primary rounded-2xl p-6 border border-ui-divider flex items-center justify-between group hover:border-brand-primary/30 transition-all shadow-sm"
+            className="bg-background-primary rounded-2xl p-6 border border-ui-divider flex flex-col justify-start group hover:border-brand-primary/30 transition-all shadow-sm h-full"
           >
-            <div>
-              <p className="text-xs font-semibold text-text-secondary uppercase tracking-widest mb-2">{m.label}</p>
-              <p className="text-3xl font-bold text-text-primary tracking-tight">{m.value}</p>
+            <div className="flex items-start justify-between w-full">
+              <div>
+                <p className="text-xs font-semibold text-text-secondary uppercase tracking-widest mb-2">{m.label}</p>
+                <p className="text-3xl font-bold text-text-primary tracking-tight">{m.value}</p>
+              </div>
+              <div className={`w-14 h-14 rounded-2xl ${m.bg} flex items-center justify-center transition-transform group-hover:scale-110 shrink-0`}>
+                <m.icon className={`w-7 h-7 ${m.color}`} />
+              </div>
             </div>
-            <div className={`w-14 h-14 rounded-2xl ${m.bg} flex items-center justify-center transition-transform group-hover:scale-110`}>
-              <m.icon className={`w-7 h-7 ${m.color}`} />
-            </div>
+            {m.subtitle && (
+              <div className="mt-auto pt-4 border-t border-ui-divider/50 w-full">
+                {m.subtitle}
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
@@ -191,7 +220,18 @@ export default function Affiliate() {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div>
+            <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">UTM</label>
+            <select
+              value={filters.utmSource}
+              onChange={(e) => setFilters((p) => ({ ...p, utmSource: e.target.value }))}
+              className="w-full bg-background-secondary border border-ui-divider rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-brand-primary/50 transition-all appearance-none cursor-pointer"
+            >
+              <option value="">Todas UTMs</option>
+              {profile.affiliate_utms.map(u => <option key={u} value={u}>{u}</option>)}
+            </select>
+          </div>
           <div>
             <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Data Inicial</label>
             <input
