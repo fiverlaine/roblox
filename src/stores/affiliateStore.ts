@@ -35,6 +35,7 @@ export const useAffiliateStore = create<AffiliateState>()((set, get) => ({
         .from('telegram_leads')
         .select('*, profile:profiles(*)')
         .not('telegram_id', 'is', null)
+        .not('user_id', 'is', null)
         .in('utm_source', profile.affiliate_utms)
         .order('created_at', { ascending: false });
 
@@ -45,7 +46,7 @@ export const useAffiliateStore = create<AffiliateState>()((set, get) => ({
 
       const { data, error } = await query;
       if (error) throw error;
-      let leads = (data ?? []) as TelegramLead[];
+      let leads = (data ?? []).filter((l: any) => l.user_id !== null && l.user_id !== '') as TelegramLead[];
 
       // Fetch payments for these leads
       const userIds = leads.map((l) => l.user_id).filter(Boolean) as string[];
