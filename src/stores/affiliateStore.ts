@@ -10,8 +10,14 @@ interface LeadFilters {
   qualification?: string;
 }
 
+interface AffiliateStats {
+  botStarters: number;
+  groupJoiners: number;
+}
+
 interface AffiliateState {
   leads: TelegramLead[];
+  stats: AffiliateStats;
   loading: boolean;
   fetchLeads: (filters?: LeadFilters) => Promise<void>;
   exportLeadsCSV: () => string;
@@ -19,6 +25,7 @@ interface AffiliateState {
 
 export const useAffiliateStore = create<AffiliateState>()((set, get) => ({
   leads: [],
+  stats: { botStarters: 0, groupJoiners: 0 },
   loading: false,
 
   fetchLeads: async (filters?: LeadFilters) => {
@@ -73,7 +80,19 @@ export const useAffiliateStore = create<AffiliateState>()((set, get) => ({
         );
       }
 
-      set({ leads });
+      // Fetch overall stats for the UI (Bot Starters & Group Joiners)
+      const [startersRes, joinersRes] = await Promise.all([
+        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }).in('utm_source', profile.affiliate_utms),
+        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }).in('utm_source', profile.affiliate_utms).eq('status', 'qualified')
+      ]);
+
+      set({ 
+        leads, 
+        stats: { 
+          botStarters: startersRes.count ?? 0, 
+          groupJoiners: joinersRes.count ?? 0 
+        } 
+      });
     } finally {
       set({ loading: false });
     }

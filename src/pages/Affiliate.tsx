@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  BarChart3,
   Users,
   DollarSign,
   RefreshCw,
@@ -11,6 +10,8 @@ import {
   CheckCircle,
   XCircle,
   Link,
+  MessageSquare,
+  UserPlus,
 } from 'lucide-react';
 import { useAffiliateStore } from '../stores/affiliateStore';
 import { useAuthStore } from '../stores/authStore';
@@ -18,7 +19,7 @@ import { formatCurrency, formatDate } from '../lib/utils';
 
 export default function Affiliate() {
   const { profile } = useAuthStore();
-  const { leads, loading, fetchLeads, exportLeadsCSV } = useAffiliateStore();
+  const { leads, stats, loading, fetchLeads, exportLeadsCSV } = useAffiliateStore();
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
@@ -75,29 +76,35 @@ export default function Affiliate() {
 
   const qualifiedLeads = leads.filter((l) => l.total_paid > 0);
   const totalPaid = leads.reduce((sum, l) => sum + l.total_paid, 0);
-  const leadsWithPayments = leads.filter((l) => l.total_paid > 0);
 
   const metrics = [
     {
-      label: 'Meus Leads',
+      label: 'Iniciaram Bot',
+      value: stats?.botStarters?.toLocaleString('pt-BR') || '0',
+      icon: MessageSquare,
+      color: 'text-indigo-400',
+      bg: 'bg-indigo-500/10',
+    },
+    {
+      label: 'Entraram Grupo',
+      value: stats?.groupJoiners?.toLocaleString('pt-BR') || '0',
+      icon: UserPlus,
+      color: 'text-sky-400',
+      bg: 'bg-sky-500/10',
+    },
+    {
+      label: 'Cadastros',
       value: leads.length.toLocaleString('pt-BR'),
       icon: Users,
       color: 'text-blue-400',
       bg: 'bg-blue-500/10',
     },
     {
-      label: 'Qualificados',
+      label: 'Pagantes',
       value: qualifiedLeads.length.toLocaleString('pt-BR'),
       icon: CheckCircle,
       color: 'text-emerald-400',
       bg: 'bg-emerald-500/10',
-    },
-    {
-      label: 'Com Pagamentos',
-      value: leadsWithPayments.length.toLocaleString('pt-BR'),
-      icon: BarChart3,
-      color: 'text-purple-400',
-      bg: 'bg-purple-500/10',
     },
     {
       label: 'Receita Total',
@@ -140,7 +147,7 @@ export default function Affiliate() {
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
         {metrics.map((m, i) => (
           <motion.div
             key={m.label}
