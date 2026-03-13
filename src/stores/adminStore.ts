@@ -42,6 +42,7 @@ interface AdminState {
   saveBotConfig: (config: Partial<BotConfig> & { id?: number }) => Promise<void>;
   fetchUtmifyConfig: () => Promise<void>;
   saveUtmifyConfig: (config: Partial<UtmifyConfig> & { id?: number }) => Promise<void>;
+  updateUser: (id: string, data: Partial<Profile>) => Promise<void>;
   exportLeadsCSV: () => string;
 }
 
@@ -268,6 +269,24 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
         if (error) throw error;
       }
       await get().fetchUtmifyConfig();
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  updateUser: async (id: string, data: Partial<Profile>) => {
+    set({ loading: true });
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update(data)
+        .eq('id', id);
+      if (error) throw error;
+      
+      const { users } = get();
+      set({
+        users: users.map(u => u.id === id ? { ...u, ...data } : u)
+      });
     } finally {
       set({ loading: false });
     }

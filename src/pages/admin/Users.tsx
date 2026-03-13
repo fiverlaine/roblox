@@ -4,14 +4,35 @@ import { Users as UsersIcon, Search, RefreshCw, CheckCircle, XCircle } from 'luc
 import AdminLayout from '../../components/layout/AdminLayout';
 import { useAdminStore } from '../../stores/adminStore';
 import { formatCurrency, formatRobux, formatDate } from '../../lib/utils';
+import type { Profile } from '../../lib/types';
+import toast from 'react-hot-toast';
 
 export default function Users() {
-  const { users, loading, fetchUsers } = useAdminStore();
+  const { users, loading, fetchUsers, updateUser } = useAdminStore();
   const [search, setSearch] = useState('');
+  
+  // Modal states
+  const [editingUser, setEditingUser] = useState<Profile | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [newUtm, setNewUtm] = useState('');
+  const [affiliateSettings, setAffiliateSettings] = useState({
+    is_affiliate: false,
+    affiliate_utms: [] as string[]
+  });
 
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  useEffect(() => {
+    if (editingUser) {
+      setAffiliateSettings({
+        is_affiliate: editingUser.is_affiliate || false,
+        affiliate_utms: editingUser.affiliate_utms || []
+      });
+      setNewUtm('');
+    }
+  }, [editingUser]);
 
   const handleSearch = () => {
     fetchUsers(search || undefined);
@@ -19,6 +40,48 @@ export default function Users() {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleSearch();
+  };
+
+  const handleAddUtm = () => {
+    if (!newUtm.trim()) return;
+    
+    // Suportar utms separadas por vírgula
+    const utmsToAdd = newUtm.split(',')
+      .map(u => u.trim())
+      .filter(u => u.length > 0 && !affiliateSettings.affiliate_utms.includes(u));
+      
+    if (utmsToAdd.length > 0) {
+      setAffiliateSettings(s => ({
+        ...s,
+        affiliate_utms: [...s.affiliate_utms, ...utmsToAdd]
+      }));
+    }
+    setNewUtm('');
+  };
+
+  const handleRemoveUtm = (index: number) => {
+    setAffiliateSettings(s => ({
+      ...s,
+      affiliate_utms: s.affiliate_utms.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSaveUser = async () => {
+    if (!editingUser) return;
+    setSaving(true);
+    try {
+      await updateUser(editingUser.id, {
+        is_affiliate: affiliateSettings.is_affiliate,
+        affiliate_utms: affiliateSettings.is_affiliate ? affiliateSettings.affiliate_utms : []
+      });
+      toast.success('Configurações de afiliado salvas com sucesso!');
+      setEditingUser(null);
+    } catch (error) {
+      toast.error('Erro ao salvar as configurações.');
+      console.error(error);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -153,6 +216,14 @@ export default function Users() {
                           {formatDate(user.created_at)}
                         </p>
                       </td>
+                      <td className="py-4 px-6 text-right">
+                        <button
+                          onClick={() => setEditingUser(user)}
+                          className="px-3 py-1.5 rounded bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20 text-xs font-medium transition-colors border border-brand-primary/20"
+                        >
+                          Configurar
+                        </button>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -161,6 +232,97 @@ export default function Users() {
           </div>
         </motion.div>
       </div>
+
+      {/* Edit Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-[#1f2937] rounded-2xl w-full max-w-md border border-gray-700/50 shadow-2xl overflow-hidden"
+          >
+            <div className="p-6 border-b border-gray-700/50">
+              <h3 className="text-xl font-bold text-white">Configurar Usuário</h3>
+              <p className="text-sm text-gray-400 mt-1">{editingUser.full_name}</p>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium text-white">Aprovar como Afiliado</h4>
+                  <p className="text-xs text-gray-400">Permite que o usuário acesse o painel /affiliate</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={affiliateSettings.is_affiliate}
+                    onChange={(e) => setAffiliateSettings(s => ({ ...s, is_affiliate: e.target.checked }))}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-primary"></div>
+                </label>
+              </div>
+
+              {affiliateSettings.is_affiliate && (
+                <div className="space-y-3">
+                  <label className="text-sm font-medium text-white block">UTMs Aprovadas</label>
+                  <p className="text-xs text-gray-400">Adicione as UTMs (ex: tiktok-fp, insta-bio) separadas por vírgula ou uma por linha usando Enter.</p>
+                  
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newUtm}
+                      onChange={(e) => setNewUtm(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleAddUtm();
+                      }}
+                      placeholder="Nova UTM..."
+                      className="flex-1 bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white text-sm focus:border-brand-primary focus:outline-none"
+                    />
+                    <button
+                      onClick={handleAddUtm}
+                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm transition-colors"
+                    >
+                      Adicionar
+                    </button>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {affiliateSettings.affiliate_utms.map((utm, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-brand-primary/10 text-brand-primary text-xs font-mono border border-brand-primary/20">
+                        {utm}
+                        <button onClick={() => handleRemoveUtm(idx)} className="hover:text-red-400 transition-colors">
+                          <XCircle className="w-3.5 h-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                    {affiliateSettings.affiliate_utms.length === 0 && (
+                      <span className="text-gray-500 text-xs italic">Nenhuma UTM configurada</span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-gray-700/50 flex justify-end gap-3 bg-[#1a2332]">
+              <button
+                onClick={() => setEditingUser(null)}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveUser}
+                disabled={saving}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-brand-primary text-white hover:bg-brand-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {saving && <RefreshCw className="w-4 h-4 animate-spin" />}
+                Salvar Configurações
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </AdminLayout>
   );
 }

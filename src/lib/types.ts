@@ -13,6 +13,8 @@ export interface Profile {
   role: 'user' | 'admin'
   city: string | null
   state: string | null
+  is_affiliate: boolean
+  affiliate_utms: string[]
   created_at: string
   updated_at: string
 }

@@ -22,6 +22,7 @@ import SellerPass from './pages/SellerPass'
 import Wallet from './pages/Wallet'
 import RobloxAccount from './pages/RobloxAccount'
 import Support from './pages/Support'
+import Affiliate from './pages/Affiliate'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, initialized } = useAuthStore()
@@ -70,6 +71,7 @@ export default function App() {
           <Route path="carteira" element={<Wallet />} />
           <Route path="conta-roblox" element={<RobloxAccount />} />
           <Route path="suporte" element={<Support />} />
+          <Route path="affiliate" element={<Affiliate />} />
         </Route>
 
         <Route path="/admin" element={<AdminRoute><Dashboard /></AdminRoute>} />
