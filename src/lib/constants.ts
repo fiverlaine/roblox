@@ -27,7 +27,6 @@ export const SIDEBAR_ITEMS = [
   { path: '/comprar-robux', label: 'Comprar Robux', icon: 'Coins' },
   { path: '/carteira', label: 'Carteira', icon: 'Wallet' },
   { path: '/conta-roblox', label: 'Conta Roblox', icon: 'Gamepad2' },
-  { path: '/affiliate', label: 'Afiliados', icon: 'Link' },
   { path: '/suporte', label: 'Suporte', icon: 'HelpCircle' },
 ] as const;
 

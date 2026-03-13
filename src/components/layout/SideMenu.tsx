@@ -19,7 +19,6 @@ import {
   Webhook,
   RefreshCw,
   Award,
-  Link,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
@@ -42,7 +41,6 @@ const ICON_MAP: Record<string, LucideIcon> = {
   BarChart3,
   Webhook,
   RefreshCw,
-  Link,
 };
 
 interface SideMenuProps {
