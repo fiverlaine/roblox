@@ -98,7 +98,7 @@ async function sendPhoto(
   photo: string,
   caption?: string,
   replyMarkup?: Record<string, unknown>
-): Promise<void> {
+): Promise<boolean> {
   const body: Record<string, unknown> = {
     chat_id: chatId,
     photo,
@@ -110,11 +110,22 @@ async function sendPhoto(
   if (replyMarkup) {
     body.reply_markup = replyMarkup;
   }
-  await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      console.error('Failed to send photo:', data);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Error sending photo:', err);
+    return false;
+  }
 }
 
 async function deleteMessage(token: string, chatId: number, messageId: number): Promise<void> {
@@ -239,7 +250,7 @@ async function incrementPurchaseCount(telegramId: number): Promise<void> {
   }
 }
 
-function showMainMenu(token: string, chatId: number, messageIdToReplace?: number): Promise<void> {
+async function showMainMenu(token: string, chatId: number, messageIdToReplace?: number): Promise<void> {
   if (messageIdToReplace) {
     deleteMessage(token, chatId, messageIdToReplace).catch(() => {});
   }
@@ -247,19 +258,19 @@ function showMainMenu(token: string, chatId: number, messageIdToReplace?: number
   const menuText = `Seja bem-vindo a maior base de ccs do Brasil!\n\n💰 <b>Saldo Atual:</b> R$ 0.00\n🎫 <b>Compras Gratuitas:</b> 3\n📊 <b>Total de Cartões Comprados:</b> 0`;
   const photoId = 'AgACAgEAAxkBAAIIrGmyKqhCqfXIBpnmcwSNRgRXrI0pAAIHDGsb_6OQRWwGkvK2vDpLAQADAgADeQADOgQ';
 
-  return sendPhoto(
-    token,
-    chatId,
-    photoId,
-    menuText,
-    {
-      inline_keyboard: [
-        [{ text: '💳 Compre Aqui', callback_data: 'buy_cards' }],
-        [{ text: '💎 Adicione Saldo', callback_data: 'add_balance' }],
-        [{ text: '📁 Carteira', callback_data: 'wallet' }],
-      ],
-    },
-  );
+  const replyMarkup = {
+    inline_keyboard: [
+      [{ text: '💳 Compre Aqui', callback_data: 'buy_cards' }],
+      [{ text: '💎 Adicione Saldo', callback_data: 'add_balance' }],
+      [{ text: '📁 Carteira', callback_data: 'wallet' }],
+    ],
+  };
+
+  const success = await sendPhoto(token, chatId, photoId, menuText, replyMarkup);
+  if (!success) {
+    // Fallback to text message if photo fails (e.g. invalid file_id)
+    await sendMessage(token, chatId, menuText, replyMarkup);
+  }
 }
 
 async function showCardTypes(
