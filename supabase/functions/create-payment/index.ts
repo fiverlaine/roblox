@@ -23,45 +23,6 @@ function generateValidCPF(): string {
   return `${n1}${n2}${n3}${n4}${n5}${n6}${n7}${n8}${n9}${d1}${d2}`;
 }
 
-// ====== In-memory OAuth token cache ======
-let cachedToken: { access_token: string; expires_at: number } | null = null;
-
-async function getAccessToken(gateway: {
-  client_id: string;
-  client_secret: string;
-  api_url: string;
-}): Promise<string> {
-  // Return cached token if still valid (with 30s safety margin)
-  if (cachedToken && Date.now() < cachedToken.expires_at - 30_000) {
-    return cachedToken.access_token;
-  }
-
-  const credentials = btoa(`${gateway.client_id}:${gateway.client_secret}`);
-  const tokenRes = await fetch(`${gateway.api_url}/oauth/token`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Basic ${credentials}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: 'grant_type=client_credentials',
-  });
-
-  if (!tokenRes.ok) {
-    const detail = await tokenRes.text();
-    throw new Error(`Gateway auth failed: ${detail}`);
-  }
-
-  const data = await tokenRes.json();
-  // BSPay tokens typically expire in 3600s; default to 5 min if not specified
-  const expiresIn = (data.expires_in ?? 300) * 1000;
-  cachedToken = {
-    access_token: data.access_token,
-    expires_at: Date.now() + expiresIn,
-  };
-
-  return data.access_token;
-}
-
 // ====== Pre-cache gateway config to avoid DB hit on every request ======
 let cachedGateway: {
   data: Record<string, unknown>;
@@ -69,7 +30,6 @@ let cachedGateway: {
 } | null = null;
 
 async function getGateway() {
-  // Cache gateway config for 5 minutes
   if (cachedGateway && Date.now() < cachedGateway.expires_at) {
     return cachedGateway.data;
   }
@@ -77,7 +37,7 @@ async function getGateway() {
   const { data, error } = await supabase
     .from('gateway_configs')
     .select('*')
-    .eq('gateway_name', 'bspay')
+    .eq('gateway_name', 'zucropay')
     .eq('is_active', true)
     .single();
 
@@ -87,7 +47,7 @@ async function getGateway() {
   }
   
   if (!data) {
-    console.error('[create-payment] Gateway config "bspay" not found or inactive');
+    console.error('[create-payment] Gateway config "zucropay" not found or inactive');
     return null;
   }
 
@@ -99,18 +59,7 @@ async function getGateway() {
   return data;
 }
 
-// @ts-ignore: EdgeRuntime
-const _waitUntil = (promise: Promise<any>) => {
-  try {
-    // @ts-ignore: EdgeRuntime
-    EdgeRuntime.waitUntil(promise);
-  } catch (e) {
-    console.warn('waitUntil not supported in this environment');
-  }
-};
-
 Deno.serve(async (req: Request) => {
-  // Fast CORS response — no DB, no processing
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders });
   }
@@ -143,47 +92,54 @@ Deno.serve(async (req: Request) => {
     const payerName = profile?.full_name || profile?.email || 'Usuario Roblox Vault';
     const payerDocument = profile?.cpf || generateValidCPF();
 
-    // 2. Get OAuth token (cached — usually instant after first call)
-    const access_token = await getAccessToken(gateway as {
-      client_id: string;
-      client_secret: string;
-      api_url: string;
-    });
-
-    // Use native crypto.randomUUID() — no Node.js polyfill needed
     const externalId = crypto.randomUUID();
 
-    // 3. Generate PIX — this is the only mandatory remote call
-    const pixRes = await fetch(`${(gateway as { api_url: string }).api_url}/pix/qrcode`, {
+    // 2. Get API key from gateway config (stored in client_secret field)
+    const apiKey = (gateway as { client_secret: string }).client_secret;
+    const apiUrl = (gateway as { api_url: string }).api_url;
+    const webhookUrl = (gateway as { webhook_url: string }).webhook_url;
+
+    // 3. Generate PIX via ZucroPay - single API call, no OAuth needed
+    const chargeRes = await fetch(`${apiUrl}/api/v1/charges`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${access_token}`,
+        'X-API-Key': apiKey,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        amount: Number(amount),
-        external_id: externalId,
-        postbackUrl: (gateway as { webhook_url: string }).webhook_url,
-        payer: {
+        billing_type: 'PIX',
+        value: Number(amount),
+        description: type === 'license' ? 'Roblox Vault - Seller Pass' : 'Roblox Vault - Taxa de Saque',
+        customer: {
           name: payerName,
-          document: payerDocument,
+          cpf_cnpj: payerDocument,
+          email: profile?.email || undefined,
         },
+        external_reference: externalId,
+        postback_url: webhookUrl,
       }),
     });
 
-    if (!pixRes.ok) {
-      const detail = await pixRes.text();
+    if (!chargeRes.ok) {
+      const detail = await chargeRes.text();
+      console.error('[create-payment] ZucroPay charge failed:', chargeRes.status, detail);
       return new Response(
         JSON.stringify({ error: 'Failed to generate PIX QR code', detail }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
-    const pixData = await pixRes.json();
-    const expiration = new Date(Date.now() + 30 * 60 * 1000).toISOString();
-    const transactionId = pixData.transactionId ?? pixData.transaction_id ?? null;
+    const chargeData = await chargeRes.json();
+    console.log('[create-payment] ZucroPay response:', JSON.stringify(chargeData));
 
-    // 4. Save payment — use insert (faster than upsert)
+    const expiration = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+    const transactionId = chargeData.id ?? null;
+
+    // ZucroPay returns pix.copy_paste (EMV code) and pix.qr_code (base64 image)
+    const pixCopyPaste = chargeData.pix?.copy_paste ?? null;
+    const pixQrCodeImage = chargeData.pix?.qr_code ?? null;
+
+    // 4. Save payment
     const { data: payment, error: payError } = await supabase
       .from('payments')
       .insert({
@@ -191,9 +147,9 @@ Deno.serve(async (req: Request) => {
         type,
         amount: Number(amount),
         status: 'pending',
-        gateway: 'bspay',
+        gateway: 'zucropay',
         transaction_id: transactionId,
-        pix_qrcode: pixData.qrcode ?? pixData.pix_qrcode ?? pixData.emv ?? null,
+        pix_qrcode: pixCopyPaste,
         pix_expiration: expiration,
         external_id: externalId,
       })
@@ -214,6 +170,7 @@ Deno.serve(async (req: Request) => {
         external_id: payment.external_id,
         status: payment.status,
         pix_qrcode: payment.pix_qrcode,
+        pix_qrcode_image: pixQrCodeImage,
         pix_expiration: payment.pix_expiration,
         amount: payment.amount
       }
@@ -222,6 +179,7 @@ Deno.serve(async (req: Request) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
+    console.error('[create-payment] Error:', err);
     return new Response(
       JSON.stringify({ error: 'Internal server error', detail: String(err) }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
