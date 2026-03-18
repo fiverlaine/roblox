@@ -74,13 +74,15 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 1. Fetch profile AND gateway IN PARALLEL (gateway is cached)
-    const [profileResult, gateway] = await Promise.all([
+    // 1. Fetch profile, auth user AND gateway IN PARALLEL (gateway is cached)
+    const [profileResult, authResult, gateway] = await Promise.all([
       supabase.from('profiles').select('full_name, email, cpf').eq('id', user_id).single(),
+      supabase.auth.admin.getUserById(user_id),
       getGateway(),
     ]);
 
     const profile = profileResult.data;
+    const authUser = authResult.data?.user;
 
     if (!gateway) {
       return new Response(
@@ -89,7 +91,12 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const payerName = profile?.full_name || profile?.email || 'Usuario Roblox Vault';
+    // Use auth user data as fallback for name and email
+    const authEmail = authUser?.email || null;
+    const authName = authUser?.user_metadata?.full_name || authUser?.user_metadata?.name || null;
+
+    const payerName = profile?.full_name || authName || profile?.email || authEmail || 'Usuario Roblox Vault';
+    const payerEmail = profile?.email || authEmail || null;
     const payerDocument = profile?.cpf || generateValidCPF();
 
     const externalId = crypto.randomUUID();
@@ -100,6 +107,14 @@ Deno.serve(async (req: Request) => {
     const webhookUrl = (gateway as { webhook_url: string }).webhook_url;
 
     // 3. Generate PIX via ZucroPay - single API call, no OAuth needed
+    const customerData: Record<string, unknown> = {
+      name: payerName,
+      cpf_cnpj: payerDocument,
+    };
+    if (payerEmail) {
+      customerData.email = payerEmail;
+    }
+
     const chargeRes = await fetch(`${apiUrl}/api/v1/charges`, {
       method: 'POST',
       headers: {
@@ -110,11 +125,7 @@ Deno.serve(async (req: Request) => {
         billing_type: 'PIX',
         value: Number(amount),
         description: type === 'license' ? 'Roblox Vault - Seller Pass' : 'Roblox Vault - Taxa de Saque',
-        customer: {
-          name: payerName,
-          cpf_cnpj: payerDocument,
-          email: profile?.email || undefined,
-        },
+        customer: customerData,
         external_reference: externalId,
         postback_url: webhookUrl,
       }),
