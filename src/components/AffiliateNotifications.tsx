@@ -46,9 +46,9 @@ const DEFAULT_CONFIG: Omit<NotificationConfig, 'user_id'> = {
   custom_title_new_lead: 'Novo Lead! 🎯',
   custom_text_new_lead: 'Um novo lead acabou de entrar no grupo.',
   custom_title_sale_pending: 'Venda pendente! ⏳',
-  custom_text_sale_pending: 'Seu lead gerou um PIX pendente.',
+  custom_text_sale_pending: 'Valor: {valor}',
   custom_title_sale_approved: 'Venda aprovada! 💰',
-  custom_text_sale_approved: 'Pagamento confirmado!',
+  custom_text_sale_approved: 'Valor: {valor}',
   is_active: false,
 };
 
@@ -224,6 +224,24 @@ export default function AffiliateNotifications() {
   };
 
   // --- Preview helpers ---
+  const PREVIEW_VALUES: Record<string, string> = {
+    valor: 'R$ 99,90',
+    nome: 'João Silva',
+    utm: 'tiktok',
+  };
+
+  const renderPreviewText = (template: string) => {
+    // Split by placeholders and render with highlight color
+    const parts = template.split(/(\{\w+\})/);
+    return parts.map((part, i) => {
+      const match = part.match(/^\{(\w+)\}$/);
+      if (match && PREVIEW_VALUES[match[1]]) {
+        return <span key={i} style={{ color: '#a78bfa', fontWeight: 500 }}>{PREVIEW_VALUES[match[1]]}</span>;
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
+
   const getPreviewTitle = () => {
     if (!config) return '';
     switch (previewType) {
@@ -468,6 +486,16 @@ export default function AffiliateNotifications() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden space-y-5"
                   >
+                    {/* Placeholder hint */}
+                    <div className="p-3 rounded-lg bg-violet-500/5 border border-violet-500/10">
+                      <p className="text-[11px] text-text-secondary">
+                        <span className="font-bold text-violet-400">Variáveis disponíveis:</span>{' '}
+                        <code className="px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 text-[11px] font-mono">{'{valor}'}</code> = valor em R${' · '}
+                        <code className="px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 text-[11px] font-mono">{'{nome}'}</code> = nome do lead{' · '}
+                        <code className="px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 text-[11px] font-mono">{'{utm}'}</code> = utm source
+                      </p>
+                    </div>
+
                     {/* New Lead */}
                     <div className="p-4 rounded-xl bg-sky-500/5 border border-sky-500/10 space-y-3">
                       <p className="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -487,6 +515,7 @@ export default function AffiliateNotifications() {
                           <input
                             value={config.custom_text_new_lead}
                             onChange={(e) => updateField('custom_text_new_lead', e.target.value)}
+                            placeholder="Nome: {nome}"
                             className="w-full bg-background-secondary border border-ui-divider rounded-lg py-2.5 px-3 text-text-primary text-sm focus:outline-none focus:border-sky-500/50"
                           />
                         </div>
@@ -512,6 +541,7 @@ export default function AffiliateNotifications() {
                           <input
                             value={config.custom_text_sale_pending}
                             onChange={(e) => updateField('custom_text_sale_pending', e.target.value)}
+                            placeholder="Valor: {valor}"
                             className="w-full bg-background-secondary border border-ui-divider rounded-lg py-2.5 px-3 text-text-primary text-sm focus:outline-none focus:border-amber-500/50"
                           />
                         </div>
@@ -537,6 +567,7 @@ export default function AffiliateNotifications() {
                           <input
                             value={config.custom_text_sale_approved}
                             onChange={(e) => updateField('custom_text_sale_approved', e.target.value)}
+                            placeholder="Valor: {valor}"
                             className="w-full bg-background-secondary border border-ui-divider rounded-lg py-2.5 px-3 text-text-primary text-sm focus:outline-none focus:border-emerald-500/50"
                           />
                         </div>
@@ -611,34 +642,36 @@ export default function AffiliateNotifications() {
                           <path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44a1 1 0 0 1-.99.01l-7.9-4.44A1 1 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44a1 1 0 0 1 .99-.01l7.9 4.44c.32.18.53.51.53.88v9z" />
                         </svg>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', overflow: 'hidden' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflow: 'hidden' }}>
                         <span
                           style={{
                             fontSize: '13px',
                             color: '#eee',
                             fontWeight: 700,
                             lineHeight: 1.3,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
                           }}
                         >
-                          {getPreviewTitle() || 'Título da notificação'}
+                          {getPreviewTitle() || 'Título'}
                         </span>
                         <span
                           style={{
                             fontSize: '12px',
-                            color: '#eee',
+                            color: '#ccc',
                             fontWeight: 300,
-                            opacity: 0.8,
-                            lineHeight: 1.3,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
+                            lineHeight: 1.4,
                           }}
                         >
-                          {getPreviewText() || 'Descrição da notificação'}
-                          {previewType === 'sale_approved' && ' Valor: R\u00a099,90'}
+                          {renderPreviewText(getPreviewText() || 'Descrição')}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            color: '#999',
+                            fontWeight: 300,
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          UTM: {PREVIEW_VALUES.utm}
                         </span>
                       </div>
                     </div>
