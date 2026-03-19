@@ -21,15 +21,16 @@ Deno.serve(async (req: Request) => {
     // Log the raw webhook for debugging
     await supabase.from('webhook_logs').insert({ gateway: 'zucropay', payload: body });
 
-    // ZucroPay webhook format:
-    // { event: "payment.received", data: { payment_id, value, net_value, status, billing_type, customer }, timestamp }
-    // Also supports direct/legacy format where the payload is flat
+    // ZucroPay webhook format can be:
+    // 1. { event: "payment.received", data: { ... } }
+    // 2. { event: "charge.paid", charge: { ... } } (Seen in production logs)
     const event = body.event;
-    const data = body.data || body;
+    const data = body.data || body.charge || body;
 
     // Determine if payment is confirmed
     const isPaymentReceived = 
       event === 'payment.received' || 
+      event === 'charge.paid' || 
       (data.status && (data.status.toUpperCase() === 'RECEIVED' || data.status.toUpperCase() === 'PAID' || data.status.toUpperCase() === 'APPROVED' || data.status.toUpperCase() === 'APROVADO'));
 
     if (!isPaymentReceived) {

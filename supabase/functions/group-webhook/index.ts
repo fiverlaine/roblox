@@ -30,6 +30,10 @@ async function sendCAPIEvent(
     user_agent?: string | null;
     ip_address?: string | null;
     external_id?: string | null;
+    city?: string | null;
+    state?: string | null;
+    zip_code?: string | null;
+    country?: string | null;
   },
   customData?: {
     content_name?: string;
@@ -64,6 +68,21 @@ async function sendCAPIEvent(
   }
   if (userData.external_id) {
     capiUserData.external_id = await hashSHA256(userData.external_id);
+  }
+
+  // Geo data — Meta requires these to be hashed with SHA256
+  // Values should be lowercase, no spaces, before hashing
+  if (userData.city) {
+    capiUserData.ct = await hashSHA256(userData.city.toLowerCase().trim());
+  }
+  if (userData.state) {
+    capiUserData.st = await hashSHA256(userData.state.toLowerCase().trim());
+  }
+  if (userData.zip_code) {
+    capiUserData.zp = await hashSHA256(userData.zip_code.toLowerCase().trim());
+  }
+  if (userData.country) {
+    capiUserData.country = await hashSHA256(userData.country.toLowerCase().trim());
   }
 
   const capiCustomData: Record<string, unknown> = {};
@@ -259,6 +278,10 @@ Deno.serve(async (req: Request) => {
               user_agent: lead.user_agent,
               ip_address: lead.ip_address,
               external_id: lead.start_param,
+              city: lead.city,
+              state: lead.state,
+              zip_code: lead.zip_code,
+              country: lead.country,
             },
             {
               content_name: 'Roblox Vault - Entrada no Grupo',
@@ -316,6 +339,10 @@ Deno.serve(async (req: Request) => {
                 user_agent: lead.user_agent,
                 ip_address: lead.ip_address,
                 external_id: lead.start_param,
+                city: lead.city,
+                state: lead.state,
+                zip_code: lead.zip_code,
+                country: lead.country,
               },
               {
                 content_name: 'Roblox Vault - Saída do Grupo',
