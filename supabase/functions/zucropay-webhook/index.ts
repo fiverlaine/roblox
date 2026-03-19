@@ -90,11 +90,34 @@ Deno.serve(async (req: Request) => {
       }
 
       if (payment.type === 'withdrawal_fee') {
-        await supabase
-          .from('user_items')
-          .update({ status: 'sold', sold_at: new Date().toISOString() })
-          .eq('user_id', payment.user_id)
-          .eq('status', 'selling');
+        const { data: withdrawal } = await supabase
+          .from('withdrawals')
+          .select('amount')
+          .eq('payment_id', payment.id)
+          .maybeSingle();
+
+        if (withdrawal) {
+          const withdrawAmount = Number(withdrawal.amount);
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('real_balance')
+            .eq('id', payment.user_id)
+            .single();
+
+          if (profile) {
+            const currentBalance = Number(profile.real_balance || 0);
+            const newBalance = currentBalance - withdrawAmount;
+            
+            await supabase
+              .from('profiles')
+              .update({ real_balance: newBalance })
+              .eq('id', payment.user_id);
+              
+            console.log(`[ZucroPay Webhook] Deducted ${withdrawAmount} from user ${payment.user_id} (Withdrawal ID p_id: ${payment.id}). New balance: ${newBalance}`);
+          }
+        } else {
+          console.error(`[ZucroPay Webhook] Withdrawal record not found for payment_id ${payment.id}`);
+        }
       }
     } else {
       console.log(`[ZucroPay Webhook] Payment ${payment.id} already paid. Checking UTMify.`);

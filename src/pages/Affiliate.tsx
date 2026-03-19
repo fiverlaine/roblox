@@ -16,6 +16,7 @@ import {
 import { useAffiliateStore } from '../stores/affiliateStore';
 import { useAuthStore } from '../stores/authStore';
 import { formatCurrency, formatDate } from '../lib/utils';
+import AffiliateNotifications from '../components/AffiliateNotifications';
 
 export default function Affiliate() {
   const { profile } = useAuthStore();
@@ -195,6 +196,9 @@ export default function Affiliate() {
           </motion.div>
         ))}
       </div>
+
+      {/* Pushcut Notifications Config */}
+      <AffiliateNotifications />
 
       {/* Filters */}
       <div className="bg-background-primary rounded-2xl p-6 border border-ui-divider shadow-sm relative overflow-hidden">

@@ -1,0 +1,50 @@
+<div id="sales-pushes-preview" class="space-y-7 w-full min-h-[48px] rounded-[14px] bg-[#000] !bg-opacity-30 !px-3 !py-4 flex items-center" style="max-width: 300px;"><div class="h-full flex !gap-x-3 items-center"><div class="rounded-md bg-[#000] opacity-100 w-[32px] h-[32px] flex items-center justify-center shrink-0"><img src="/logo/logo-sm-dark.png" alt="Utmify" class="w-[60%]"></div> <div class="flex flex-col !gap-[5px]"><h5 class="!mb-0 text-[13px] text-[#eee] !font-bold">
+                          Venda aprovada!
+                          
+                          
+                          
+                        </h5> <span class="text-[12px] text-[#eee] !font-thin">
+                              Valor:
+                              R$&nbsp;99,90
+                            </span></div></div></div>
+
+CSS:
+
+.\!py-4 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+.\!px-3 {
+    padding-left: .75rem !important;
+    padding-right: .75rem !important;
+}
+
+.\!bg-opacity-30 {
+    --tw-bg-opacity: .3 !important;
+}
+
+.bg-\[\#000\] {
+    --tw-bg-opacity: 1;
+    background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1));
+}
+
+.rounded-\[14px\] {
+    border-radius: 14px;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.min-h-\[48px\] {
+    min-height: 48px;
+}
+
+.flex {
+    display: flex;
+}
