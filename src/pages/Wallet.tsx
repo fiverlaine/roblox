@@ -90,6 +90,17 @@ export default function Wallet() {
 
         if (!error && data?.status === "paid") {
           clearInterval(pollRef.current!);
+
+          // NOW deduct balance — only after fee is confirmed paid
+          const withdrawAmount = parseFloat(amount.replace(',', '.'));
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            await supabase
+              .from('profiles')
+              .update({ real_balance: (profile?.real_balance ?? 0) - withdrawAmount })
+              .eq('id', session.user.id);
+          }
+
           toast.success("Taxa paga! Seu saque será processado instantaneamente.");
           await loadProfile();
           await loadWithdrawals();
@@ -102,7 +113,7 @@ export default function Wallet() {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [feePaymentExternalId, showWithdrawalFee, loadProfile]);
+  }, [feePaymentExternalId, showWithdrawalFee, loadProfile, amount, profile]);
 
   // Validates form fields before showing the popup
   const handleConfirmClick = () => {
@@ -164,16 +175,9 @@ export default function Wallet() {
         return;
       }
 
-      // Deduct balance from user account
+      // Balance is NOT deducted here — it will be deducted only
+      // when the fee payment is confirmed as 'paid' (in the polling useEffect)
       const parsedAmount = parseFloat(amount.replace(',', '.'));
-      const { error: balanceError } = await supabase
-        .from('profiles')
-        .update({ real_balance: balance - parsedAmount })
-        .eq('id', session.user.id);
-
-      if (balanceError) {
-        console.error('Failed to deduct balance:', balanceError);
-      }
 
       // Create withdrawal record
       await supabase.from('withdrawals').insert({
