@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
   DollarSign,
@@ -12,11 +12,21 @@ import {
   Link,
   MessageSquare,
   UserPlus,
+  Copy,
+  ChevronDown,
+  ChevronUp,
+  Settings,
+  Shield,
+  Save,
+  Loader2,
 } from 'lucide-react';
 import { useAffiliateStore } from '../stores/affiliateStore';
 import { useAuthStore } from '../stores/authStore';
 import { formatCurrency, formatDate } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 import AffiliateNotifications from '../components/AffiliateNotifications';
+import toast from 'react-hot-toast';
+import type { AffiliateTrackingConfig } from '../lib/types';
 
 export default function Affiliate() {
   const { profile } = useAuthStore();
@@ -26,14 +36,94 @@ export default function Affiliate() {
     endDate: '',
     paymentType: '',
     qualification: '',
-    utmSource: '',
   });
+
+  // Tracking config states
+  const [trackingConfig, setTrackingConfig] = useState<Partial<AffiliateTrackingConfig>>({
+    utmify_api_token: '',
+    utmify_platform_name: 'RobloxVault',
+    pixel_id: '',
+    pixel_access_token: '',
+    is_active: true,
+  });
+  const [trackingConfigId, setTrackingConfigId] = useState<number | null>(null);
+  const [trackingExpanded, setTrackingExpanded] = useState(false);
+  const [trackingSaving, setTrackingSaving] = useState(false);
+  const [trackingLoading, setTrackingLoading] = useState(true);
+  const [refCopied, setRefCopied] = useState(false);
 
   useEffect(() => {
     if (profile?.is_affiliate) {
       fetchLeads();
+      loadTrackingConfig();
     }
   }, [fetchLeads, profile?.is_affiliate]);
+
+  const loadTrackingConfig = async () => {
+    if (!profile) return;
+    setTrackingLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('affiliate_tracking_configs')
+        .select('*')
+        .eq('user_id', profile.id)
+        .maybeSingle();
+      
+      if (!error && data) {
+        setTrackingConfig(data);
+        setTrackingConfigId(data.id);
+      }
+    } catch (err) {
+      console.error('Error loading tracking config:', err);
+    } finally {
+      setTrackingLoading(false);
+    }
+  };
+
+  const handleSaveTrackingConfig = async () => {
+    if (!profile) return;
+    setTrackingSaving(true);
+    try {
+      const payload = {
+        user_id: profile.id,
+        utmify_api_token: trackingConfig.utmify_api_token || null,
+        utmify_platform_name: trackingConfig.utmify_platform_name || 'RobloxVault',
+        pixel_id: trackingConfig.pixel_id || null,
+        pixel_access_token: trackingConfig.pixel_access_token || null,
+        is_active: trackingConfig.is_active ?? true,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (trackingConfigId) {
+        const { error } = await supabase
+          .from('affiliate_tracking_configs')
+          .update(payload)
+          .eq('id', trackingConfigId);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase
+          .from('affiliate_tracking_configs')
+          .insert(payload)
+          .select()
+          .single();
+        if (error) throw error;
+        if (data) setTrackingConfigId(data.id);
+      }
+      toast.success('Configurações de tracking salvas!');
+    } catch (err: any) {
+      toast.error(err?.message || 'Erro ao salvar');
+    } finally {
+      setTrackingSaving(false);
+    }
+  };
+
+  const handleCopyRef = () => {
+    if (profile?.affiliate_ref) {
+      navigator.clipboard.writeText(profile.affiliate_ref);
+      setRefCopied(true);
+      setTimeout(() => setRefCopied(false), 2000);
+    }
+  };
 
   if (!profile) return null;
 
@@ -57,12 +147,11 @@ export default function Affiliate() {
       endDate: filters.endDate || undefined,
       paymentType: filters.paymentType || undefined,
       qualification: filters.qualification || undefined,
-      utmSource: filters.utmSource || undefined,
     });
   };
 
   const handleClearFilters = () => {
-    setFilters({ startDate: '', endDate: '', paymentType: '', qualification: '', utmSource: '' });
+    setFilters({ startDate: '', endDate: '', paymentType: '', qualification: '' });
     fetchLeads();
   };
 
@@ -84,16 +173,6 @@ export default function Affiliate() {
     {
       label: 'Iniciaram Bot',
       value: stats?.botStarters?.toLocaleString('pt-BR') || '0',
-      subtitle: stats?.byUtm && stats.byUtm.length > 0 && !filters.utmSource && profile.affiliate_utms.length > 1 ? (
-        <div className="mt-3 space-y-1.5 w-full">
-          {stats.byUtm.map(u => (
-            <div key={u.utm} className="flex justify-between items-center text-[10px] text-text-secondary font-medium">
-              <span className="truncate mr-2 px-1.5 py-0.5 bg-background-secondary rounded text-text-primary/70">{u.utm}</span>
-              <span className="text-text-primary font-bold">{u.botStarters}</span>
-            </div>
-          ))}
-        </div>
-      ) : null,
       icon: MessageSquare,
       color: 'text-indigo-400',
       bg: 'bg-indigo-500/10',
@@ -101,16 +180,6 @@ export default function Affiliate() {
     {
       label: 'Entraram Grupo',
       value: stats?.groupJoiners?.toLocaleString('pt-BR') || '0',
-      subtitle: stats?.byUtm && stats.byUtm.length > 0 && !filters.utmSource && profile.affiliate_utms.length > 1 ? (
-        <div className="mt-3 space-y-1.5 w-full">
-          {stats.byUtm.map(u => (
-            <div key={u.utm} className="flex justify-between items-center text-[10px] text-text-secondary font-medium">
-              <span className="truncate mr-2 px-1.5 py-0.5 bg-background-secondary rounded text-text-primary/70">{u.utm}</span>
-              <span className="text-text-primary font-bold">{u.groupJoiners}</span>
-            </div>
-          ))}
-        </div>
-      ) : null,
       icon: UserPlus,
       color: 'text-sky-400',
       bg: 'bg-sky-500/10',
@@ -146,13 +215,17 @@ export default function Affiliate() {
           <h2 className="text-2xl font-bold text-text-primary mb-1">
             Painel do Afiliado
           </h2>
-          <p className="text-sm text-text-secondary">Acompanhe seus leads indicados e ganhos gerados através das suas UTMs.</p>
+          <p className="text-sm text-text-secondary">Acompanhe seus leads indicados e ganhos gerados.</p>
         </div>
         <div className="flex gap-2">
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-background-primary text-text-secondary border border-ui-divider mr-2">
+          <button
+            onClick={handleCopyRef}
+            className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-background-primary text-text-secondary border border-ui-divider mr-2 hover:border-brand-primary/40 transition-all"
+          >
             <Link className="w-4 h-4 text-brand-primary" />
-            Minhas UTMs: <span className="text-text-primary font-mono">{profile.affiliate_utms.join(', ')}</span>
-          </div>
+            Meu Ref: <span className="text-text-primary font-mono font-bold">{profile.affiliate_ref}</span>
+            <Copy className={`w-3.5 h-3.5 transition-colors ${refCopied ? 'text-emerald-400' : 'text-text-secondary'}`} />
+          </button>
           <button
             onClick={() => fetchLeads()}
             disabled={loading}
@@ -164,10 +237,14 @@ export default function Affiliate() {
         </div>
       </div>
 
-      <div className="sm:hidden flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium bg-background-primary text-text-secondary border border-ui-divider">
+      <button
+        onClick={handleCopyRef}
+        className="sm:hidden w-full flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium bg-background-primary text-text-secondary border border-ui-divider"
+      >
         <Link className="w-4 h-4 text-brand-primary min-w-4" />
-        <span className="truncate">UTMs: <span className="text-text-primary font-mono">{profile.affiliate_utms.join(', ')}</span></span>
-      </div>
+        <span className="truncate">Ref: <span className="text-text-primary font-mono font-bold">{profile.affiliate_ref}</span></span>
+        <Copy className={`w-3.5 h-3.5 ml-auto ${refCopied ? 'text-emerald-400' : 'text-text-secondary'}`} />
+      </button>
 
       {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
@@ -188,11 +265,6 @@ export default function Affiliate() {
                 <m.icon className={`w-7 h-7 ${m.color}`} />
               </div>
             </div>
-            {m.subtitle && (
-              <div className="mt-auto pt-4 border-t border-ui-divider/50 w-full">
-                {m.subtitle}
-              </div>
-            )}
           </motion.div>
         ))}
       </div>
@@ -224,18 +296,7 @@ export default function Affiliate() {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-          <div>
-            <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">UTM</label>
-            <select
-              value={filters.utmSource}
-              onChange={(e) => setFilters((p) => ({ ...p, utmSource: e.target.value }))}
-              className="w-full bg-background-secondary border border-ui-divider rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-brand-primary/50 transition-all appearance-none cursor-pointer"
-            >
-              <option value="">Todas UTMs</option>
-              {profile.affiliate_utms.map(u => <option key={u} value={u}>{u}</option>)}
-            </select>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Data Inicial</label>
             <input
@@ -308,7 +369,6 @@ export default function Affiliate() {
                 <th className="text-left py-4 px-6 text-[10px] font-bold text-text-secondary uppercase tracking-widest whitespace-nowrap">PAGAMENTOS</th>
                 <th className="text-right py-4 px-6 text-[10px] font-bold text-text-secondary uppercase tracking-widest whitespace-nowrap">TOTAL PAGO</th>
                 <th className="text-right py-4 px-6 text-[10px] font-bold text-text-secondary uppercase tracking-widest whitespace-nowrap">VINCULADO EM</th>
-                <th className="text-right py-4 px-6 text-[10px] font-bold text-brand-primary uppercase tracking-widest whitespace-nowrap">UTM</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ui-divider">
@@ -410,17 +470,135 @@ export default function Affiliate() {
                         {formatDate(lead.created_at)}
                       </p>
                     </td>
-                    <td className="py-6 px-6 align-top text-right">
-                      <span className="inline-flex items-center px-2 py-1 rounded bg-brand-primary/10 text-brand-primary text-xs font-mono border border-brand-primary/20 whitespace-nowrap">
-                        {lead.utm_source || 'Desconhecida'}
-                      </span>
-                    </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Tracking Config (Pixel + UTMify) */}
+      <div className="bg-background-primary rounded-2xl border border-ui-divider overflow-hidden shadow-sm">
+        <button
+          onClick={() => setTrackingExpanded(!trackingExpanded)}
+          className="w-full flex items-center justify-between p-6 hover:bg-background-secondary/30 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+              <Settings className="w-5 h-5 text-purple-400" />
+            </div>
+            <div className="text-left">
+              <h3 className="text-lg font-bold text-text-primary">Configurações de Tracking</h3>
+              <p className="text-xs text-text-secondary">Configure seu Pixel do Meta e UTMify para rastrear seus próprios leads.</p>
+            </div>
+          </div>
+          {trackingExpanded ? <ChevronUp className="w-5 h-5 text-text-secondary" /> : <ChevronDown className="w-5 h-5 text-text-secondary" />}
+        </button>
+        
+        <AnimatePresence>
+          {trackingExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden"
+            >
+              <div className="p-6 pt-0 border-t border-ui-divider space-y-6">
+                {trackingLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-text-secondary" />
+                  </div>
+                ) : (
+                  <>
+                    {/* Meta Pixel */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-blue-400" />
+                        <h4 className="text-sm font-bold text-text-primary">Meta Pixel (Facebook CAPI)</h4>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Pixel ID</label>
+                          <input
+                            type="text"
+                            value={trackingConfig.pixel_id || ''}
+                            onChange={(e) => setTrackingConfig(c => ({ ...c, pixel_id: e.target.value }))}
+                            placeholder="Ex: 123456789012345"
+                            className="w-full bg-background-secondary border border-ui-divider rounded-xl py-3 px-4 text-text-primary text-sm font-mono focus:outline-none focus:border-brand-primary/50 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Access Token (CAPI)</label>
+                          <input
+                            type="password"
+                            value={trackingConfig.pixel_access_token || ''}
+                            onChange={(e) => setTrackingConfig(c => ({ ...c, pixel_access_token: e.target.value }))}
+                            placeholder="EAAG..."
+                            className="w-full bg-background-secondary border border-ui-divider rounded-xl py-3 px-4 text-text-primary text-sm font-mono focus:outline-none focus:border-brand-primary/50 transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* UTMify */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Link className="w-4 h-4 text-emerald-400" />
+                        <h4 className="text-sm font-bold text-text-primary">UTMify</h4>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Token da API</label>
+                          <input
+                            type="password"
+                            value={trackingConfig.utmify_api_token || ''}
+                            onChange={(e) => setTrackingConfig(c => ({ ...c, utmify_api_token: e.target.value }))}
+                            placeholder="Seu token da UTMify"
+                            className="w-full bg-background-secondary border border-ui-divider rounded-xl py-3 px-4 text-text-primary text-sm font-mono focus:outline-none focus:border-brand-primary/50 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Nome da Plataforma</label>
+                          <input
+                            type="text"
+                            value={trackingConfig.utmify_platform_name || ''}
+                            onChange={(e) => setTrackingConfig(c => ({ ...c, utmify_platform_name: e.target.value }))}
+                            placeholder="RobloxVault"
+                            className="w-full bg-background-secondary border border-ui-divider rounded-xl py-3 px-4 text-text-primary text-sm focus:outline-none focus:border-brand-primary/50 transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Active toggle + Save */}
+                    <div className="flex items-center justify-between pt-2">
+                      <label className="relative inline-flex items-center cursor-pointer gap-3">
+                        <input
+                          type="checkbox"
+                          checked={trackingConfig.is_active ?? true}
+                          onChange={(e) => setTrackingConfig(c => ({ ...c, is_active: e.target.checked }))}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-primary"></div>
+                        <span className="text-sm font-medium text-text-secondary">Tracking ativo</span>
+                      </label>
+                      <button
+                        onClick={handleSaveTrackingConfig}
+                        disabled={trackingSaving}
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-brand-primary text-white hover:opacity-90 transition-all shadow-lg shadow-brand-primary/20 disabled:opacity-50"
+                      >
+                        {trackingSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        Salvar Configurações
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

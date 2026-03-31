@@ -14,10 +14,9 @@ export default function Users() {
   // Modal states
   const [editingUser, setEditingUser] = useState<Profile | null>(null);
   const [saving, setSaving] = useState(false);
-  const [newUtm, setNewUtm] = useState('');
   const [affiliateSettings, setAffiliateSettings] = useState({
     is_affiliate: false,
-    affiliate_utms: [] as string[]
+    affiliate_ref: '' as string,
   });
 
   useEffect(() => {
@@ -28,9 +27,8 @@ export default function Users() {
     if (editingUser) {
       setAffiliateSettings({
         is_affiliate: editingUser.is_affiliate || false,
-        affiliate_utms: editingUser.affiliate_utms || []
+        affiliate_ref: editingUser.affiliate_ref || '',
       });
-      setNewUtm('');
     }
   }, [editingUser]);
 
@@ -42,28 +40,13 @@ export default function Users() {
     if (e.key === 'Enter') handleSearch();
   };
 
-  const handleAddUtm = () => {
-    if (!newUtm.trim()) return;
-    
-    // Suportar utms separadas por vírgula
-    const utmsToAdd = newUtm.split(',')
-      .map(u => u.trim())
-      .filter(u => u.length > 0 && !affiliateSettings.affiliate_utms.includes(u));
-      
-    if (utmsToAdd.length > 0) {
-      setAffiliateSettings(s => ({
-        ...s,
-        affiliate_utms: [...s.affiliate_utms, ...utmsToAdd]
-      }));
+  const generateRef = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    for (let i = 0; i < 7; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    setNewUtm('');
-  };
-
-  const handleRemoveUtm = (index: number) => {
-    setAffiliateSettings(s => ({
-      ...s,
-      affiliate_utms: s.affiliate_utms.filter((_, i) => i !== index)
-    }));
+    setAffiliateSettings(s => ({ ...s, affiliate_ref: result }));
   };
 
   const handleSaveUser = async () => {
@@ -72,7 +55,7 @@ export default function Users() {
     try {
       await updateUser(editingUser.id, {
         is_affiliate: affiliateSettings.is_affiliate,
-        affiliate_utms: affiliateSettings.is_affiliate ? affiliateSettings.affiliate_utms : []
+        affiliate_ref: affiliateSettings.is_affiliate ? (affiliateSettings.affiliate_ref || null) : null,
       });
       toast.success('Configurações de afiliado salvas com sucesso!');
       setEditingUser(null);
@@ -265,41 +248,35 @@ export default function Users() {
 
               {affiliateSettings.is_affiliate && (
                 <div className="space-y-3">
-                  <label className="text-sm font-medium text-white block">UTMs Aprovadas</label>
-                  <p className="text-xs text-gray-400">Adicione as UTMs (ex: tiktok-fp, insta-bio) separadas por vírgula ou uma por linha usando Enter.</p>
+                  <label className="text-sm font-medium text-white block">Código Ref do Afiliado</label>
+                  <p className="text-xs text-gray-400">Defina um código único ou gere um aleatório (7 caracteres). Este código será usado como <code className="bg-gray-800 px-1 rounded text-brand-primary">&ref=CODIGO</code> na URL.</p>
                   
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      value={newUtm}
-                      onChange={(e) => setNewUtm(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAddUtm();
-                      }}
-                      placeholder="Nova UTM..."
-                      className="flex-1 bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white text-sm focus:border-brand-primary focus:outline-none"
+                      value={affiliateSettings.affiliate_ref}
+                      onChange={(e) => setAffiliateSettings(s => ({ ...s, affiliate_ref: e.target.value }))}
+                      placeholder="Ex: aB3xKz7"
+                      maxLength={10}
+                      className="flex-1 bg-gray-800 border border-gray-700 rounded-lg py-2 px-3 text-white text-sm font-mono focus:border-brand-primary focus:outline-none"
                     />
                     <button
-                      onClick={handleAddUtm}
-                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm transition-colors"
+                      onClick={generateRef}
+                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm transition-colors flex items-center gap-1.5"
                     >
-                      Adicionar
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      Gerar
                     </button>
                   </div>
-                  
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {affiliateSettings.affiliate_utms.map((utm, idx) => (
-                      <span key={idx} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-brand-primary/10 text-brand-primary text-xs font-mono border border-brand-primary/20">
-                        {utm}
-                        <button onClick={() => handleRemoveUtm(idx)} className="hover:text-red-400 transition-colors">
-                          <XCircle className="w-3.5 h-3.5" />
-                        </button>
-                      </span>
-                    ))}
-                    {affiliateSettings.affiliate_utms.length === 0 && (
-                      <span className="text-gray-500 text-xs italic">Nenhuma UTM configurada</span>
-                    )}
-                  </div>
+
+                  {affiliateSettings.affiliate_ref && (
+                    <div className="mt-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold mb-1.5">URL modelo do afiliado:</p>
+                      <p className="text-xs text-brand-primary font-mono break-all select-all">
+                        https://seusite.com/redirect.html?utm_source=FB&amp;utm_campaign={'{{campaign.name}}'}&amp;ref={affiliateSettings.affiliate_ref}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

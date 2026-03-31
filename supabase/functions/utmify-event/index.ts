@@ -84,25 +84,16 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Fetch profile and utmify config IN PARALLEL
-    const [profileResult, utmifyResult] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', payment.user_id).single(),
-      supabase.from('utmify_configs').select('*').eq('is_active', true).limit(1).single(),
-    ]);
-    
-    const profile = profileResult.data;
-    const utmifyConfig = utmifyResult.data;
+    // Fetch profile
+    const { data: profile, error: profErr } = await supabase
+      .from('profiles').select('*').eq('id', payment.user_id).single();
 
-    if (!utmifyConfig?.api_token) {
-      console.error('[Utmify] Utmify not configured or inactive');
-      return new Response(
-        JSON.stringify({ error: 'Utmify not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+    if (profErr) {
+      console.error('[Utmify] Profile not found:', payment.user_id);
     }
 
     // Fetch lead with fallback: first by user_id, then by telegram_id
-    let lead = null;
+    let lead: any = null;
     const { data: leadByUserId } = await supabase
       .from('telegram_leads')
       .select('*')
@@ -120,6 +111,50 @@ Deno.serve(async (req: Request) => {
         .limit(1)
         .maybeSingle();
       lead = leadByTelegramId;
+    }
+
+    // Determine which UTMify to use based on affiliate_ref
+    let utmifyToken: string | null = null;
+    let platformName = 'RobloxVault';
+
+    if (lead?.affiliate_ref) {
+      // Lead is from an affiliate — use affiliate's UTMify
+      const { data: affProfile } = await supabase
+        .from('profiles').select('id').eq('affiliate_ref', lead.affiliate_ref).single();
+      
+      if (affProfile) {
+        const { data: affConfig } = await supabase
+          .from('affiliate_tracking_configs')
+          .select('utmify_api_token, utmify_platform_name')
+          .eq('user_id', affProfile.id)
+          .eq('is_active', true)
+          .maybeSingle();
+        
+        if (affConfig?.utmify_api_token) {
+          utmifyToken = affConfig.utmify_api_token;
+          platformName = affConfig.utmify_platform_name || 'RobloxVault';
+          console.log(`[Utmify] Using affiliate UTMify for ref=${lead.affiliate_ref}`);
+        } else {
+          console.log(`[Utmify] Affiliate ${lead.affiliate_ref} has no UTMify configured — skipping`);
+        }
+      }
+    } else {
+      // Lead is from the owner — use global UTMify config
+      const { data: utmifyConfig } = await supabase
+        .from('utmify_configs').select('*').eq('is_active', true).limit(1).single();
+      
+      if (utmifyConfig?.api_token) {
+        utmifyToken = utmifyConfig.api_token;
+        platformName = utmifyConfig.platform_name || 'RobloxVault';
+      }
+    }
+
+    if (!utmifyToken) {
+      console.log('[Utmify] No UTMify configured for this lead (affiliate or owner) — skipping');
+      return new Response(
+        JSON.stringify({ skipped: true, reason: 'No UTMify configured' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
     }
 
     const productName = payment.type === 'license' ? 'Roblox Seller Pass' : 'Taxa de Saque';
@@ -143,7 +178,7 @@ Deno.serve(async (req: Request) => {
 
     const orderPayload = {
       orderId: payment.external_id || String(payment.id),
-      platform: utmifyConfig.platform_name || 'RobloxVault',
+      platform: platformName,
       paymentMethod: 'pix',
       status: status,
       createdAt: createdAtStr,
@@ -194,7 +229,7 @@ Deno.serve(async (req: Request) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-token': utmifyConfig.api_token,
+          'x-api-token': utmifyToken,
         },
         body: JSON.stringify(orderPayload),
       });

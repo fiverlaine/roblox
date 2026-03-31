@@ -258,11 +258,40 @@ Deno.serve(async (req: Request) => {
 
       console.log(`[GroupWebhook] ✅ Lead ${lead.id} marcado como qualified`);
 
-      // 4. Send Facebook CAPI "Lead" event
-      const { data: pixels } = await supabase
-        .from('pixel_configs')
-        .select('pixel_id, access_token')
-        .eq('is_active', true);
+      // 4. Send Facebook CAPI "Lead" event — route to correct pixel
+      let pixels: { pixel_id: string; access_token: string }[] = [];
+
+      if (lead.affiliate_ref) {
+        // Lead is from an affiliate — use affiliate's pixel
+        const { data: affProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('affiliate_ref', lead.affiliate_ref)
+          .single();
+
+        if (affProfile) {
+          const { data: affConfig } = await supabase
+            .from('affiliate_tracking_configs')
+            .select('pixel_id, pixel_access_token')
+            .eq('user_id', affProfile.id)
+            .eq('is_active', true)
+            .maybeSingle();
+
+          if (affConfig?.pixel_id && affConfig?.pixel_access_token) {
+            pixels = [{ pixel_id: affConfig.pixel_id, access_token: affConfig.pixel_access_token }];
+            console.log(`[GroupWebhook] 🎯 Using affiliate pixel for ref=${lead.affiliate_ref}`);
+          } else {
+            console.log(`[GroupWebhook] ⚠️ Affiliate ${lead.affiliate_ref} has no pixel configured`);
+          }
+        }
+      } else {
+        // Lead is from the owner — use global pixels
+        const { data: globalPixels } = await supabase
+          .from('pixel_configs')
+          .select('pixel_id, access_token')
+          .eq('is_active', true);
+        pixels = globalPixels || [];
+      }
 
       if (pixels && pixels.length > 0) {
         console.log(`[GroupWebhook] 🎯 Disparando CAPI Lead para ${pixels.length} pixel(s)...`);

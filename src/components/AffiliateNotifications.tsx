@@ -178,7 +178,7 @@ export default function AffiliateNotifications() {
     }
 
     setTesting(true);
-    const utmSource = profile.affiliate_utms?.[0] || 'teste';
+    const utmSource = profile.affiliate_ref || 'teste';
     const events: { type: string; enabled: boolean }[] = [
       { type: 'new_lead', enabled: config.notify_new_lead },
       { type: 'sale_pending', enabled: config.notify_sale_pending },

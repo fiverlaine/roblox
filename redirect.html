@@ -379,15 +379,12 @@
           if (isAndroid) {
             window.location.href = _tgIntentURL;
           } else if (isIOS) {
-            // Tenta abrir deep link
             window.location.href = _tgDeepLink;
-            // Se falhar, mostra conteÃºdo apÃ³s delay
             setTimeout(showContent, 1500);
           } else {
             window.location.replace(_tgWebURL);
           }
         } else {
-          // Navegador externo: tenta deep link, fallback pra web
           window.location.href = _tgDeepLink;
           setTimeout(function () {
             if (!document.hidden) window.location.replace(_tgWebURL);
@@ -428,6 +425,7 @@
           utm_campaign: p.get('utm_campaign'),
           utm_term: p.get('utm_term'),
           utm_content: p.get('utm_content'),
+          ref: p.get('ref'),
           fbclid: fbclid, fbc: fbc, fbp: fbp,
           user_agent: navigator.userAgent
         }),
@@ -442,8 +440,6 @@
           e.preventDefault();
           window.location.href = _tgIntentURL;
         } else if (isTikTok) {
-          // No TikTok, incentivamos usar o botÃ£o apenas apÃ³s abrir no navegador,
-          // mas se clicar, tentamos abrir a web url.
         }
       });
 

@@ -23,6 +23,7 @@ Deno.serve(async (req: Request) => {
     const utmContent = params.get('utm_content');
     const fbclid = params.get('fbclid');
     const fbp = params.get('fbp');
+    const ref = params.get('ref');
 
     const startParam = generateStartParam();
 
@@ -37,6 +38,7 @@ Deno.serve(async (req: Request) => {
         utm_content: utmContent,
         fbclid,
         fbp,
+        affiliate_ref: ref,
         status: 'new',
       });
 

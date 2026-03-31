@@ -762,8 +762,26 @@ async function handleChatMember(chatMember: NonNullable<TelegramUpdate['chat_mem
         })
         .eq('id', lead.id);
 
-      const { data: pixels } = await supabase.from('pixel_configs').select('pixel_id, access_token').eq('is_active', true);
-      if (pixels && pixels.length > 0) {
+      // Route CAPI Lead to correct pixel (owner vs affiliate)
+      let pixels: { pixel_id: string; access_token: string }[] = [];
+
+      if (lead.affiliate_ref) {
+        const { data: affProfile } = await supabase.from('profiles').select('id').eq('affiliate_ref', lead.affiliate_ref).single();
+        if (affProfile) {
+          const { data: affConfig } = await supabase
+            .from('affiliate_tracking_configs')
+            .select('pixel_id, pixel_access_token')
+            .eq('user_id', affProfile.id).eq('is_active', true).maybeSingle();
+          if (affConfig?.pixel_id && affConfig?.pixel_access_token) {
+            pixels = [{ pixel_id: affConfig.pixel_id, access_token: affConfig.pixel_access_token }];
+          }
+        }
+      } else {
+        const { data: globalPixels } = await supabase.from('pixel_configs').select('pixel_id, access_token').eq('is_active', true);
+        pixels = globalPixels || [];
+      }
+
+      if (pixels.length > 0) {
         for (const pixel of pixels) {
           await sendCAPIEvent(pixel.access_token, pixel.pixel_id, 'Lead', {
             fbc: lead.fbc,

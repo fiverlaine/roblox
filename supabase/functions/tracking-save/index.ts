@@ -101,6 +101,7 @@ Deno.serve(async (req: Request) => {
         utm_campaign: data.utm_campaign || null,
         utm_term: data.utm_term || null,
         utm_content: data.utm_content || null,
+        affiliate_ref: data.ref || null,
         fbclid: data.fbclid || null,
         fbc: data.fbc || null,
         fbp: data.fbp || null,

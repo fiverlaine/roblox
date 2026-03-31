@@ -41,7 +41,7 @@ export const useAffiliateStore = create<AffiliateState>()((set, get) => ({
     try {
       const { profile } = useAuthStore.getState();
       
-      if (!profile || !profile.is_affiliate || !profile.affiliate_utms || profile.affiliate_utms.length === 0) {
+      if (!profile || !profile.is_affiliate || !profile.affiliate_ref) {
         set({ leads: [] });
         return;
       }
@@ -51,7 +51,7 @@ export const useAffiliateStore = create<AffiliateState>()((set, get) => ({
         .select('*, profile:profiles(*)')
         .not('telegram_id', 'is', null)
         .not('user_id', 'is', null)
-        .in('utm_source', profile.affiliate_utms)
+        .eq('affiliate_ref', profile.affiliate_ref)
         .order('created_at', { ascending: false });
 
       if (filters?.startDate) query = query.gte('created_at', filters.startDate);
@@ -90,11 +90,10 @@ export const useAffiliateStore = create<AffiliateState>()((set, get) => ({
       }
 
       // Fetch overall stats for the UI (Bot Starters & Group Joiners) respecting filters
-      let statsQuery = supabase.from('telegram_leads').select('utm_source, status').in('utm_source', profile.affiliate_utms);
+      let statsQuery = supabase.from('telegram_leads').select('utm_source, status').eq('affiliate_ref', profile.affiliate_ref);
       
       if (filters?.startDate) statsQuery = statsQuery.gte('created_at', filters.startDate);
       if (filters?.endDate) statsQuery = statsQuery.lte('created_at', filters.endDate + 'T23:59:59');
-      if (filters?.utmSource && filters.utmSource !== '') statsQuery = statsQuery.eq('utm_source', filters.utmSource);
 
       const { data: statsData } = await statsQuery;
 

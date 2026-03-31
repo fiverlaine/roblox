@@ -15,6 +15,7 @@ export interface Profile {
   state: string | null
   is_affiliate: boolean
   affiliate_utms: string[]
+  affiliate_ref: string | null
   created_at: string
   updated_at: string
 }
@@ -82,6 +83,7 @@ export interface TelegramLead {
   utm_campaign: string | null
   utm_term: string | null
   utm_content: string | null
+  affiliate_ref: string | null
   fbclid: string | null
   fbp: string | null
   user_id: string | null
@@ -125,6 +127,18 @@ export interface UtmifyConfig {
   id: number
   api_token: string | null
   platform_name: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface AffiliateTrackingConfig {
+  id: number
+  user_id: string
+  utmify_api_token: string | null
+  utmify_platform_name: string
+  pixel_id: string | null
+  pixel_access_token: string | null
   is_active: boolean
   created_at: string
   updated_at: string
