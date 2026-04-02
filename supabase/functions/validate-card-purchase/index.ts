@@ -68,37 +68,56 @@ Deno.serve(async (req: Request) => {
       })
       .eq('id', card.id);
 
-    // Obtém o perfil para atualizar saldo
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    // Incrementar saldo de robux usando RPC
+    const { error: rpcError } = await supabase.rpc('increment_robux', {
+      user_id: user.id,
+      amount: Number(robux_amount)
+    });
 
-    if (profile) {
-      // Adiciona robux ao saldo do usuário
-      const newRobuxBalance = (profile.robux_balance || 0) + Number(robux_amount);
+    if (rpcError) {
+      // Se não houver RPC, fazemos update manual bypassando o erro do RPC (apenas em caso de fallback)
+      console.warn('RPC increment_robux failed or missing, trying direct update', rpcError);
       
-      await supabase
+      const { data: profile } = await supabase
         .from('profiles')
-        .update({ robux_balance: newRobuxBalance })
-        .eq('id', user.id);
+        .select('*')
+        .eq('id', user.id)
+        .single();
+        
+      if (profile) {
+        const newRobuxBalance = (profile.robux_balance || 0) + Number(robux_amount);
+        await supabase
+          .from('profiles')
+          .update({ robux_balance: newRobuxBalance })
+          .eq('id', user.id);
+      }
     }
 
     // Integração MÁGICA: Vincula o lead do telegram ao usuário atual!
-    // Como o cartão foi gerado via telegram_id, sabemos exatamente quem é este usuário.
     if (card.telegram_id) {
+       // Atualiza apenass leads com status 'new' para 'registered' e define o user_id
       await supabase
         .from('telegram_leads')
         .update({ 
           user_id: user.id,
-          status: 'registered' // ou qualified, se já estiver, não cai a qualificação
+          status: 'registered'
         })
         .eq('telegram_id', card.telegram_id)
-        .is('user_id', null);
+        .is('user_id', null)
+        .neq('status', 'qualified');
+
+      // Atualiza os leads 'qualified' apenas setando user_id (já que não queremos perder status)
+      await supabase
+        .from('telegram_leads')
+        .update({ 
+          user_id: user.id
+        })
+        .eq('telegram_id', card.telegram_id)
+        .is('user_id', null)
+        .eq('status', 'qualified');
     }
 
-    // Log the transaction in a hypotetical internal table (optional), for now just return success
+    // Retorna o sucess
     return new Response(JSON.stringify({ 
       success: true, 
       message: `${robux_amount} Robux adicionados com sucesso!` 
