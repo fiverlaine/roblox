@@ -9,7 +9,7 @@ interface AuthState {
   loading: boolean;
   initialized: boolean;
   initialize: () => Promise<void>;
-  signUp: (email: string, password: string, fullName: string) => Promise<void>;
+  signUp: (email: string, password: string, fullName: string, telegramUsername?: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   loadProfile: () => Promise<void>;
@@ -46,14 +46,14 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     set({ initialized: true });
   },
 
-  signUp: async (email, password, fullName) => {
+  signUp: async (email, password, fullName, telegramUsername) => {
     set({ loading: true });
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { full_name: fullName },
+          data: { full_name: fullName, telegram_username: telegramUsername },
         },
       });
       if (error) throw error;

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User as UserIcon, Loader2, UserPlus } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Loader2, UserPlus, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -11,6 +11,7 @@ export default function Register() {
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [telegramUsername, setTelegramUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -33,7 +34,7 @@ export default function Register() {
     }
 
     try {
-      await signUp(email, password, fullName);
+      await signUp(email, password, fullName, telegramUsername);
       toast.success('Conta criada com sucesso!');
       navigate('/', { replace: true });
     } catch (err: unknown) {
@@ -105,6 +106,28 @@ export default function Register() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
+            </div>
+
+            <div className="w-full">
+              <label className="block text-body font-medium text-text-primary mb-xs">
+                @ do Telegram <span className="text-sm font-normal text-brand-primary">(Para receber os bônus)</span>
+              </label>
+              <div className="relative">
+                <div className="absolute left-md top-1/2 -translate-y-1/2 text-brand-primary">
+                  <Send size={20} />
+                </div>
+                <input
+                  className="input w-full pl-12 border-brand-primary/30 focus:border-brand-primary shadow-sm bg-brand-primary/5"
+                  type="text"
+                  placeholder="@seu_usuario"
+                  value={telegramUsername}
+                  onChange={(e) => setTelegramUsername(e.target.value)}
+                />
+              </div>
+              <p className="text-xs text-text-secondary mt-1 ml-1 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-primary inline-block"></span>
+                Usado para conectarmos sua conta ao bot
+              </p>
             </div>
 
             <div className="w-full">
