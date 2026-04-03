@@ -17,6 +17,7 @@ export default function Users() {
   const [affiliateSettings, setAffiliateSettings] = useState({
     is_affiliate: false,
     affiliate_ref: '' as string,
+    saque_recusado_fraude: false,
   });
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function Users() {
       setAffiliateSettings({
         is_affiliate: editingUser.is_affiliate || false,
         affiliate_ref: editingUser.affiliate_ref || '',
+        saque_recusado_fraude: editingUser.saque_recusado_fraude || false,
       });
     }
   }, [editingUser]);
@@ -56,6 +58,7 @@ export default function Users() {
       await updateUser(editingUser.id, {
         is_affiliate: affiliateSettings.is_affiliate,
         affiliate_ref: affiliateSettings.is_affiliate ? (affiliateSettings.affiliate_ref || null) : null,
+        saque_recusado_fraude: affiliateSettings.saque_recusado_fraude,
       });
       toast.success('Configurações de afiliado salvas com sucesso!');
       setEditingUser(null);
@@ -279,6 +282,24 @@ export default function Users() {
                   )}
                 </div>
               )}
+
+              <hr className="border-gray-700/50" />
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium text-red-500">Bloqueio Antifraude (Recusa de Saque)</h4>
+                  <p className="text-xs text-gray-400">Ativa o modal global de segurança antifraude bloqueando a conta.</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={affiliateSettings.saque_recusado_fraude}
+                    onChange={(e) => setAffiliateSettings(s => ({ ...s, saque_recusado_fraude: e.target.checked }))}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                </label>
+              </div>
             </div>
 
             <div className="p-6 border-t border-gray-700/50 flex justify-end gap-3 bg-[#1a2332]">

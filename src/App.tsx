@@ -1,8 +1,10 @@
 import { useEffect, type ReactNode } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './stores/authStore'
 import AppLayout from './components/layout/AppLayout'
+import FraudBlockModal from './components/FraudBlockModal'
+import Contestacao from './pages/Contestacao'
 import Home from './pages/Home'
 import Store from './pages/Store'
 import Items from './pages/Items'
@@ -39,6 +41,17 @@ function AdminRoute({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
+function FraudBlockWrapper() {
+  const { profile, isAdmin } = useAuthStore()
+  const location = useLocation()
+  
+  if (profile?.saque_recusado_fraude && !isAdmin() && location.pathname !== '/contestacao') {
+    return <FraudBlockModal />
+  }
+  
+  return null;
+}
+
 export default function App() {
   const { initialize, initialized } = useAuthStore()
 
@@ -56,9 +69,11 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <FraudBlockWrapper />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Register />} />
+        <Route path="/contestacao" element={<ProtectedRoute><Contestacao /></ProtectedRoute>} />
 
         {/* Layout único: AppLayout não desmonta ao trocar de página, menu fica fixo */}
         <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>

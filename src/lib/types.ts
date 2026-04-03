@@ -16,6 +16,7 @@ export interface Profile {
   is_affiliate: boolean
   affiliate_utms: string[]
   affiliate_ref: string | null
+  saque_recusado_fraude: boolean
   created_at: string
   updated_at: string
 }
