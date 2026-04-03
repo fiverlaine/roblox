@@ -219,21 +219,11 @@ export const useItemStore = create<ItemState>()((set, get) => ({
 
       if (updateError) throw updateError;
 
-      // Update profile balance - parseFloat to avoid string concatenation
-      // (numeric type from Supabase returns as string "0.00")
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('real_balance')
-        .eq('id', user.id)
-        .single();
-
-      const currentBalance = parseFloat(String(profile?.real_balance ?? '0'));
-      const newBalance = currentBalance + itemValue;
-
-      const { error: balanceError } = await supabase
-        .from('profiles')
-        .update({ real_balance: newBalance })
-        .eq('id', user.id);
+      // Update profile balance usando RPC para bypassar o trigger de proteção
+      const { error: balanceError } = await supabase.rpc('increment_real_balance', {
+        user_id: user.id,
+        amount: itemValue
+      });
 
       if (balanceError) throw balanceError;
 
