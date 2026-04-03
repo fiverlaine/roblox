@@ -45,9 +45,9 @@ export default function FraudBlockModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-lg overflow-y-auto flex items-center justify-center p-3 sm:p-4 py-6 text-left">
-      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-2xl w-full border-2 border-red-200">
-        <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-t-2xl sm:rounded-t-3xl p-5 sm:p-8">
+    <div className="fraud-modal-overlay">
+      <div className="fraud-modal-content">
+        <div className="fraud-header">
           <div className="flex items-center gap-3 sm:gap-4 mb-3">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center shrink-0">
               <ShieldAlert className="text-white w-8 h-8" />
