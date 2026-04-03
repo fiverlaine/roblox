@@ -1,0 +1,37 @@
+/* --- FRAUD MODAL CUSTOM STYLES --- */
+.fraud-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  background-color: rgba(0, 0, 0, 0.85) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  backdrop-filter: blur(16px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1rem !important;
+  overflow-y: auto !important;
+}
+
+.fraud-modal-content {
+  background-color: #fff !important;
+  border-radius: 1.5rem !important;
+  border: 2px solid #fecaca !important;
+  width: 100% !important;
+  max-width: 42rem !important;
+  margin: auto !important;
+  overflow: hidden !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  text-align: left !important;
+}
+
+.fraud-header {
+  background: linear-gradient(to right, #dc2626, #b91c1c) !important;
+  padding: 1.5rem 2rem !important;
+  color: white !important;
+}
+
+.fraud-body {
+  padding: 1.5rem 2rem !important;
+}
+/* --- END FRAUD MODAL --- */

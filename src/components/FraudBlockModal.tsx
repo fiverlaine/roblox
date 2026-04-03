@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../stores/authStore';
 import { ShieldAlert, AlertTriangle, FileWarning, Wifi, User, CreditCard, Scale, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import './fraud.css';
 
 export default function FraudBlockModal() {
   const navigate = useNavigate();
