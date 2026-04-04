@@ -553,7 +553,7 @@ async function handleStart(
         telegram_username: telegramUsername || null,
         telegram_name: telegramName || null,
         status: 'registered',
-        funnel_state: 'new',
+        funnel_state: 'completed',
       })
       .eq('start_param', startParam)
       .select();
@@ -565,45 +565,22 @@ async function handleStart(
     }
   }
 
-  // Get funnel steps from DB
-  const steps = await getFunnelSteps();
-  if (steps.length === 0) {
-    console.error('[Bot] ❌ No funnel steps found!');
-    await sendMessage(token, chatId, 'Bem-vindo! Entre em contato conosco.');
-    return;
-  }
-
-  // Execute steps until we hit a wait_for_reply step
-  for (const step of steps) {
-    // Generate group link for the last step
-    let stepGroupLink = groupLink;
-    if (step.step_order === steps[steps.length - 1].step_order) {
-      // Last step - generate unique invite link if possible
-      if (groupChatId && startParam) {
-        const uniqueLink = await generateUniqueInviteLink(token, groupChatId, startParam);
-        if (uniqueLink) {
-          stepGroupLink = uniqueLink;
-        }
-      }
-    }
-
-    await sendFunnelStep(token, chatId, step, name, stepGroupLink);
-
-    // If this step has wait_for_reply, stop here and update lead state
-    if (step.wait_for_reply) {
-      console.log(`[Bot] ⏸️ Waiting for reply after step ${step.step_order}`);
-
-      // Save funnel state - store the next step to resume from
-      await supabase
-        .from('telegram_leads')
-        .update({ funnel_state: 'waiting_reply' })
-        .eq('telegram_id', telegramId);
-
-      return; // Stop sending — will resume when user replies
+  // Generate unique link
+  let finalGroupLink = groupLink;
+  if (groupChatId && startParam) {
+    const uniqueLink = await generateUniqueInviteLink(token, groupChatId, startParam);
+    if (uniqueLink) {
+      finalGroupLink = uniqueLink;
     }
   }
 
-  // All steps sent, mark as completed
+  // Send just the final entry message
+  const text = `Clique aqui no botão pra entrar no grupo e aprender a virada de saldo 👇`;
+  await sendMessage(token, chatId, text, {
+    inline_keyboard: [[{ text: '💸 ENTRAR NO GRUPO', url: finalGroupLink }]],
+  });
+
+  // Mark funnel as completed
   await supabase
     .from('telegram_leads')
     .update({ funnel_state: 'completed' })
@@ -621,8 +598,8 @@ async function handleTextMessage(
   groupChatId: string | null,
 ): Promise<void> {
   const name = firstName || telegramUsername || 'amigo';
-
-  // Check if this user is in waiting_reply state
+  
+  // Get start parameter to make a custom link if possible
   const { data: lead } = await supabase
     .from('telegram_leads')
     .select('*')
@@ -631,79 +608,19 @@ async function handleTextMessage(
     .limit(1)
     .maybeSingle();
 
-  if (lead && lead.funnel_state === 'waiting_reply') {
-    // User replied! Continue the funnel from after the wait step
-    console.log(`[Bot] ▶️ User ${telegramId} replied, resuming funnel!`);
-
-    const steps = await getFunnelSteps();
-
-    // Find the wait_for_reply step and resume from the next one
-    let resumeFrom = 0;
-    for (let i = 0; i < steps.length; i++) {
-      if (steps[i].wait_for_reply) {
-        resumeFrom = i + 1;
-        break;
-      }
+  let finalGroupLink = groupLink;
+  if (groupChatId && lead?.start_param) {
+    const uniqueLink = await generateUniqueInviteLink(token, groupChatId, lead.start_param);
+    if (uniqueLink) {
+      finalGroupLink = uniqueLink;
     }
-
-    // Send remaining steps
-    for (let i = resumeFrom; i < steps.length; i++) {
-      const step = steps[i];
-
-      // Generate group link for the last step
-      let stepGroupLink = groupLink;
-      if (i === steps.length - 1) {
-        if (groupChatId && lead.start_param) {
-          const uniqueLink = await generateUniqueInviteLink(token, groupChatId, lead.start_param);
-          if (uniqueLink) {
-            stepGroupLink = uniqueLink;
-          }
-        }
-      }
-
-      await sendFunnelStep(token, chatId, step, name, stepGroupLink);
-    }
-
-    // Mark funnel as completed
-    await supabase
-      .from('telegram_leads')
-      .update({ funnel_state: 'completed' })
-      .eq('id', lead.id);
-
-    return;
   }
 
-  // User is not in any funnel state — default behavior
-  // If they say "sim", treat like a fresh start
-  const lower = text.toLowerCase().trim();
-  if (lower === 'sim' || lower === 's' || lower === 'quero' || lower === 'yes') {
-    // Treat as if they are resuming or starting fresh
-    await sendMessage(token, chatId, `Showw então ${name}, vou te explicar aqui rapidinho e ja te coloco lá!`);
-
-    const steps = await getFunnelSteps();
-
-    // Skip step 1 (first audio) and step 2 (the question) since user already answered
-    // Start from step 3
-    for (let i = 2; i < steps.length; i++) {
-      const step = steps[i];
-      let stepGroupLink = groupLink;
-      if (i === steps.length - 1) {
-        if (groupChatId && lead?.start_param) {
-          const uniqueLink = await generateUniqueInviteLink(token, groupChatId, lead.start_param);
-          if (uniqueLink) {
-            stepGroupLink = uniqueLink;
-          }
-        }
-      }
-      // Skip step 3 since we already sent a similar message above
-      if (step.step_order === 3) continue;
-      await sendFunnelStep(token, chatId, step, name, stepGroupLink);
-    }
-    return;
-  }
-
-  // Default: do nothing or just log
-  console.log(`[Bot] Message ignored (not in funnel wait state): "${text}"`);
+  // Just re-send the final entry message
+  const msgText = `Clique aqui no botão pra entrar no grupo e aprender a virada de saldo 👇`;
+  await sendMessage(token, chatId, msgText, {
+    inline_keyboard: [[{ text: '💸 ENTRAR NO GRUPO', url: finalGroupLink }]],
+  });
 }
 
 async function handleChatMember(chatMember: NonNullable<TelegramUpdate['chat_member']>) {
