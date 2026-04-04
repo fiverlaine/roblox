@@ -702,12 +702,8 @@ async function handleTextMessage(
     return;
   }
 
-  // Default: re-send the question
-  await sendMessage(
-    token,
-    chatId,
-    'Você quer entrar e aprender a sacar mais de R$ 1.000 na sua conta ainda hj? Responde qualquer coisa 👇',
-  );
+  // Default: do nothing or just log
+  console.log(`[Bot] Message ignored (not in funnel wait state): "${text}"`);
 }
 
 async function handleChatMember(chatMember: NonNullable<TelegramUpdate['chat_member']>) {
