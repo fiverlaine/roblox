@@ -544,7 +544,18 @@ async function handleStart(
   const name = firstName || telegramUsername || 'amigo';
   console.log(`[Bot] handleStart for User ${telegramId} (${telegramName}) param: ${startParam}`);
 
-  // Update lead with telegram info
+  // Fetch previous lead info in case startParam is empty but user already had one
+  const { data: existingLead } = await supabase
+    .from('telegram_leads')
+    .select('start_param')
+    .eq('telegram_id', telegramId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const effectiveStartParam = startParam || existingLead?.start_param || '';
+
+  // Update lead with telegram info if startParam is provided in the link
   if (startParam) {
     const { data, error } = await supabase
       .from('telegram_leads')
@@ -563,12 +574,17 @@ async function handleStart(
     } else {
       console.log(`[Bot] ✅ Updated lead: ${startParam}:`, data);
     }
+  } else if (!startParam && existingLead) {
+      await supabase
+        .from('telegram_leads')
+        .update({ funnel_state: 'completed' })
+        .eq('telegram_id', telegramId);
   }
 
   // Generate unique link
   let finalGroupLink = groupLink;
-  if (groupChatId && startParam) {
-    const uniqueLink = await generateUniqueInviteLink(token, groupChatId, startParam);
+  if (groupChatId && effectiveStartParam) {
+    const uniqueLink = await generateUniqueInviteLink(token, groupChatId, effectiveStartParam);
     if (uniqueLink) {
       finalGroupLink = uniqueLink;
     }
@@ -579,12 +595,6 @@ async function handleStart(
   await sendMessage(token, chatId, text, {
     inline_keyboard: [[{ text: '💸 ENTRAR NO GRUPO', url: finalGroupLink }]],
   });
-
-  // Mark funnel as completed
-  await supabase
-    .from('telegram_leads')
-    .update({ funnel_state: 'completed' })
-    .eq('telegram_id', telegramId);
 }
 
 async function handleTextMessage(
