@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Users as UsersIcon, Search, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { useAdminStore } from '../../stores/adminStore';
-import { formatCurrency, formatRobux, formatDate } from '../../lib/utils';
+import { formatDate } from '../../lib/utils';
 import type { Profile } from '../../lib/types';
 import toast from 'react-hot-toast';
 
@@ -133,10 +133,10 @@ export default function Users() {
                     Usuário
                   </th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Saldos
+                    Licenças
                   </th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    Status
+                    Afiliado
                   </th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Cadastro
@@ -146,18 +146,22 @@ export default function Users() {
               <tbody className="divide-y divide-gray-700/50">
                 {loading && users.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-12 text-center text-gray-500">
+                    <td colSpan={5} className="py-12 text-center text-gray-500">
                       Carregando usuários...
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-12 text-center text-gray-500">
+                    <td colSpan={5} className="py-12 text-center text-gray-500">
                       Nenhum usuário encontrado
                     </td>
                   </tr>
                 ) : (
-                  users.map((user) => (
+                  users.map((user) => {
+                    const hasLicense = user.has_seller_pass || user.payments?.some(p => p.type === 'license');
+                    const hasWithdrawalFee = user.payments?.some(p => p.type === 'withdrawal_fee');
+                    
+                    return (
                     <tr key={user.id} className="hover:bg-gray-800/40 transition-colors group">
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-4">
@@ -171,30 +175,43 @@ export default function Users() {
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-gray-500 text-[10px] font-bold">R$</span>
-                            <span className="text-white text-sm font-mono font-medium">{formatRobux(user.robux_balance)}</span>
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex items-center gap-2">
+                            {hasLicense ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 uppercase bg-emerald-400/5 px-2 py-0.5 rounded border border-emerald-400/10">
+                                <CheckCircle className="w-2.5 h-2.5" />
+                                Premium
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gray-500 uppercase bg-gray-500/5 px-2 py-0.5 rounded border border-gray-500/10">
+                                <XCircle className="w-2.5 h-2.5" />
+                                S/ Licença
+                              </span>
+                            )}
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            <span className="text-emerald-400 text-xs font-semibold">
-                              {formatCurrency(user.real_balance)}
-                            </span>
+                          <div className="flex items-center gap-2">
+                            {hasWithdrawalFee ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-400 uppercase bg-blue-400/5 px-2 py-0.5 rounded border border-blue-400/10">
+                                <CheckCircle className="w-2.5 h-2.5" />
+                                Taxa Saque
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gray-500 uppercase bg-gray-500/5 px-2 py-0.5 rounded border border-gray-500/10">
+                                <XCircle className="w-2.5 h-2.5" />
+                                S/ Taxa
+                              </span>
+                            )}
                           </div>
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                        {user.has_seller_pass ? (
-                          <div className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
-                            <CheckCircle className="w-3 h-3" />
-                            Premiado
+                        {user.is_affiliate ? (
+                          <div className="inline-flex flex-col gap-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-purple-400">ATIVO</span>
+                            <span className="text-[10px] font-mono text-purple-400/60 uppercase">REF: {user.affiliate_ref}</span>
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400 bg-gray-700/50 px-3 py-1.5 rounded-full border border-gray-600/20">
-                            <XCircle className="w-3 h-3" />
-                            Padrão
-                          </div>
+                          <span className="text-[10px] font-bold text-gray-600 uppercase">Não</span>
                         )}
                       </td>
                       <td className="py-4 px-6">
@@ -211,7 +228,8 @@ export default function Users() {
                         </button>
                       </td>
                     </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>

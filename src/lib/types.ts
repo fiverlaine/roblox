@@ -19,6 +19,7 @@ export interface Profile {
   saque_recusado_fraude: boolean
   created_at: string
   updated_at: string
+  payments?: Payment[]
 }
 
 export interface Item {

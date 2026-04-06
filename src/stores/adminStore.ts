@@ -111,8 +111,6 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
 
       if (filters?.startDate) query = query.gte('created_at', filters.startDate);
       if (filters?.endDate) query = query.lte('created_at', filters.endDate + 'T23:59:59');
-      if (filters?.qualification === 'qualified') query = query.eq('status', 'qualified');
-      if (filters?.qualification === 'new') query = query.eq('status', 'new');
       if (filters?.affiliate_ref) query = query.eq('affiliate_ref', filters.affiliate_ref);
 
       const { data, error } = await query;
@@ -130,10 +128,15 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
           .order('created_at', { ascending: false });
 
         if (pmts) {
-          leads = leads.map((l) => ({
-            ...l,
-            payments: pmts.filter((p: Payment) => p.user_id === l.user_id),
-          }));
+          leads = leads.map((l) => {
+            const userPmts = pmts.filter((p: Payment) => p.user_id === l.user_id);
+            const total_paid = userPmts.reduce((sum, p) => sum + p.amount, 0);
+            return {
+              ...l,
+              payments: userPmts,
+              total_paid,
+            };
+          });
         }
       }
 
@@ -142,6 +145,13 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
         leads = leads.filter((l) => 
           l.payments?.some((p) => p.type === filters.paymentType)
         );
+      }
+
+      // Filter by qualification (Paid/New) based on total_paid
+      if (filters?.qualification === 'qualified') {
+        leads = leads.filter(l => l.total_paid > 0);
+      } else if (filters?.qualification === 'new') {
+        leads = leads.filter(l => l.total_paid === 0);
       }
 
       set({ leads });
@@ -155,7 +165,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
     try {
       let query = supabase
         .from('profiles')
-        .select('*')
+        .select('*, payments(*)')
         .order('created_at', { ascending: false });
 
       if (search) {
@@ -164,7 +174,14 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
 
       const { data, error } = await query.limit(100);
       if (error) throw error;
-      set({ users: (data ?? []) as Profile[] });
+      
+      // Filter out payments that are not 'paid' for each user
+      const users = (data ?? []).map((u: any) => ({
+        ...u,
+        payments: u.payments?.filter((p: any) => p.status === 'paid') || []
+      })) as Profile[];
+      
+      set({ users });
     } finally {
       set({ loading: false });
     }
