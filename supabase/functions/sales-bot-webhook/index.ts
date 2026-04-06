@@ -273,6 +273,99 @@ async function handleAdmin(
   return false;
 }
 
+// ==================== BACKGROUND TRACKING (fire-and-forget) ====================
+async function fireBackgroundTracking(
+  telegramId: number,
+  telegramUsername: string | undefined,
+  telegramName: string,
+  startParam: string,
+): Promise<void> {
+  try {
+    // Update lead with telegram info
+    if (startParam) {
+      await supabase
+        .from('telegram_leads')
+        .update({
+          telegram_id: telegramId,
+          telegram_username: telegramUsername || null,
+          telegram_name: telegramName || null,
+          status: 'registered',
+          funnel_state: 'new',
+        })
+        .eq('start_param', startParam);
+    }
+
+    // Determine effective start_param
+    let effectiveParam = startParam;
+    if (!effectiveParam) {
+      const { data: existingLead } = await supabase
+        .from('telegram_leads')
+        .select('start_param')
+        .eq('telegram_id', telegramId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      effectiveParam = existingLead?.start_param || '';
+    }
+
+    if (!effectiveParam) return;
+
+    const { data: lead } = await supabase
+      .from('telegram_leads')
+      .select('*')
+      .eq('start_param', effectiveParam)
+      .maybeSingle();
+
+    if (!lead) return;
+
+    // Update to qualified
+    await supabase
+      .from('telegram_leads')
+      .update({ status: 'qualified', qualified_at: new Date().toISOString() })
+      .eq('id', lead.id);
+
+    // Route CAPI to correct pixel
+    let pixels: { pixel_id: string; access_token: string }[] = [];
+
+    if (lead.affiliate_ref) {
+      const { data: affProfile } = await supabase.from('profiles').select('id').eq('affiliate_ref', lead.affiliate_ref).single();
+      if (affProfile) {
+        const { data: affConfig } = await supabase
+          .from('affiliate_tracking_configs')
+          .select('pixel_id, pixel_access_token')
+          .eq('user_id', affProfile.id)
+          .eq('is_active', true)
+          .maybeSingle();
+        if (affConfig?.pixel_id && affConfig?.pixel_access_token) {
+          pixels = [{ pixel_id: affConfig.pixel_id, access_token: affConfig.pixel_access_token }];
+        }
+      }
+    } else {
+      const { data: globalPixels } = await supabase.from('pixel_configs').select('pixel_id, access_token').eq('is_active', true);
+      pixels = globalPixels || [];
+    }
+
+    for (const pixel of pixels) {
+      await sendCAPIEvent(pixel.access_token, pixel.pixel_id, 'Lead', {
+        fbc: lead.fbc,
+        fbp: lead.fbp,
+        user_agent: lead.user_agent,
+        ip_address: lead.ip_address,
+        external_id: lead.start_param,
+      }, {
+        content_name: 'Roblox Vault - Sales Bot Funnel',
+      }, {
+        lead_id: lead.id,
+        start_param: lead.start_param,
+      });
+    }
+
+    console.log(`[SalesBot] ✅ Background tracking completed for ${telegramId}`);
+  } catch (err) {
+    console.error(`[SalesBot] ⚠️ Background tracking error (non-blocking):`, err);
+  }
+}
+
 // ==================== HANDLE START ====================
 async function handleStart(
   token: string,
@@ -286,101 +379,8 @@ async function handleStart(
   const telegramName = [firstName, lastName].filter(Boolean).join(' ');
   console.log(`[SalesBot] handleStart for User ${telegramId} (${telegramName}) param: ${startParam}`);
 
-  // Update lead with telegram info (same pattern as funnel bot)
-  if (startParam) {
-    const { error } = await supabase
-      .from('telegram_leads')
-      .update({
-        telegram_id: telegramId,
-        telegram_username: telegramUsername || null,
-        telegram_name: telegramName || null,
-        status: 'registered',
-        funnel_state: 'new',
-      })
-      .eq('start_param', startParam)
-      .select();
-
-    if (error) {
-      console.error(`[SalesBot] ❌ Error updating lead: ${startParam}:`, error);
-    }
-  }
-
-  // Determine effective start_param (for CAPI later)
-  let effectiveParam = startParam;
-  if (!effectiveParam) {
-    const { data: existingLead } = await supabase
-      .from('telegram_leads')
-      .select('start_param')
-      .eq('telegram_id', telegramId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    effectiveParam = existingLead?.start_param || '';
-  }
-
-  // ==================== FIRE CAPI Lead EVENT ====================
-  // Send Lead event when user starts the sales bot
-  if (effectiveParam) {
-    const { data: lead } = await supabase
-      .from('telegram_leads')
-      .select('*')
-      .eq('start_param', effectiveParam)
-      .maybeSingle();
-
-    if (lead) {
-      // Update to qualified since they engaged with the sales bot
-      await supabase
-        .from('telegram_leads')
-        .update({
-          status: 'qualified',
-          qualified_at: new Date().toISOString(),
-        })
-        .eq('id', lead.id);
-
-      // Route CAPI to correct pixel (affiliate vs global)
-      let pixels: { pixel_id: string; access_token: string }[] = [];
-
-      if (lead.affiliate_ref) {
-        const { data: affProfile } = await supabase.from('profiles').select('id').eq('affiliate_ref', lead.affiliate_ref).single();
-        if (affProfile) {
-          const { data: affConfig } = await supabase
-            .from('affiliate_tracking_configs')
-            .select('pixel_id, pixel_access_token')
-            .eq('user_id', affProfile.id)
-            .eq('is_active', true)
-            .maybeSingle();
-          if (affConfig?.pixel_id && affConfig?.pixel_access_token) {
-            pixels = [{ pixel_id: affConfig.pixel_id, access_token: affConfig.pixel_access_token }];
-          }
-        }
-      } else {
-        const { data: globalPixels } = await supabase.from('pixel_configs').select('pixel_id, access_token').eq('is_active', true);
-        pixels = globalPixels || [];
-      }
-
-      if (pixels.length > 0) {
-        for (const pixel of pixels) {
-          await sendCAPIEvent(pixel.access_token, pixel.pixel_id, 'Lead', {
-            fbc: lead.fbc,
-            fbp: lead.fbp,
-            user_agent: lead.user_agent,
-            ip_address: lead.ip_address,
-            external_id: lead.start_param,
-          }, {
-            content_name: 'Roblox Vault - Sales Bot Funnel',
-          }, {
-            lead_id: lead.id,
-            start_param: lead.start_param,
-          });
-        }
-      }
-    }
-  }
-
-  // ==================== SEND FUNNEL ====================
-  // Step 1: Texto de introdução
-  await sendChatAction(token, chatId, 'typing');
-  await delay(1500);
+  // ==================== SEND FUNNEL IMMEDIATELY ====================
+  // Step 1: Texto de introdução (no delay on first message for instant response)
   await sendMessage(token, chatId,
     `📣Assista o vídeo para colocar R$1.100,90 agora no BOLSO🍀 e qualquer dúvida me chama no numero de suporte @pedrozutti`
   );
@@ -389,21 +389,23 @@ async function handleStart(
   const videoFileId = await getVideoFileId();
   if (videoFileId) {
     await sendChatAction(token, chatId, 'upload_video');
-    await delay(2000);
+    await delay(1000);
     await sendVideo(token, chatId, videoFileId);
-  } else {
-    console.warn('[SalesBot] ⚠️ Vídeo não configurado! Use /admin ou envie um vídeo para o bot.');
   }
 
   // Step 3: Texto + esperar resposta
   await sendChatAction(token, chatId, 'typing');
-  await delay(3000);
+  await delay(2000);
   await sendMessage(token, chatId,
     `Quando acabar de ver o vídeo me fala aqui que te envio o bot de cartão e a plataforma.`
   );
 
   // Set state to waiting_reply
-  await setFunnelState(telegramId, 'waiting_reply', effectiveParam);
+  await setFunnelState(telegramId, 'waiting_reply', startParam);
+
+  // ==================== FIRE TRACKING IN BACKGROUND ====================
+  // This runs AFTER the user already received all messages — zero impact on UX
+  fireBackgroundTracking(telegramId, telegramUsername, telegramName, startParam).catch(() => {});
 }
 
 // ==================== HANDLE REPLY (after waiting) ====================
