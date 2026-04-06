@@ -1,8 +1,92 @@
 # PRD — Roblox Vault
 
-> **Versão:** 1.0  
-> **Data:** 01/04/2026  
-> **Autor:** Gerado automaticamente via análise completa do código-fonte
+> **Versão:** 2.0  
+> **Data:** 05/04/2026  
+> **Autor:** Documento consolidado a partir do repositório `roblox-vault`, leitura do código-fonte e inspeção do projeto Supabase **Roblox** via MCP (tabelas, migrações aplicadas e Edge Functions ativas).
+
+---
+
+## 0. Snapshot Supabase (produção — MCP)
+
+| Campo | Valor |
+|---|---|
+| **Nome do projeto** | Roblox |
+| **Project ref / ID** | `eopofvyigdokxatoijzt` |
+| **Região** | `us-west-2` |
+| **Status** | ACTIVE_HEALTHY |
+| **PostgreSQL** | 17.x (engine 17) |
+| **URL pública** | `https://eopofvyigdokxatoijzt.supabase.co` (padrão Supabase; domínio customizado pode existir no front) |
+
+### 0.1 Volume aproximado de dados (contagem de linhas — instantâneo)
+
+Valores úteis para dimensionamento e suporte; variam em produção.
+
+| Tabela / escopo | Linhas (aprox.) |
+|---|---|
+| `auth.users` | 460 |
+| `public.profiles` | 458 |
+| `public.user_roles` | 458 |
+| `public.items` | 220 |
+| `public.user_items` | 370 |
+| `public.purchases` | 370 |
+| `public.payments` | 564 |
+| `public.telegram_leads` | 4 755 |
+| `public.capi_logs` | 1 941 |
+| `public.generated_cards` | 1 174 |
+| `public.withdrawals` | 167 |
+| `public.webhook_logs` | 325 |
+| `public.admin_settings` | 401 |
+| `public.funnel_steps` | 9 |
+| Storage `storage.objects` | 0 (objetos; bucket(s) podem existir vazios) |
+
+### 0.2 Migrações registradas no banco remoto
+
+Ordem aplicada no histórico do projeto (nomes como no Supabase):
+
+1. `initial_schema`  
+2. `rls_policies`  
+3. `seed_items`  
+4. `add_missing_fk_index`  
+5. `create_generated_cards`  
+6. `fix_function_search_path`  
+7. `create_withdrawals_table`  
+8. `create_webhook_logs`  
+9. `add_group_tracking_infrastructure`  
+10. `add_telegram_name_to_leads`  
+11. `create_funnel_media_bucket_and_state`  
+12. `create_funnel_steps_table_v2`  
+13. `add_affiliate_columns_to_profiles`  
+14. `update_payments_gateway_default_to_zucropay`  
+15. `add_geo_columns_to_telegram_leads`  
+16. `create_affiliate_notification_configs`  
+17. `create_pushcut_triggers`  
+18. `add_affiliate_ref_columns`  
+19. `create_affiliate_tracking_configs`  
+20. `fix_rls_block_role_escalation`  
+21. `lockdown_gateway_configs`  
+22. `add_saque_recusado_fraude`  
+23. `rpc_delete_user`  
+
+**Nota:** A pasta `supabase/migrations/` no Git contém um subconjunto nomeado por data (`20260224…` etc.); o remoto pode incluir migrações aplicadas diretamente ou com nomes de versão diferentes. A lista acima reflete o estado **aplicado** no projeto Supabase.
+
+### 0.3 Edge Functions implantadas (remoto)
+
+Todas listadas com `verify_jwt: false` (chamadas tipicamente servidor-a-servidor ou com lógica própria de auth).
+
+| Slug | Versão (aprox.) | Presente no repositório local |
+|---|---|---|
+| `create-payment` | 24 | Sim (`supabase/functions/create-payment`) |
+| `bspay-webhook` | 13 | Sim |
+| `utmify-event` | 11 | Sim |
+| `tracking-redirect` | 4 | Sim |
+| `telegram-bot-webhook` | 14 | Sim |
+| `card-bot-webhook` | 13 | Sim |
+| `validate-card-purchase` | 5 | Sim |
+| `buy-item-with-robux` | 3 | Sim |
+| `tracking-save` | 5 | Sim |
+| `group-webhook` | 5 | Sim |
+| `zucropay-webhook` | 3 | Sim |
+| `pushcut-notify` | 3 | **Não** (pasta ausente em `supabase/functions/`; o front chama `…/functions/v1/pushcut-notify`) |
 
 ---
 
@@ -18,6 +102,7 @@
 - Sistema de afiliados com tracking independente (Pixel + UTMify por afiliado)
 - Notificações push via Pushcut para afiliados
 - Painel administrativo completo
+- Bloqueio por suspeita de fraude em saque (`saque_recusado_fraude`) com fluxo de contestação na web
 
 **Tagline:** "Compre, Venda e Ganhe"  
 **Descrição:** "Compre Robux, adquira skins exclusivas e revenda para ganhar dinheiro real"
@@ -122,6 +207,7 @@ Estende `auth.users` com dados da aplicação.
 | `is_affiliate` | boolean | Se é afiliado |
 | `affiliate_utms` | text[] | UTMs do afiliado (legado) |
 | `affiliate_ref` | text | Código único de referência do afiliado |
+| `saque_recusado_fraude` | boolean | Quando verdadeiro, usuários não-admin são bloqueados no app (exceto rota `/contestacao`) até regularização |
 | `created_at` / `updated_at` | timestamptz | Timestamps |
 
 #### `items`
@@ -319,6 +405,29 @@ Registros de saques.
 | `status` | text | Status do saque |
 | `payment_id` | bigint | Pagamento da taxa associado |
 
+**Observação:** `fee_method` no banco aceita `'pix'` ou `'balance'` (taxa paga via PIX separado ou abatida do saldo, conforme implementação).
+
+#### `generated_cards`
+Cartões gerados / entregues pelo fluxo do **bot de cartão** (dados sensíveis; acesso restrito por RLS e uso via service role nas functions).
+
+| Coluna | Tipo | Descrição |
+|---|---|---|
+| `telegram_id` | bigint | Usuário Telegram |
+| `card_number`, `holder_name`, `expiry`, `cvv`, etc. | text | Dados do cartão entregue |
+| `is_free` / `is_used` | boolean | Controle de uso |
+| `used_by` | UUID (FK → profiles) | Usuário da plataforma que consumiu, se houver |
+
+#### `user_roles`
+Espelho/auxiliar de papel por usuário (FK → `auth.users`); usado em conjunto com políticas RLS endurecidas (`fix_rls_block_role_escalation`).
+
+| Coluna | Tipo | Descrição |
+|---|---|---|
+| `id` | UUID (PK → auth.users) | Mesmo ID do usuário |
+| `role` | text | Papel (ex.: `user`) |
+
+#### `bspay_debug`
+Tabela de depuração (`rls_enabled: false` no remoto) para payloads BSPay — uso operacional/debug, não para cliente final.
+
 #### `webhook_logs`
 Logs brutos de webhooks recebidos.
 
@@ -345,7 +454,9 @@ Configurações administrativas key-value.
 
 ### 4.3 Row Level Security (RLS)
 
-Todas as tabelas têm RLS habilitado:
+Quase todas as tabelas de negócio têm RLS habilitado. **Exceções no remoto:** `webhook_logs`, `bspay_debug` (RLS desligado — acesso via service role / admin DB).
+
+Com RLS:
 - **profiles**: Usuários veem/editam apenas seu próprio perfil; Admin vê todos
 - **items**: Todos autenticados veem ativos; Admin gerencia (CRUD)
 - **user_items**: Usuários veem seus próprios; Admin vê todos
@@ -456,7 +567,13 @@ Todas as tabelas têm RLS habilitado:
 ### 5.10 `buy-item-with-robux`
 **Propósito:** Processa compra de itens usando saldo de Robux server-side.
 
-### 5.11 `_shared/`
+### 5.11 `validate-card-purchase`
+**Propósito:** Valida e registra compras originadas no bot de cartão (integração com `generated_cards` e regras de negócio do card bot).
+
+### 5.12 `pushcut-notify`
+**Propósito:** Dispara notificações no app **Pushcut** para afiliados (teste de configuração e eventos disparados pelo backend). **Implantada no Supabase**, mas o código-fonte **não está** na pasta `supabase/functions/` do repositório local — apenas consumida pelo front (`AffiliateNotifications.tsx`).
+
+### 5.13 `_shared/`
 Código compartilhado entre Edge Functions:
 - **`cors.ts`**: Headers CORS padrão
 - **`supabase.ts`**: Cliente Supabase inicializado com service role key
@@ -474,6 +591,13 @@ Código compartilhado entre Edge Functions:
 | `/registro` | `Register.tsx` | Tela de cadastro |
 
 #### Rotas Protegidas (requer autenticação)
+
+| Rota | Componente | Descrição |
+|---|---|---|
+| `/contestacao` | `Contestacao.tsx` | Contestação quando `saque_recusado_fraude` está ativo (única área acessível além do modal de bloqueio para não-admins) |
+
+**Com layout principal (`AppLayout`)**
+
 | Rota | Componente | Descrição |
 |---|---|---|
 | `/` | `Home.tsx` | Página inicial com itens em destaque |
@@ -526,6 +650,10 @@ Código compartilhado entre Edge Functions:
 | Componente | Descrição |
 |---|---|
 | `AffiliateNotifications.tsx` | Configuração completa de notificações Pushcut para afiliados |
+| `FraudBlockModal.tsx` + `fraud.css` | Modal de bloqueio global para usuários com fraude em saque |
+| `components/home/*` | `WelcomeCard`, `SummaryCard`, `TrendingItems`, `QuickAccess` |
+| `components/store/*` | `ItemCard`, `PurchaseModal` |
+| `components/items/*` | `SellItemModal` |
 
 ---
 
@@ -695,6 +823,26 @@ VITE_SUPABASE_ANON_KEY=<Anon key do Supabase>
 
 ---
 
+## 11.1 Inventário do repositório (pastas relevantes)
+
+| Caminho | Conteúdo |
+|---|---|
+| `src/` | Aplicação React (~11 300 linhas em `.ts`/`.tsx`/`.css` — medida local) |
+| `supabase/functions/` | Edge Functions Deno (~2 700 linhas em `.ts` no repo; **+ `pushcut-notify` só no remoto**) |
+| `supabase/migrations/` | SQL versionado (pode divergir do histórico remoto; ver seção 0.2) |
+| `public/` | Assets estáticos, `landing/`, espelho de imagens/fontes para deploy |
+| `documentation/` | Docs de integrações (ZucroPay, BSPay, UTMify, Telegram, Meta CAPI, Pushcut) |
+| `contestacao/` | HTML/CSS estáticos auxiliares de contestação legada ou referência |
+| `REFERENCIAS/` | Capturas, clones HTML e exports de chat Telegram (material de design/requisitos, fora do build) |
+| `dist/` | Artefatos de build Vite (gerados; não fonte) |
+| Raiz | `redirect.html`, `white.html`, `index.html`, `fraude.js`, `vercel.json`, `vite.config.ts` |
+
+### 11.2 API externa de referência (não usada pela loja em runtime)
+
+`src/lib/robloxVaultApi.ts` documenta a API pública `https://robloxvault.space/api/products` para **importação one-time** ou referência de formato; a loja em produção lê catálogo do **Supabase** (`items`).
+
+---
+
 ## 12. Documentação Existente
 
 | Arquivo | Conteúdo |
@@ -738,3 +886,20 @@ VITE_SUPABASE_ANON_KEY=<Anon key do Supabase>
 - BSPay e ZucroPay webhooks possuem lógica duplicada — poderiam ser consolidados
 - `card-bot-webhook` é uma funcionalidade mais complexa (17KB) com escopo separado
 - Uso de `generateValidCPF()` em múltiplos locais para gerar CPFs fake quando ausentes
+
+---
+
+## 15. Métricas de código (referência local)
+
+| Escopo | Linhas (aprox.) |
+|---|---|
+| `src/**/*.ts`, `tsx`, `css` | ~11 281 |
+| `supabase/functions/**/*.ts` | ~2 706 |
+
+Contagens obtidas via PowerShell (`Measure-Object -Line`); incluem comentários e espaços. `node_modules/` e `dist/` foram excluídos.
+
+---
+
+## 16. Conformidade com a análise solicitada
+
+Este PRD cobre: visão de produto, stack, arquitetura, schema **alinhado ao banco remoto** (incluindo colunas e tabelas descobertas via MCP), funções edge **implantadas**, rotas do `App.tsx`, stores, fluxos de pagamento/afiliados/Telegram/CAPI, deploy (Vercel + Supabase), riscos e extensões recentes (fraude/contestação, `user_roles`, `generated_cards`). Para credenciais e segredos, use apenas variáveis de ambiente e painel Supabase — não versionar chaves no Git.

@@ -36,7 +36,7 @@ const SIDEBAR_ITEMS = [
   { path: '/admin/bot-telegram', label: 'Bot do Telegram', icon: 'Bot' },
   { path: '/admin/utmify', label: 'Integração Utmify', icon: 'TrendingUp' },
   { path: '/admin/conversao-gateway', label: 'Conversão Gateway', icon: 'RefreshCw' },
-  { path: '/admin/analytics-telegram', label: 'Analytics Telegram', icon: 'BarChart3' },
+  { path: '/admin/analytics-telegram', label: 'Relatório de Leads', icon: 'BarChart3' },
   { path: '/admin/webhooks', label: 'Webhooks', icon: 'Webhook' },
 ];
 

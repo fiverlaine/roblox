@@ -22,6 +22,7 @@ interface LeadFilters {
   endDate?: string;
   paymentType?: string;
   qualification?: string;
+  affiliate_ref?: string;
 }
 
 interface AdminState {
@@ -112,6 +113,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       if (filters?.endDate) query = query.lte('created_at', filters.endDate + 'T23:59:59');
       if (filters?.qualification === 'qualified') query = query.eq('status', 'qualified');
       if (filters?.qualification === 'new') query = query.eq('status', 'new');
+      if (filters?.affiliate_ref) query = query.eq('affiliate_ref', filters.affiliate_ref);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -305,6 +307,10 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       'Cidade',
       'Status',
       'Total Pago',
+      'Afiliado (Ref)',
+      'UTM Source',
+      'UTM Medium',
+      'UTM Campaign',
       'Criado Em',
     ];
 
@@ -319,6 +325,10 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       lead.profile?.city ?? '',
       lead.status,
       lead.total_paid.toString(),
+      lead.affiliate_ref ?? 'Direto',
+      lead.utm_source ?? '',
+      lead.utm_medium ?? '',
+      lead.utm_campaign ?? '',
       lead.created_at,
     ]);
 

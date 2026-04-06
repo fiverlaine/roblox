@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  BarChart3,
   Users,
   DollarSign,
   RefreshCw,
@@ -10,20 +9,22 @@ import {
   Search,
   CheckCircle,
   XCircle,
-  FileText,
+  LayoutDashboard,
+  Link as LinkIcon,
+  MousePointer2,
 } from 'lucide-react';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { useAdminStore } from '../../stores/adminStore';
 import { formatCurrency, formatDate } from '../../lib/utils';
 
-export default function TelegramAnalytics() {
+export default function GlobalLeadsReport() {
   const { leads, loading, fetchLeads, exportLeadsCSV } = useAdminStore();
-  const [showDocs, setShowDocs] = useState(false);
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
     paymentType: '',
     qualification: '',
+    affiliate_ref: '',
   });
 
   useEffect(() => {
@@ -36,11 +37,12 @@ export default function TelegramAnalytics() {
       endDate: filters.endDate || undefined,
       paymentType: filters.paymentType || undefined,
       qualification: filters.qualification || undefined,
+      affiliate_ref: filters.affiliate_ref || undefined,
     });
   };
 
   const handleClearFilters = () => {
-    setFilters({ startDate: '', endDate: '', paymentType: '', qualification: '' });
+    setFilters({ startDate: '', endDate: '', paymentType: '', qualification: '', affiliate_ref: '' });
     fetchLeads();
   };
 
@@ -50,14 +52,13 @@ export default function TelegramAnalytics() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `leads-telegram-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `relatorio-global-leads-${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
 
   const qualifiedLeads = leads.filter((l) => l.total_paid > 0);
-  const totalPaid = leads.reduce((sum, l) => sum + l.total_paid, 0);
-  const leadsWithPayments = leads.filter((l) => l.total_paid > 0);
+  const totalPaid = leads.reduce((sum, l) => sum + Number(l.total_paid || 0), 0);
 
   const metrics = [
     {
@@ -68,18 +69,11 @@ export default function TelegramAnalytics() {
       bg: 'bg-blue-500/10',
     },
     {
-      label: 'Leads Qualificados',
+      label: 'Vendas Confirmadas',
       value: qualifiedLeads.length.toLocaleString('pt-BR'),
       icon: CheckCircle,
       color: 'text-emerald-400',
       bg: 'bg-emerald-500/10',
-    },
-    {
-      label: 'Total de Pagamentos',
-      value: leadsWithPayments.length.toLocaleString('pt-BR'),
-      icon: BarChart3,
-      color: 'text-purple-400',
-      bg: 'bg-purple-500/10',
     },
     {
       label: 'Receita Total',
@@ -87,6 +81,13 @@ export default function TelegramAnalytics() {
       icon: DollarSign,
       color: 'text-emerald-400',
       bg: 'bg-emerald-500/10',
+    },
+    {
+      label: 'Ticket Médio',
+      value: formatCurrency(qualifiedLeads.length > 0 ? totalPaid / qualifiedLeads.length : 0),
+      icon: LayoutDashboard,
+      color: 'text-purple-400',
+      bg: 'bg-purple-500/10',
     },
   ];
 
@@ -97,18 +98,11 @@ export default function TelegramAnalytics() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-white mb-1">
-              Analytics do Telegram
+              Relatório Global de Leads & Vendas
             </h2>
-            <p className="text-sm text-gray-400">Rastreamento de leads do Telegram vinculados à plataforma</p>
+            <p className="text-sm text-gray-400">Visão geral de todo o tráfego, afiliados e conversões do sistema.</p>
           </div>
           <div className="flex gap-2">
-            <button
-              onClick={() => setShowDocs(!showDocs)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors"
-            >
-              <FileText className="w-4 h-4" />
-              {showDocs ? 'Ocultar' : 'Mostrar'} Documentação
-            </button>
             <button
               onClick={() => fetchLeads()}
               disabled={loading}
@@ -117,10 +111,18 @@ export default function TelegramAnalytics() {
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               Atualizar
             </button>
+            <button
+              onClick={handleExportCSV}
+              disabled={leads.length === 0}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-500 transition-colors disabled:opacity-50"
+            >
+              <Download className="w-4 h-4" />
+              Exportar CSV
+            </button>
           </div>
         </div>
 
-        {/* Metrics Cards - Redesigned to match reference */}
+        {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {metrics.map((m, i) => (
             <motion.div
@@ -128,7 +130,7 @@ export default function TelegramAnalytics() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="bg-[#1e222d] rounded-2xl p-6 border border-gray-800/50 flex items-center justify-between group hover:border-gray-700/80 transition-all"
+              className="bg-[#1e222d] rounded-2xl p-6 border border-gray-800/50 flex items-center justify-between group hover:border-brand-primary/30 transition-all shadow-sm"
             >
               <div>
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">{m.label}</p>
@@ -146,7 +148,7 @@ export default function TelegramAnalytics() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <Filter className="w-5 h-5 text-gray-400" />
-              <h3 className="text-lg font-bold text-white">Filtros</h3>
+              <h3 className="text-lg font-bold text-white">Filtros Avançados</h3>
             </div>
             <div className="flex gap-2">
               <button
@@ -161,11 +163,11 @@ export default function TelegramAnalytics() {
                 className="flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/20 disabled:opacity-50"
               >
                 <Search className="w-4 h-4" />
-                Aplicar
+                Filtrar Resultados
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Data Inicial</label>
               <input
@@ -185,11 +187,21 @@ export default function TelegramAnalytics() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tipo de Pagamento</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Afiliado (REF)</label>
+              <input
+                type="text"
+                placeholder="Ex: YrKVqav"
+                value={filters.affiliate_ref}
+                onChange={(e) => setFilters((p) => ({ ...p, affiliate_ref: e.target.value }))}
+                className="w-full bg-[#161a23] border border-gray-700/50 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tipo Pagamento</label>
               <select
                 value={filters.paymentType}
                 onChange={(e) => setFilters((p) => ({ ...p, paymentType: e.target.value }))}
-                className="w-full bg-[#161a23] border border-gray-700/50 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all appearance-none cursor-pointer"
+                className="w-full bg-[#161a23] border border-gray-700/50 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all cursor-pointer appearance-none"
               >
                 <option value="">Todos</option>
                 <option value="license">Licença</option>
@@ -197,47 +209,39 @@ export default function TelegramAnalytics() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Qualificação</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Status</label>
               <select
                 value={filters.qualification}
                 onChange={(e) => setFilters((p) => ({ ...p, qualification: e.target.value }))}
-                className="w-full bg-[#161a23] border border-gray-700/50 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all appearance-none cursor-pointer"
+                className="w-full bg-[#161a23] border border-gray-700/50 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all cursor-pointer appearance-none"
               >
                 <option value="">Todos</option>
-                <option value="qualified">Qualificados</option>
-                <option value="new">Novos</option>
+                <option value="qualified">Pagos</option>
+                <option value="new">Pendentes</option>
               </select>
             </div>
           </div>
         </div>
 
         {/* Leads Table */}
-        <div className="bg-[#1e222d] rounded-2xl border border-gray-800/50 overflow-hidden shadow-xl shadow-black/20">
-          <div className="flex items-center justify-between p-6 border-b border-gray-800/50">
+        <div className="bg-[#1e222d] rounded-2xl border border-gray-800/50 overflow-hidden shadow-sm">
+          <div className="p-6 border-b border-gray-800/50">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              Leads <span className="px-2 py-0.5 rounded-lg bg-gray-800/50 text-gray-400 text-sm font-mono tracking-tighter">({leads.length})</span>
+              Listagem de Leads & Conversões <span className="px-2 py-0.5 rounded-lg bg-gray-800/50 text-gray-400 text-sm font-mono tracking-tighter">({leads.length})</span>
             </h3>
-            <button
-              onClick={handleExportCSV}
-              disabled={leads.length === 0}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-emerald-600/90 text-white hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-900/20 disabled:opacity-50"
-            >
-              <Download className="w-4 h-4" />
-              Exportar CSV
-            </button>
           </div>
 
           <div className="overflow-x-auto overflow-y-hidden custom-scrollbar">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-[#161a23]/30">
-                  <th className="text-left py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">TELEGRAM</th>
-                  <th className="text-left py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">USUÁRIO DA PLATAFORMA</th>
-                  <th className="text-left py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">DADOS PESSOAIS</th>
-                  <th className="text-left py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap text-center">STATUS</th>
+                <tr className="bg-[#161a23]/50">
+                  <th className="text-left py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">USUÁRIO / TELEGRAM</th>
+                  <th className="text-left py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">ORIGEM / AFILIADO</th>
+                  <th className="text-left py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">UTM SOURCE</th>
+                  <th className="text-center py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">STATUS</th>
                   <th className="text-left py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">PAGAMENTOS</th>
                   <th className="text-right py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">TOTAL PAGO</th>
-                  <th className="text-right py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">VINCULADO EM</th>
+                  <th className="text-right py-4 px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">DATA</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800/40">
@@ -246,7 +250,7 @@ export default function TelegramAnalytics() {
                     <td colSpan={7} className="py-20 text-center">
                       <div className="flex flex-col items-center gap-2">
                         <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
-                        <span className="text-gray-500 font-medium">Carregando leads com inteligência...</span>
+                        <span className="text-gray-500 font-medium">Buscando dados globais...</span>
                       </div>
                     </td>
                   </tr>
@@ -255,95 +259,86 @@ export default function TelegramAnalytics() {
                     <td colSpan={7} className="py-20 text-center">
                       <div className="flex flex-col items-center gap-2">
                         <Users className="w-10 h-10 text-gray-700" />
-                        <span className="text-gray-500 font-medium">Nenhum rastro encontrado até agora.</span>
+                        <span className="text-gray-500 font-medium">Nenhum lead encontrado para os filtros atuais.</span>
                       </div>
                     </td>
                   </tr>
                 ) : (
                   leads.map((lead) => (
                     <tr key={lead.id} className="group hover:bg-[#161a23]/50 transition-all duration-200">
-                      {/* Telegram */}
-                      <td className="py-6 px-6 align-top">
-                        <div className="min-w-[140px]">
-                          <p className="text-white text-sm font-bold group-hover:text-blue-400 transition-colors">
-                            {lead.telegram_username ? `@${lead.telegram_username}` : (lead.telegram_name || 'Usuário sem nome')}
-                          </p>
-                          <p className="text-[10px] text-gray-600 font-mono mt-1">ID: {lead.telegram_id ?? '-'}</p>
-                        </div>
-                      </td>
-                      {/* Platform User */}
                       <td className="py-6 px-6 align-top">
                         <div className="min-w-[180px]">
                           {lead.profile ? (
                             <>
-                              <p className="text-white/90 text-sm font-medium leading-tight">{lead.profile.full_name}</p>
-                              <p className="text-xs text-gray-400 mt-1">{lead.profile.email}</p>
+                              <p className="text-white text-sm font-bold">{lead.profile.full_name}</p>
+                              <p className="text-xs text-gray-400">{lead.profile.email}</p>
                             </>
                           ) : (
-                            <span className="text-gray-600 text-xs italic">Perfil não encontrado</span>
+                            <p className="text-white text-sm font-bold">Sem Registro no Site</p>
                           )}
+                          <p className="text-[10px] text-blue-400/70 font-mono mt-1">
+                            Tele: {lead.telegram_username ? `@${lead.telegram_username}` : (lead.telegram_name || 'Desconhecido')}
+                          </p>
                         </div>
                       </td>
-                      {/* Personal Data */}
                       <td className="py-6 px-6 align-top">
-                        <div className="min-w-[220px]">
-                          {lead.profile && (
-                            <div className="space-y-1 text-xs text-gray-400 font-medium leading-relaxed">
-                              <p className="text-gray-300">{lead.profile.full_name}</p>
-                              <p>{lead.profile.email}</p>
-                              {lead.profile.phone && <p>{lead.profile.phone}</p>}
-                              {lead.profile.cpf && <p className="font-mono text-[11px] bg-gray-800/20 inline-block px-1 rounded">CPF: {lead.profile.cpf}</p>}
-                              {lead.profile.city && <p className="text-gray-500">{lead.profile.city} / {lead.profile.state}</p>}
-                            </div>
+                        <div className="flex flex-col gap-1">
+                          {lead.affiliate_ref ? (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-400 text-[11px] font-bold border border-purple-500/20 w-fit">
+                              <LinkIcon className="w-3 h-3" />
+                              {lead.affiliate_ref}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-gray-500/10 text-gray-500 text-[11px] font-bold border border-gray-500/20 w-fit">
+                              <MousePointer2 className="w-3 h-3" />
+                              Direto / Orgânico
+                            </span>
+                          )}
+                          {lead.utm_campaign && (
+                            <span className="text-[10px] text-gray-500 truncate max-w-[120px]">
+                              Camp: {lead.utm_campaign}
+                            </span>
                           )}
                         </div>
                       </td>
-                      {/* Status */}
+                      <td className="py-6 px-6 align-top">
+                        <span className="text-xs text-gray-400 font-mono">
+                          {lead.utm_source || '—'}
+                        </span>
+                      </td>
                       <td className="py-6 px-6 align-top text-center">
                         {lead.total_paid > 0 ? (
-                          <div className="flex flex-col items-center gap-1.5">
-                            <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-400 uppercase tracking-tight">
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                              <CheckCircle className="w-3.5 h-3.5" />
-                              Qualificado
-                            </span>
-                          </div>
+                          <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-400 uppercase tracking-tighter">
+                            <CheckCircle className="w-3 h-3" />
+                            Pago
+                          </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-gray-600 uppercase tracking-tight grayscale opacity-70">
-                            <XCircle className="w-3.5 h-3.5" />
-                            Novo
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gray-600 uppercase tracking-tighter">
+                            <XCircle className="w-3 h-3" />
+                            Pendente
                           </span>
                         )}
                       </td>
-                      {/* Payments - Detailed List */}
                       <td className="py-6 px-6 align-top">
-                        <div className="min-w-[200px] space-y-2">
+                        <div className="min-w-[150px] space-y-1">
                           {lead.payments && lead.payments.length > 0 ? (
                             lead.payments.map((p, idx) => (
-                              <div key={idx} className="flex flex-col">
-                                <span className="text-[11px] text-gray-400 font-medium">
-                                  {p.type === 'license' ? 'Licença' : 'Taxa de Saque'}: 
-                                  <span className="text-white ml-2">{formatCurrency(p.amount)}</span>
-                                </span>
-                                <span className="text-[10px] text-gray-600 font-mono italic">
-                                  ({formatDate(p.created_at)})
-                                </span>
-                              </div>
+                              <p key={idx} className="text-[10px] text-gray-400">
+                                {p.type === 'license' ? 'Licença' : 'Saque'}: <span className="text-gray-200">{formatCurrency(p.amount)}</span>
+                              </p>
                             ))
                           ) : (
-                            <span className="text-gray-700 text-xs italic opacity-40">— Nenhum pagamento</span>
+                            <p className="text-[10px] text-gray-600 italic">Sem vendas</p>
                           )}
                         </div>
                       </td>
-                      {/* Total Paid */}
                       <td className="py-6 px-6 align-top text-right">
-                        <p className={`text-base font-black ${lead.total_paid > 0 ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]' : 'text-gray-600'}`}>
+                        <p className={`text-sm font-black ${lead.total_paid > 0 ? 'text-emerald-400' : 'text-gray-600'}`}>
                           {formatCurrency(lead.total_paid)}
                         </p>
                       </td>
-                      {/* Date */}
                       <td className="py-6 px-6 align-top text-right">
-                        <p className="text-gray-500 text-xs font-mono whitespace-nowrap whitespace-nowrap group-hover:text-gray-400 transition-colors">
+                        <p className="text-gray-500 text-[10px] font-mono">
                           {formatDate(lead.created_at)}
                         </p>
                       </td>
