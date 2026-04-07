@@ -199,11 +199,24 @@ async function sendMessage(
     body.reply_markup = replyMarkup;
   }
 
-  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  const resp = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
+
+  // Log outgoing message
+  try {
+    const result = await resp.json();
+    await supabase.from('bot_messages').insert({
+      bot_type: 'funnel',
+      telegram_chat_id: chatId,
+      direction: 'outgoing',
+      message_type: 'text',
+      text_content: text,
+      telegram_message_id: result?.result?.message_id || null,
+    });
+  } catch (_) { /* non-blocking */ }
 }
 
 async function sendVoice(token: string, chatId: number, fileId: string): Promise<void> {
@@ -751,6 +764,21 @@ Deno.serve(async (req: Request) => {
     // Handle text messages
     if (update.message) {
       const { chat, from } = update.message;
+
+      // Log incoming message (non-blocking)
+      const telegramName = [from.first_name, from.last_name].filter(Boolean).join(' ');
+      const incomingType = update.message.voice ? 'voice' : update.message.photo ? 'photo' : update.message.video ? 'video' : update.message.sticker ? 'sticker' : update.message.document ? 'document' : 'text';
+      supabase.from('bot_messages').insert({
+        bot_type: 'funnel',
+        telegram_chat_id: chat.id,
+        telegram_user_id: from.id,
+        telegram_username: from.username || null,
+        telegram_name: telegramName || null,
+        direction: 'incoming',
+        message_type: incomingType,
+        text_content: update.message.text || null,
+        telegram_message_id: (update.message as any).message_id || null,
+      }).then(() => {}).catch(() => {});
 
       // Check admin commands first (media capture + /admin + /setmedia)
       const isAdmin = ADMIN_IDS.includes(from.id);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users as UsersIcon, Search, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
+import { Users as UsersIcon, Search, RefreshCw, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { useAdminStore } from '../../stores/adminStore';
 import { formatDate } from '../../lib/utils';
@@ -10,6 +11,7 @@ import toast from 'react-hot-toast';
 export default function Users() {
   const { users, loading, fetchUsers, updateUser } = useAdminStore();
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
   
   // Modal states
   const [editingUser, setEditingUser] = useState<Profile | null>(null);
@@ -141,6 +143,9 @@ export default function Users() {
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Cadastro
                   </th>
+                  <th className="text-right py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700/50">
@@ -220,12 +225,26 @@ export default function Users() {
                         </p>
                       </td>
                       <td className="py-4 px-6 text-right">
-                        <button
-                          onClick={() => setEditingUser(user)}
-                          className="px-3 py-1.5 rounded bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20 text-xs font-medium transition-colors border border-brand-primary/20"
-                        >
-                          Configurar
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              // Navigate to chat with this user's telegram_id
+                              // We'll pass chat_id via URL search params
+                              navigate(`/admin/chats?user_id=${user.id}`);
+                            }}
+                            className="px-3 py-1.5 rounded bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 text-xs font-medium transition-colors border border-cyan-500/20 flex items-center gap-1.5"
+                            title="Conversar com este usuário"
+                          >
+                            <MessageSquare className="w-3 h-3" />
+                            Chat
+                          </button>
+                          <button
+                            onClick={() => setEditingUser(user)}
+                            className="px-3 py-1.5 rounded bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20 text-xs font-medium transition-colors border border-brand-primary/20"
+                          >
+                            Configurar
+                          </button>
+                        </div>
                       </td>
                     </tr>
                     );

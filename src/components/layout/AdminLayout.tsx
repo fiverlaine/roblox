@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   Shield,
+  MessageSquare,
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { cn } from '../../lib/utils';
@@ -27,6 +28,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   RefreshCw,
   BarChart3,
   Webhook,
+  MessageSquare,
 };
 
 const SIDEBAR_ITEMS = [
@@ -34,6 +36,7 @@ const SIDEBAR_ITEMS = [
   { path: '/admin/gateways', label: 'Gateways de Pagamento', icon: 'CreditCard' },
   { path: '/admin/usuarios', label: 'Usuários', icon: 'Users' },
   { path: '/admin/bot-telegram', label: 'Bot do Telegram', icon: 'Bot' },
+  { path: '/admin/chats', label: 'Chats', icon: 'MessageSquare' },
   { path: '/admin/utmify', label: 'Integração Utmify', icon: 'TrendingUp' },
   { path: '/admin/conversao-gateway', label: 'Conversão Gateway', icon: 'RefreshCw' },
   { path: '/admin/analytics-telegram', label: 'Relatório de Leads', icon: 'BarChart3' },
