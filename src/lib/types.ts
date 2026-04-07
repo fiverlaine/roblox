@@ -20,6 +20,7 @@ export interface Profile {
   created_at: string
   updated_at: string
   payments?: Payment[]
+  all_payments?: Payment[]
 }
 
 export interface Item {

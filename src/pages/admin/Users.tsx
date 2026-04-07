@@ -138,6 +138,9 @@ export default function Users() {
                     Licenças
                   </th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    PIX Gerados
+                  </th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Afiliado
                   </th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -151,13 +154,13 @@ export default function Users() {
               <tbody className="divide-y divide-gray-700/50">
                 {loading && users.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-gray-500">
+                    <td colSpan={6} className="py-12 text-center text-gray-500">
                       Carregando usuários...
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-gray-500">
+                    <td colSpan={6} className="py-12 text-center text-gray-500">
                       Nenhum usuário encontrado
                     </td>
                   </tr>
@@ -165,6 +168,8 @@ export default function Users() {
                   users.map((user) => {
                     const hasLicense = user.has_seller_pass || user.payments?.some(p => p.type === 'license');
                     const hasWithdrawalFee = user.payments?.some(p => p.type === 'withdrawal_fee');
+                    const licensePixCount = user.all_payments?.filter(p => p.type === 'license').length || 0;
+                    const feePixCount = user.all_payments?.filter(p => p.type === 'withdrawal_fee').length || 0;
                     
                     return (
                     <tr key={user.id} className="hover:bg-gray-800/40 transition-colors group">
@@ -207,6 +212,28 @@ export default function Users() {
                               </span>
                             )}
                           </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="flex flex-col gap-1.5">
+                          {licensePixCount === 0 && feePixCount === 0 ? (
+                            <span className="text-[10px] font-bold text-gray-500 uppercase bg-gray-500/5 px-2 py-0.5 rounded border border-gray-500/10 inline-flex w-max">
+                              Não gerou PIX
+                            </span>
+                          ) : (
+                            <>
+                              {licensePixCount > 0 && (
+                                <span className="text-[10px] font-bold text-emerald-400 uppercase bg-emerald-400/5 px-2 py-0.5 rounded border border-emerald-400/10 inline-flex w-max">
+                                  {licensePixCount}x Licença
+                                </span>
+                              )}
+                              {feePixCount > 0 && (
+                                <span className="text-[10px] font-bold text-blue-400 uppercase bg-blue-400/5 px-2 py-0.5 rounded border border-blue-400/10 inline-flex w-max">
+                                  {feePixCount}x Taxa
+                                </span>
+                              )}
+                            </>
+                          )}
                         </div>
                       </td>
                       <td className="py-4 px-6">

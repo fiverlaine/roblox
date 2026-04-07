@@ -178,7 +178,8 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       // Filter out payments that are not 'paid' for each user
       const users = (data ?? []).map((u: any) => ({
         ...u,
-        payments: u.payments?.filter((p: any) => p.status === 'paid') || []
+        payments: u.payments?.filter((p: any) => p.status === 'paid') || [],
+        all_payments: u.payments || []
       })) as Profile[];
       
       set({ users });
