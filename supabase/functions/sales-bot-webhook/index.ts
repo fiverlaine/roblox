@@ -512,11 +512,6 @@ Deno.serve(async (req: Request) => {
 
           if (funnelState?.state === 'waiting_reply') {
             await handleReply(token, chat.id, from.id);
-          } else {
-            // User already completed the funnel or has no state — resend links
-            await sendMessage(token, chat.id,
-              `🤖💳 Link do bot pra pegar os cartões: @S7venncsssbot\n\n🔗 Link do site pra virar saldo: https://robloxvault.site/registro \n\n👆 Copia o link e cola no seu navegador!`
-            );
           }
         }
       } else {

@@ -610,42 +610,6 @@ async function handleStart(
   });
 }
 
-async function handleTextMessage(
-  token: string,
-  chatId: number,
-  telegramId: number,
-  firstName: string | undefined,
-  telegramUsername: string | undefined,
-  text: string,
-  groupLink: string,
-  groupChatId: string | null,
-): Promise<void> {
-  const name = firstName || telegramUsername || 'amigo';
-  
-  // Get start parameter to make a custom link if possible
-  const { data: lead } = await supabase
-    .from('telegram_leads')
-    .select('*')
-    .eq('telegram_id', telegramId)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  let finalGroupLink = groupLink;
-  if (groupChatId && lead?.start_param) {
-    const uniqueLink = await generateUniqueInviteLink(token, groupChatId, lead.start_param);
-    if (uniqueLink) {
-      finalGroupLink = uniqueLink;
-    }
-  }
-
-  // Just re-send the final entry message
-  const msgText = `Clique aqui no botão pra entrar no grupo e aprender a virada de saldo 👇`;
-  await sendMessage(token, chatId, msgText, {
-    inline_keyboard: [[{ text: '💸 ENTRAR NO GRUPO', url: finalGroupLink }]],
-  });
-}
-
 async function handleChatMember(chatMember: NonNullable<TelegramUpdate['chat_member']>) {
   const newStatus = chatMember.new_chat_member?.status;
   const oldStatus = chatMember.old_chat_member?.status;
@@ -795,8 +759,6 @@ Deno.serve(async (req: Request) => {
         if (text.startsWith('/start')) {
           const startParam = text.split(' ')[1] || '';
           await handleStart(token, chat.id, from.id, from.username, from.first_name, from.last_name, startParam, group_link, group_chat_id);
-        } else {
-          await handleTextMessage(token, chat.id, from.id, from.first_name, from.username, text, group_link, group_chat_id);
         }
       }
     }
