@@ -19,6 +19,54 @@ async function hashSHA256(value: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+// ==================== GEO LOOKUP (fills missing city/state/zip) ====================
+async function fillGeoIfMissing(lead: any): Promise<any> {
+  // If geo already exists, return as-is
+  if (lead.city && lead.state) return lead;
+
+  // If no IP, can't lookup
+  if (!lead.ip_address || lead.ip_address === '0.0.0.0') return lead;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+
+    const res = await fetch(
+      `http://ip-api.com/json/${lead.ip_address}?fields=status,city,regionName,zip,country`,
+      { signal: controller.signal },
+    );
+    clearTimeout(timeout);
+
+    if (!res.ok) return lead;
+
+    const geo = await res.json();
+    if (geo.status !== 'success') return lead;
+
+    // Fill in missing fields
+    if (geo.city) lead.city = geo.city;
+    if (geo.regionName) lead.state = geo.regionName;
+    if (geo.zip) lead.zip_code = geo.zip;
+    if (geo.country) lead.country = geo.country;
+
+    // Also persist to DB for future use
+    const updates: Record<string, string> = {};
+    if (geo.city) updates.city = geo.city;
+    if (geo.regionName) updates.state = geo.regionName;
+    if (geo.zip) updates.zip_code = geo.zip;
+    if (geo.country) updates.country = geo.country;
+
+    if (Object.keys(updates).length > 0) {
+      await supabase.from('telegram_leads').update(updates).eq('id', lead.id);
+      console.log(`[GroupWebhook] 🌍 Geo filled: ${geo.city}, ${geo.regionName} ${geo.zip}`);
+    }
+
+    return lead;
+  } catch (err) {
+    console.log(`[GroupWebhook] Geo lookup skipped: ${String(err).substring(0, 60)}`);
+    return lead;
+  }
+}
+
 // ==================== FACEBOOK CAPI ====================
 async function sendCAPIEvent(
   accessToken: string,
@@ -243,7 +291,10 @@ Deno.serve(async (req: Request) => {
         });
       }
 
-      console.log(`[GroupWebhook] 📋 Lead encontrado: id=${lead.id}, fbc=${lead.fbc ? 'YES' : 'NO'}, fbp=${lead.fbp ? 'YES' : 'NO'}`);
+      console.log(`[GroupWebhook] 📋 Lead encontrado: id=${lead.id}, fbc=${lead.fbc ? 'YES' : 'NO'}, fbp=${lead.fbp ? 'YES' : 'NO'}, city=${lead.city || 'NO'}`);
+
+      // 2.5. Fill geo data if missing (race condition fix: tracking-save geo may not have finished)
+      lead = await fillGeoIfMissing(lead);
 
       // 3. Update lead to "qualified" status
       await supabase
