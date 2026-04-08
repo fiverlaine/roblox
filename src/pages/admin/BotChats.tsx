@@ -197,30 +197,19 @@ export default function BotChats() {
 
     setSending(true);
     try {
-      const { data: session } = await supabase.auth.getSession();
-      const token = session?.session?.access_token;
+      const { data, error } = await supabase.functions.invoke('send-bot-message', {
+        body: {
+          bot_type: selectedChat.bot_type,
+          telegram_chat_id: selectedChat.telegram_chat_id,
+          text: newMessage.trim(),
+        }
+      });
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-bot-message`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            bot_type: selectedChat.bot_type,
-            telegram_chat_id: selectedChat.telegram_chat_id,
-            text: newMessage.trim(),
-          }),
-        },
-      );
-
-      const result = await response.json();
-
-      if (!response.ok || result.error) {
-        throw new Error(result.error || 'Falha ao enviar');
+      if (error || data?.error) {
+        throw new Error(error?.message || data?.error || 'Falha ao enviar');
       }
+
+      const result = data;
 
       // Add to local messages
       setMessages(prev => [...prev, {
