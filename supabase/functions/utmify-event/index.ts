@@ -98,6 +98,8 @@ Deno.serve(async (req: Request) => {
       .from('telegram_leads')
       .select('*')
       .eq('user_id', payment.user_id)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
     
     lead = leadByUserId;
@@ -114,13 +116,16 @@ Deno.serve(async (req: Request) => {
     }
 
     // Determine which UTMify to use based on affiliate_ref
+    // Safety check: if lead is missing affiliate_ref, check the user's profile
+    const affiliateRef = lead?.affiliate_ref || profile?.affiliate_ref;
+
     let utmifyToken: string | null = null;
     let platformName = 'RobloxVault';
 
-    if (lead?.affiliate_ref) {
+    if (affiliateRef) {
       // Lead is from an affiliate — use affiliate's UTMify
       const { data: affProfile } = await supabase
-        .from('profiles').select('id').eq('affiliate_ref', lead.affiliate_ref).single();
+        .from('profiles').select('id').eq('affiliate_ref', affiliateRef).single();
       
       if (affProfile) {
         const { data: affConfig } = await supabase
@@ -133,9 +138,9 @@ Deno.serve(async (req: Request) => {
         if (affConfig?.utmify_api_token) {
           utmifyToken = affConfig.utmify_api_token;
           platformName = affConfig.utmify_platform_name || 'RobloxVault';
-          console.log(`[Utmify] Using affiliate UTMify for ref=${lead.affiliate_ref}`);
+          console.log(`[Utmify] Using affiliate UTMify for ref=${affiliateRef}`);
         } else {
-          console.log(`[Utmify] Affiliate ${lead.affiliate_ref} has no UTMify configured — skipping`);
+          console.log(`[Utmify] Affiliate ${affiliateRef} has no UTMify configured — skipping`);
         }
       }
     } else {

@@ -12,6 +12,8 @@ import type {
 interface AdminStats {
   totalUsers: number;
   totalLeads: number;
+  botStarters: number;
+  groupJoiners: number;
   totalPayments: number;
   totalRevenue: number;
   paymentsOverTime: { date: string; amount: number }[];
@@ -56,6 +58,8 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   stats: {
     totalUsers: 0,
     totalLeads: 0,
+    botStarters: 0,
+    groupJoiners: 0,
     totalPayments: 0,
     totalRevenue: 0,
     paymentsOverTime: [],
@@ -65,10 +69,12 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   fetchStats: async () => {
     set({ loading: true });
     try {
-      const [usersRes, leadsRes, paymentsRes] = await Promise.all([
+      const [usersRes, leadsRes, paymentsRes, allLeadsRes, qualifiedLeadsRes] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
         supabase.from('telegram_leads').select('id', { count: 'exact', head: true }).not('user_id', 'is', null).neq('user_id', ''),
         supabase.from('payments').select('amount, created_at, status'),
+        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }),
+        supabase.from('telegram_leads').select('id', { count: 'exact', head: true }).eq('status', 'qualified'),
       ]);
 
       const payments = (paymentsRes.data ?? []) as Pick<Payment, 'amount' | 'created_at' | 'status'>[];
@@ -89,6 +95,8 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
         stats: {
           totalUsers: usersRes.count ?? 0,
           totalLeads: leadsRes.count ?? 0,
+          botStarters: allLeadsRes.count ?? 0,
+          groupJoiners: qualifiedLeadsRes.count ?? 0,
           totalPayments: paidPayments.length,
           totalRevenue,
           paymentsOverTime,

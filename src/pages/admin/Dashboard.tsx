@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, MessageSquare, CreditCard, DollarSign, TrendingUp } from 'lucide-react';
+import { Users, MessageSquare, CreditCard, DollarSign, TrendingUp, UserPlus, PlayCircle } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { useAdminStore } from '../../stores/adminStore';
@@ -53,6 +53,20 @@ export default function Dashboard() {
       color: 'text-amber-400',
       bg: 'bg-amber-500/10',
     },
+    {
+      label: 'Iniciaram Bot',
+      value: stats.botStarters.toLocaleString('pt-BR'),
+      icon: PlayCircle,
+      color: 'text-indigo-400',
+      bg: 'bg-indigo-500/10',
+    },
+    {
+      label: 'Entraram Grupo',
+      value: stats.groupJoiners.toLocaleString('pt-BR'),
+      icon: UserPlus,
+      color: 'text-sky-400',
+      bg: 'bg-sky-500/10',
+    },
   ];
 
   return (
@@ -78,7 +92,7 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           {statCards.map((card, i) => (
             <motion.div
               key={card.label}
