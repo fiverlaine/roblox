@@ -146,3 +146,17 @@ export interface AffiliateTrackingConfig {
   created_at: string
   updated_at: string
 }
+
+export interface AffiliateWithdrawal {
+  id: number
+  user_id: string
+  amount: number
+  pix_key_type: 'cpf' | 'email' | 'phone' | 'random'
+  pix_key: string
+  status: 'pending' | 'approved' | 'rejected'
+  admin_notes: string | null
+  requested_at: string
+  reviewed_at: string | null
+  reviewed_by: string | null
+  profile?: Profile
+}

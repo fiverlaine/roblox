@@ -25,6 +25,7 @@ import { useAuthStore } from '../stores/authStore';
 import { formatCurrency, formatDate } from '../lib/utils';
 import { supabase } from '../lib/supabase';
 import AffiliateNotifications from '../components/AffiliateNotifications';
+import AffiliateWithdrawals from '../components/AffiliateWithdrawals';
 import toast from 'react-hot-toast';
 import type { AffiliateTrackingConfig } from '../lib/types';
 
@@ -268,6 +269,9 @@ export default function Affiliate() {
           </motion.div>
         ))}
       </div>
+
+      {/* Commission Withdrawals */}
+      <AffiliateWithdrawals />
 
       {/* Pushcut Notifications Config */}
       <AffiliateNotifications />

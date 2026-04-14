@@ -21,6 +21,7 @@ import TelegramAnalytics from './pages/admin/TelegramAnalytics'
 import Webhooks from './pages/admin/Webhooks'
 import ConversionGateway from './pages/admin/ConversionGateway'
 import BotChats from './pages/admin/BotChats'
+import AdminAffiliateWithdrawals from './pages/admin/AffiliateWithdrawals'
 import SellerPass from './pages/SellerPass'
 import Wallet from './pages/Wallet'
 import RobloxAccount from './pages/RobloxAccount'
@@ -99,6 +100,7 @@ export default function App() {
         <Route path="/admin/webhooks" element={<AdminRoute><Webhooks /></AdminRoute>} />
         <Route path="/admin/conversao-gateway" element={<AdminRoute><ConversionGateway /></AdminRoute>} />
         <Route path="/admin/chats" element={<AdminRoute><BotChats /></AdminRoute>} />
+        <Route path="/admin/saques-afiliados" element={<AdminRoute><AdminAffiliateWithdrawals /></AdminRoute>} />
       </Routes>
       <Toaster position="top-center" toastOptions={{ duration: 3000, style: { borderRadius: '16px', padding: '12px 20px', fontSize: '14px' } }} />
     </BrowserRouter>

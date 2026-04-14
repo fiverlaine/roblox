@@ -15,6 +15,7 @@ import {
   X,
   Shield,
   MessageSquare,
+  Wallet,
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { cn } from '../../lib/utils';
@@ -29,6 +30,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   BarChart3,
   Webhook,
   MessageSquare,
+  Wallet,
 };
 
 const SIDEBAR_ITEMS = [
@@ -40,6 +42,7 @@ const SIDEBAR_ITEMS = [
   { path: '/admin/utmify', label: 'Integração Utmify', icon: 'TrendingUp' },
   { path: '/admin/conversao-gateway', label: 'Conversão Gateway', icon: 'RefreshCw' },
   { path: '/admin/analytics-telegram', label: 'Relatório de Leads', icon: 'BarChart3' },
+  { path: '/admin/saques-afiliados', label: 'Saques Afiliados', icon: 'Wallet' },
   { path: '/admin/webhooks', label: 'Webhooks', icon: 'Webhook' },
 ];
 
