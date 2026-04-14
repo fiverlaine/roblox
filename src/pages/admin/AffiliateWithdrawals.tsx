@@ -19,9 +19,16 @@ import { formatCurrency, formatDateTime } from '../../lib/utils';
 import toast from 'react-hot-toast';
 import type { AffiliateWithdrawal } from '../../lib/types';
 
+interface WithdrawalWithCommission extends AffiliateWithdrawal {
+  _commissionBalance?: number;
+  _totalRevenue?: number;
+  _totalWithdrawn?: number;
+  _loadingCommission?: boolean;
+}
+
 export default function AffiliateWithdrawals() {
   const { profile } = useAuthStore();
-  const [withdrawals, setWithdrawals] = useState<AffiliateWithdrawal[]>([]);
+  const [withdrawals, setWithdrawals] = useState<WithdrawalWithCommission[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<number | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -38,11 +45,11 @@ export default function AffiliateWithdrawals() {
     try {
       const { data, error } = await supabase
         .from('affiliate_withdrawals')
-        .select('*, profile:profiles(id, full_name, email, real_balance, affiliate_ref, pix_key:cpf)')
+        .select('*, profile:profiles(id, full_name, email, affiliate_ref)')
         .order('requested_at', { ascending: false });
 
       if (error) throw error;
-      setWithdrawals((data ?? []) as AffiliateWithdrawal[]);
+      setWithdrawals((data ?? []) as WithdrawalWithCommission[]);
     } catch (err: any) {
       toast.error('Erro ao carregar solicitações.');
       console.error(err);
@@ -51,12 +58,73 @@ export default function AffiliateWithdrawals() {
     }
   };
 
-  const handleApprove = async (withdrawal: AffiliateWithdrawal) => {
+  // Fetch commission balance for a specific affiliate when expanding their row
+  const loadCommissionForUser = async (withdrawal: WithdrawalWithCommission) => {
+    const profileData = withdrawal.profile as any;
+    const affiliateRef = profileData?.affiliate_ref;
+    if (!affiliateRef) return;
+
+    // Mark as loading
+    setWithdrawals((prev) =>
+      prev.map((w) => (w.id === withdrawal.id ? { ...w, _loadingCommission: true } : w))
+    );
+
+    try {
+      // Fetch lead revenue + all approved withdrawals for this user in parallel
+      const [leadsRes, withdrawalsRes] = await Promise.all([
+        supabase
+          .from('telegram_leads')
+          .select('total_paid')
+          .eq('affiliate_ref', affiliateRef)
+          .not('user_id', 'is', null),
+        supabase
+          .from('affiliate_withdrawals')
+          .select('amount, status')
+          .eq('user_id', withdrawal.user_id)
+          .eq('status', 'approved'),
+      ]);
+
+      const totalRevenue = (leadsRes.data ?? []).reduce((sum, l) => sum + (l.total_paid ?? 0), 0);
+      const totalWithdrawn = (withdrawalsRes.data ?? []).reduce((sum, w) => sum + w.amount, 0);
+      const commissionBalance = Math.max(0, totalRevenue - totalWithdrawn);
+
+      setWithdrawals((prev) =>
+        prev.map((w) =>
+          w.id === withdrawal.id
+            ? {
+                ...w,
+                _totalRevenue: totalRevenue,
+                _totalWithdrawn: totalWithdrawn,
+                _commissionBalance: commissionBalance,
+                _loadingCommission: false,
+              }
+            : w
+        )
+      );
+    } catch (err) {
+      console.error('Error loading commission:', err);
+      setWithdrawals((prev) =>
+        prev.map((w) => (w.id === withdrawal.id ? { ...w, _loadingCommission: false } : w))
+      );
+    }
+  };
+
+  const handleExpand = (withdrawal: WithdrawalWithCommission) => {
+    const isExpanding = expandedId !== withdrawal.id;
+    setExpandedId(isExpanding ? withdrawal.id : null);
+
+    // Load commission data when expanding if not already loaded
+    if (isExpanding && withdrawal._commissionBalance === undefined) {
+      loadCommissionForUser(withdrawal);
+    }
+  };
+
+  const handleApprove = async (withdrawal: WithdrawalWithCommission) => {
     if (!profile) return;
     setProcessing(withdrawal.id);
 
     try {
-      // 1. Update withdrawal status
+      // Just update the withdrawal status — balance is calculated, not stored
       const { error: updateError } = await supabase
         .from('affiliate_withdrawals')
         .update({
@@ -68,25 +136,7 @@ export default function AffiliateWithdrawals() {
 
       if (updateError) throw updateError;
 
-      // 2. Deduct balance from the affiliate's profile
-      const { data: currentProfile, error: profileError } = await supabase
-        .from('profiles')
-        .select('real_balance')
-        .eq('id', withdrawal.user_id)
-        .single();
-
-      if (profileError) throw profileError;
-
-      const newBalance = (currentProfile?.real_balance ?? 0) - withdrawal.amount;
-
-      const { error: balanceError } = await supabase
-        .from('profiles')
-        .update({ real_balance: Math.max(0, newBalance) })
-        .eq('id', withdrawal.user_id);
-
-      if (balanceError) throw balanceError;
-
-      toast.success(`Saque de ${formatCurrency(withdrawal.amount)} aprovado! Saldo atualizado.`);
+      toast.success(`Saque de ${formatCurrency(withdrawal.amount)} aprovado!`);
       fetchWithdrawals();
     } catch (err: any) {
       toast.error(err?.message || 'Erro ao aprovar saque.');
@@ -95,7 +145,7 @@ export default function AffiliateWithdrawals() {
     }
   };
 
-  const handleReject = async (withdrawal: AffiliateWithdrawal) => {
+  const handleReject = async (withdrawal: WithdrawalWithCommission) => {
     if (!profile) return;
     setProcessing(withdrawal.id);
 
@@ -279,7 +329,7 @@ export default function AffiliateWithdrawals() {
                   {/* Row summary */}
                   <div
                     className="p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 cursor-pointer hover:bg-gray-800/30 transition-colors"
-                    onClick={() => setExpandedId(isExpanded ? null : w.id)}
+                    onClick={() => handleExpand(w)}
                   >
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       <div className={`w-10 h-10 rounded-xl ${sc.bg} flex items-center justify-center shrink-0`}>
@@ -316,27 +366,34 @@ export default function AffiliateWithdrawals() {
                   {/* Expanded details */}
                   {isExpanded && (
                     <div className="border-t border-gray-700/50 p-5 bg-gray-800/20 space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-500 text-[11px] uppercase font-bold tracking-wider block mb-1">Chave PIX</span>
-                          <p className="text-white font-mono text-xs break-all">{w.pix_key}</p>
-                          <p className="text-gray-500 text-[10px] uppercase mt-0.5">{w.pix_key_type}</p>
+                      {w._loadingCommission ? (
+                        <div className="flex items-center justify-center py-4">
+                          <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                          <span className="text-gray-400 text-sm ml-2">Calculando saldo de comissão...</span>
                         </div>
-                        <div>
-                          <span className="text-gray-500 text-[11px] uppercase font-bold tracking-wider block mb-1">Saldo Atual</span>
-                          <p className="text-white font-bold">{formatCurrency(profileData?.real_balance ?? 0)}</p>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-500 text-[11px] uppercase font-bold tracking-wider block mb-1">Chave PIX</span>
+                            <p className="text-white font-mono text-xs break-all">{w.pix_key}</p>
+                            <p className="text-gray-500 text-[10px] uppercase mt-0.5">{w.pix_key_type}</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 text-[11px] uppercase font-bold tracking-wider block mb-1">Receita dos Leads</span>
+                            <p className="text-white font-bold">{formatCurrency(w._totalRevenue ?? 0)}</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 text-[11px] uppercase font-bold tracking-wider block mb-1">Já Sacado</span>
+                            <p className="text-white font-bold">{formatCurrency(w._totalWithdrawn ?? 0)}</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 text-[11px] uppercase font-bold tracking-wider block mb-1">Saldo Comissão</span>
+                            <p className={`font-bold ${(w._commissionBalance ?? 0) >= w.amount ? 'text-emerald-400' : 'text-red-400'}`}>
+                              {formatCurrency(w._commissionBalance ?? 0)}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-gray-500 text-[11px] uppercase font-bold tracking-wider block mb-1">Valor Solicitado</span>
-                          <p className="text-white font-bold">{formatCurrency(w.amount)}</p>
-                        </div>
-                        <div>
-                          <span className="text-gray-500 text-[11px] uppercase font-bold tracking-wider block mb-1">Saldo Após</span>
-                          <p className={`font-bold ${((profileData?.real_balance ?? 0) - w.amount) >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                            {formatCurrency(Math.max(0, (profileData?.real_balance ?? 0) - w.amount))}
-                          </p>
-                        </div>
-                      </div>
+                      )}
 
                       {w.admin_notes && (
                         <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3">
@@ -349,12 +406,12 @@ export default function AffiliateWithdrawals() {
                       {/* Actions for pending */}
                       {w.status === 'pending' && (
                         <div className="space-y-3 pt-2">
-                          {/* Check if balance sufficient */}
-                          {(profileData?.real_balance ?? 0) < w.amount && (
+                          {/* Check if commission balance sufficient */}
+                          {w._commissionBalance !== undefined && w._commissionBalance < w.amount && (
                             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20">
                               <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
                               <p className="text-xs text-red-300">
-                                Saldo insuficiente! O afiliado tem {formatCurrency(profileData?.real_balance ?? 0)} mas solicitou {formatCurrency(w.amount)}.
+                                Saldo de comissão insuficiente! O afiliado tem {formatCurrency(w._commissionBalance)} de comissão disponível mas solicitou {formatCurrency(w.amount)}.
                               </p>
                             </div>
                           )}

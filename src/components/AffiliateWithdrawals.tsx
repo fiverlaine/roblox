@@ -24,33 +24,55 @@ export default function AffiliateWithdrawals() {
   const [withdrawals, setWithdrawals] = useState<AffiliateWithdrawal[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [commissionBalance, setCommissionBalance] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalWithdrawn, setTotalWithdrawn] = useState(0);
 
   const [amount, setAmount] = useState('');
   const [pixKeyType, setPixKeyType] = useState<'cpf' | 'email' | 'phone' | 'random'>('cpf');
   const [pixKey, setPixKey] = useState('');
 
-  const commissionBalance = profile?.real_balance ?? 0;
-
   useEffect(() => {
-    if (expanded && profile) {
-      fetchWithdrawals();
+    if (expanded && profile?.affiliate_ref) {
+      fetchAll();
     }
-  }, [expanded, profile]);
+  }, [expanded, profile?.affiliate_ref]);
 
-  const fetchWithdrawals = async () => {
-    if (!profile) return;
+  const fetchAll = async () => {
+    if (!profile?.affiliate_ref) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('affiliate_withdrawals')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('requested_at', { ascending: false });
+      // Fetch in parallel: withdrawals + lead revenue
+      const [withdrawalsRes, leadsRes] = await Promise.all([
+        supabase
+          .from('affiliate_withdrawals')
+          .select('*')
+          .eq('user_id', profile.id)
+          .order('requested_at', { ascending: false }),
+        supabase
+          .from('telegram_leads')
+          .select('total_paid')
+          .eq('affiliate_ref', profile.affiliate_ref)
+          .not('user_id', 'is', null),
+      ]);
 
-      if (error) throw error;
-      setWithdrawals((data ?? []) as AffiliateWithdrawal[]);
+      if (withdrawalsRes.error) throw withdrawalsRes.error;
+      if (leadsRes.error) throw leadsRes.error;
+
+      const fetchedWithdrawals = (withdrawalsRes.data ?? []) as AffiliateWithdrawal[];
+      setWithdrawals(fetchedWithdrawals);
+
+      // Calculate commission balance
+      const revenue = (leadsRes.data ?? []).reduce((sum, l) => sum + (l.total_paid ?? 0), 0);
+      const withdrawn = fetchedWithdrawals
+        .filter((w) => w.status === 'approved')
+        .reduce((sum, w) => sum + w.amount, 0);
+
+      setTotalRevenue(revenue);
+      setTotalWithdrawn(withdrawn);
+      setCommissionBalance(Math.max(0, revenue - withdrawn));
     } catch (err: any) {
-      console.error('Error fetching withdrawals:', err);
+      console.error('Error fetching withdrawal data:', err);
     } finally {
       setLoading(false);
     }
@@ -92,7 +114,7 @@ export default function AffiliateWithdrawals() {
       toast.success('Solicitação de saque enviada! Aguarde a aprovação do admin.');
       setAmount('');
       setPixKey('');
-      fetchWithdrawals();
+      fetchAll();
     } catch (err: any) {
       toast.error(err?.message || 'Erro ao solicitar saque.');
     } finally {
@@ -147,9 +169,9 @@ export default function AffiliateWithdrawals() {
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right hidden sm:block">
-            <p className="text-xs text-text-secondary font-medium">Saldo disponível</p>
+            <p className="text-xs text-text-secondary font-medium">Saldo de comissão</p>
             <p className={`text-lg font-black ${commissionBalance > 0 ? 'text-emerald-400' : 'text-text-secondary'}`}>
-              {formatCurrency(commissionBalance)}
+              {loading ? '...' : formatCurrency(commissionBalance)}
             </p>
           </div>
           {expanded ? (
@@ -170,12 +192,22 @@ export default function AffiliateWithdrawals() {
             className="overflow-hidden"
           >
             <div className="p-6 pt-0 border-t border-ui-divider space-y-6">
-              {/* Balance card (mobile) */}
-              <div className="sm:hidden bg-background-secondary rounded-xl p-4 flex items-center justify-between">
-                <span className="text-sm text-text-secondary font-medium">Saldo disponível</span>
-                <span className={`text-xl font-black ${commissionBalance > 0 ? 'text-emerald-400' : 'text-text-secondary'}`}>
-                  {formatCurrency(commissionBalance)}
-                </span>
+              {/* Balance breakdown */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="bg-background-secondary rounded-xl p-4">
+                  <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider mb-1">Receita dos Leads</p>
+                  <p className="text-lg font-black text-text-primary">{loading ? '...' : formatCurrency(totalRevenue)}</p>
+                </div>
+                <div className="bg-background-secondary rounded-xl p-4">
+                  <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider mb-1">Já Sacado</p>
+                  <p className="text-lg font-black text-text-primary">{loading ? '...' : formatCurrency(totalWithdrawn)}</p>
+                </div>
+                <div className="bg-background-secondary rounded-xl p-4 border border-emerald-500/20">
+                  <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-1">Disponível p/ Saque</p>
+                  <p className={`text-lg font-black ${commissionBalance > 0 ? 'text-emerald-400' : 'text-text-secondary'}`}>
+                    {loading ? '...' : formatCurrency(commissionBalance)}
+                  </p>
+                </div>
               </div>
 
               {/* Pending alert */}
