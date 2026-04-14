@@ -45,7 +45,7 @@ export default function AffiliateWithdrawals() {
     try {
       const { data, error } = await supabase
         .from('affiliate_withdrawals')
-        .select('*, profile:profiles(id, full_name, email, affiliate_ref)')
+        .select('*, profile:profiles!affiliate_withdrawals_user_id_fkey(id, full_name, email, affiliate_ref)')
         .order('requested_at', { ascending: false });
 
       if (error) throw error;
