@@ -1,0 +1,330 @@
+{
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\App.tsx": {
+    "mtime": 1776131599.2675836,
+    "hash": "222215cfb338a4db40b266dc6dd4113e"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\main.tsx": {
+    "mtime": 1771976010.6623743,
+    "hash": "9c14b37465adc0bf503b0aed4f7dcaf8"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\AffiliateNotifications.tsx": {
+    "mtime": 1774924447.0063615,
+    "hash": "12f64b954606e15886df107a35dddd51"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\AffiliateWithdrawals.tsx": {
+    "mtime": 1776139076.4106543,
+    "hash": "3ade7736df5f0b1580d6dae660d3af0e"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\FraudBlockModal.tsx": {
+    "mtime": 1775189958.5328245,
+    "hash": "2b66618cfde86bbedeebaa33ddb518a8"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\home\\QuickAccess.tsx": {
+    "mtime": 1772850803.0653994,
+    "hash": "b08a1e1e0976d2c9adf043e51db19ffc"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\home\\SummaryCard.tsx": {
+    "mtime": 1772850803.0628843,
+    "hash": "4f631319d82fbdf8c6a170c3aa487047"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\home\\TrendingItems.tsx": {
+    "mtime": 1772850803.0664053,
+    "hash": "88cd847917921a245dd09cb3392932b5"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\home\\WelcomeCard.tsx": {
+    "mtime": 1772850803.0653994,
+    "hash": "92826daea9ce02f5b4b051c029c8ef1e"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\items\\SellItemModal.tsx": {
+    "mtime": 1772125624.126348,
+    "hash": "e64df187d144cbe58ae85e9d96e47574"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\layout\\AdminLayout.tsx": {
+    "mtime": 1776131613.0702875,
+    "hash": "15fa534f9ee11ec1989ff82dba9266c2"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\layout\\AppLayout.tsx": {
+    "mtime": 1772850803.0628843,
+    "hash": "f1d522f1ad3e8337764afec249d4a4cd"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\layout\\BottomNav.tsx": {
+    "mtime": 1771987048.134205,
+    "hash": "c78b110714da62ab1ebb4b8b27da92e7"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\layout\\Header.tsx": {
+    "mtime": 1772850803.0664053,
+    "hash": "038cc7299411b0ddc94dfe838110f352"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\layout\\MessagesPanel.tsx": {
+    "mtime": 1772038187.2243035,
+    "hash": "2d7ccc486dcf06dc68f5d563e658cfd7"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\layout\\SideMenu.tsx": {
+    "mtime": 1773369858.4700973,
+    "hash": "a3878d5ccf0c8ec895bee9a4019d9764"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\store\\ItemCard.tsx": {
+    "mtime": 1771977159.062185,
+    "hash": "6e5c3757807f3015388f49db560fcee7"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\components\\store\\PurchaseModal.tsx": {
+    "mtime": 1772124587.085819,
+    "hash": "a1f6f8dd1eff577afde862cc910a3661"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\lib\\constants.ts": {
+    "mtime": 1773369848.6708992,
+    "hash": "462fef8ccfedd3a2efe72eec2eb7cf00"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\lib\\robloxVaultApi.ts": {
+    "mtime": 1772056613.198364,
+    "hash": "9845871e587690373d68b1d3dda351c4"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\lib\\supabase.ts": {
+    "mtime": 1771975961.1616154,
+    "hash": "5910114473b26d702ca38454d36593cb"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\lib\\types.ts": {
+    "mtime": 1776131462.2515824,
+    "hash": "3c862b24fd3a3bb22b73ade8179eb930"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\lib\\utils.ts": {
+    "mtime": 1771976992.1404915,
+    "hash": "86b16db19e29f99f516fb61942c2c945"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\Affiliate.tsx": {
+    "mtime": 1776131522.7690425,
+    "hash": "524172ddaf3d715e8b94ba83f74a6080"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\BuyRobux.tsx": {
+    "mtime": 1772122825.49019,
+    "hash": "4aae6fc4b4bd2866b9eea6c98e4a7eb8"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\Contestacao.tsx": {
+    "mtime": 1775188612.547365,
+    "hash": "ac1587fbb63d338fc4002b5840037ea2"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\Home.tsx": {
+    "mtime": 1772046462.6455157,
+    "hash": "e09a4f43237f6bd08d96d280057c7af1"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\Items.tsx": {
+    "mtime": 1772079510.905856,
+    "hash": "519bc44b96a711d8dc3d8c76ea22654a"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\Profile.tsx": {
+    "mtime": 1772850803.0664053,
+    "hash": "0ffb12c0e178b238066d1f3bb91b0d17"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\RobloxAccount.tsx": {
+    "mtime": 1772048418.8469138,
+    "hash": "5398ec4ddac123a9811ed5d3870e44b4"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\SellerPass.tsx": {
+    "mtime": 1772471806.622191,
+    "hash": "e08d5e9d955a987d691893167c0aa5f8"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\Store.tsx": {
+    "mtime": 1772040134.5021796,
+    "hash": "56538f76d579d724768b0c1c4d5bb710"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\Support.tsx": {
+    "mtime": 1772048470.5860395,
+    "hash": "74014bb4f857a744d23a3ddd56b68a62"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\Wallet.tsx": {
+    "mtime": 1773950945.3851469,
+    "hash": "b0d7a9c5e08ca4e8026dc41edd03bbe8"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\AffiliateWithdrawals.tsx": {
+    "mtime": 1776139793.8818216,
+    "hash": "b58b0f4d043dcfda6fa3541b27e6455f"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\BotChats.tsx": {
+    "mtime": 1775608886.206461,
+    "hash": "3d9dfd4a8636fcc0cc75c7ce64a6cc9c"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\ConversionGateway.tsx": {
+    "mtime": 1771977837.589628,
+    "hash": "669ffc148010414dc83b64e9af8d5c79"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\Dashboard.tsx": {
+    "mtime": 1775663764.0935342,
+    "hash": "ed1101ebc1f6a07347d3c38e9b15075f"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\Gateways.tsx": {
+    "mtime": 1771977621.5963607,
+    "hash": "7f2abdee56ca5e21dd03b4f295685872"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\TelegramAnalytics.tsx": {
+    "mtime": 1775489355.0270555,
+    "hash": "e3c8389566f87964c7ed566680603cea"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\TelegramBot.tsx": {
+    "mtime": 1771977692.8022492,
+    "hash": "d0f7759d7b45b98f61690bb46a032dd5"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\Users.tsx": {
+    "mtime": 1775604719.49749,
+    "hash": "89ad9d022308f6a5178c4c8ad194cc90"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\UtmifyIntegration.tsx": {
+    "mtime": 1771977728.6870973,
+    "hash": "1d731c03f56122574818524a53bd7075"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\admin\\Webhooks.tsx": {
+    "mtime": 1771977807.5131505,
+    "hash": "8ba2d5992a686c144409711f268f7901"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\auth\\Login.tsx": {
+    "mtime": 1772134503.4044962,
+    "hash": "77cd0f92780dd27feba3c8facff90940"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\pages\\auth\\Register.tsx": {
+    "mtime": 1775165662.39826,
+    "hash": "0cd0ceb0244fdcc21ec7ee4b00f90a2b"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\stores\\adminStore.ts": {
+    "mtime": 1775663737.9580095,
+    "hash": "1401876568f1ff5620dbccaa3e501393"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\stores\\affiliateStore.ts": {
+    "mtime": 1774924249.692164,
+    "hash": "6eac28f121025841bf6e3d8bafc7c165"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\stores\\authStore.ts": {
+    "mtime": 1775165662.3810325,
+    "hash": "64a660f3f3d4ace36a0bd338b24b9571"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\stores\\itemStore.ts": {
+    "mtime": 1775185180.0138469,
+    "hash": "2401cf51aca9a2aac0d89d6ad774e8e9"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\stores\\uiStore.ts": {
+    "mtime": 1772039160.460314,
+    "hash": "674524e08f58c457a979abfd441c9f41"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\src\\stores\\walletStore.ts": {
+    "mtime": 1772236974.0123465,
+    "hash": "e1036bdda3333eac7d0f647f8b6982d8"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\bspay-webhook\\index.ts": {
+    "mtime": 1773330294.0281942,
+    "hash": "84bd655d89a88f57a4e7aac3e3e0d9d9"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\buy-item-with-robux\\index.ts": {
+    "mtime": 1772072800.3277931,
+    "hash": "ac2a77459f472836b2a95b810c52ddcf"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\card-bot-webhook\\index.ts": {
+    "mtime": 1773371403.8638742,
+    "hash": "dd3054dd9256c0b1fdadc47d85800e43"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\create-payment\\index.ts": {
+    "mtime": 1776284582.3625355,
+    "hash": "f3b0d4ab5fc58bdb52b01980c730c375"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\group-webhook\\index.ts": {
+    "mtime": 1775594732.2682152,
+    "hash": "f21489d52db3c90f99741c2392d482a2"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\sales-bot-webhook\\index.ts": {
+    "mtime": 1775603431.7490833,
+    "hash": "8d49ed3b189b934fb2743ccb65f3de2b"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\send-bot-message\\index.ts": {
+    "mtime": 1775601180.654917,
+    "hash": "57929402dda242604e935c8b94468322"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\telegram-bot-webhook\\index.ts": {
+    "mtime": 1775603413.8594844,
+    "hash": "59d22d959d176c4a3a82c51aff558ff1"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\tracking-redirect\\index.ts": {
+    "mtime": 1774924037.791829,
+    "hash": "8f00b0e31665d556a55e6189c9604ca0"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\tracking-save\\index.ts": {
+    "mtime": 1774924024.939129,
+    "hash": "d77dbb917f8e73e2e9793821f476a24b"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\utmify-event\\index.ts": {
+    "mtime": 1776032390.9927928,
+    "hash": "03559a34c44fc03746d315d9d1e1cb58"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\validate-card-purchase\\index.ts": {
+    "mtime": 1775167188.336728,
+    "hash": "d5dad3c8e42ac71d2cdcc18e9e13a6dc"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\zucropay-webhook\\index.ts": {
+    "mtime": 1773956251.819763,
+    "hash": "2f660ca52138e2a88e2275b3a2c0d5b5"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\_shared\\cors.ts": {
+    "mtime": 1771977483.054419,
+    "hash": "8723797576b769faefcc3b0004257c57"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\_shared\\supabase.ts": {
+    "mtime": 1772470367.693925,
+    "hash": "25123d2bab8f0e0173624a105c28384b"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\migrations\\20260224200000_initial_schema.sql": {
+    "mtime": 1771975779.660891,
+    "hash": "2e5123d4a6fe9e4bc154cab3f63d4167"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\migrations\\20260224200100_seed_items.sql": {
+    "mtime": 1771997026.001242,
+    "hash": "827f11b67463ee5b0bf443b85383a19b"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\migrations\\20260225120000_fix_items_image_url.sql": {
+    "mtime": 1771996553.345276,
+    "hash": "b43d3d49aacdc71f59672eee49c362a0"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\migrations\\20260225130000_items_image_url_concorrente.sql": {
+    "mtime": 1771996997.5247612,
+    "hash": "c6113e8fe47532e70f9080b01c84acd6"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\migrations\\20260225140000_items_creator_catalog_url.sql": {
+    "mtime": 1771998464.6758747,
+    "hash": "2700ded656b25de76bc4f5576a1409f9"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\migrations\\20260225150000_seed_products_concorrente.sql": {
+    "mtime": 1771998563.9307015,
+    "hash": "4c8846202edc40867cdc4ffa7ff77607"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\migrations\\20260225160000_seed_products_pages_3_to_13.sql": {
+    "mtime": 1771998738.03908,
+    "hash": "a070f127d4c91ba2ea8dc55dbc034229"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\migrations\\20260227180000_add_group_tracking_infrastructure.sql": {
+    "mtime": 1772227564.2996876,
+    "hash": "20adb13254fe3a0e0392172085730318"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Doc bspay.md": {
+    "mtime": 1771962262.0,
+    "hash": "f3ced39bda289f64c5fdb0a3c1f46e12"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\docs_zucropay.md": {
+    "mtime": 1776313798.9676147,
+    "hash": "ee47fb15271e161fa97b8796e1664325"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Documenta\u00e7\u00e3o API - UTMify.md": {
+    "mtime": 1771962190.0,
+    "hash": "c4a9cd70b0a30f3d568495acb29040f8"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Fluxo BSPay UTMify.md": {
+    "mtime": 1773330294.027691,
+    "hash": "bba13b37cd187f41ea34455881225ba3"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md": {
+    "mtime": 1770651842.0726182,
+    "hash": "d6423ec10c5e1c61728a5455075411cf"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\PRD.md": {
+    "mtime": 1775494109.9705315,
+    "hash": "2fda238504cadac9d0201705f63f0794"
+  },
+  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Telegram Bot API Documentacao.md": {
+    "mtime": 1772045098.7371595,
+    "hash": "bda765076c67fa0806376cb72b1e7388"
+  }
+}

@@ -272,7 +272,7 @@ Deno.serve(async (req: Request) => {
 
     // 1. Fetch profile, auth user AND gateway IN PARALLEL (gateway is cached)
     const [profileResult, authResult, gateway] = await Promise.all([
-      supabase.from('profiles').select('full_name, email, cpf').eq('id', user_id).single(),
+      supabase.from('profiles').select('full_name, email, cpf, phone').eq('id', user_id).single(),
       supabase.auth.admin.getUserById(user_id),
       getGateway(),
     ]);
@@ -294,6 +294,7 @@ Deno.serve(async (req: Request) => {
     const payerName = profile?.full_name || authName || profile?.email || authEmail || 'Usuario Roblox Vault';
     const payerEmail = profile?.email || authEmail || null;
     const payerDocument = profile?.cpf || generateValidCPF();
+    const payerPhone = profile?.phone || '11999999999';
 
     const externalId = crypto.randomUUID();
 
@@ -306,6 +307,7 @@ Deno.serve(async (req: Request) => {
     const customerData: Record<string, unknown> = {
       name: payerName,
       cpf_cnpj: payerDocument,
+      phone: payerPhone,
     };
     if (payerEmail) {
       customerData.email = payerEmail;

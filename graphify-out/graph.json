@@ -1,0 +1,5857 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "payment_flow_pix_utmify",
+        "label": "PIX Payment \u2192 Webhook \u2192 UTMify Reporting Flow",
+        "nodes": [
+          "prd_edge_create_payment",
+          "prd_edge_zucropay_webhook",
+          "prd_edge_utmify_event",
+          "prd_table_payments",
+          "prd_table_capi_logs"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "documentation/PRD.md"
+      },
+      {
+        "id": "telegram_lead_capi_flow",
+        "label": "Telegram Funnel \u2192 Group Join \u2192 CAPI Lead Event Flow",
+        "nodes": [
+          "prd_edge_telegram_bot_webhook",
+          "prd_edge_group_webhook",
+          "concept_capi_server_side",
+          "prd_table_telegram_leads",
+          "prd_table_capi_logs"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "documentation/PRD.md"
+      },
+      {
+        "id": "affiliate_tracking_routing",
+        "label": "Affiliate-Specific Pixel + UTMify Routing",
+        "nodes": [
+          "prd_affiliate_system",
+          "prd_table_affiliate_tracking_configs",
+          "prd_edge_utmify_event",
+          "prd_edge_group_webhook",
+          "concept_hybrid_tracking"
+        ],
+        "relation": "implement",
+        "confidence": "EXTRACTED",
+        "confidence_score": 0.95,
+        "source_file": "documentation/PRD.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "App.tsx",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L1",
+      "id": "src_app_tsx",
+      "community": 9,
+      "norm_label": "app.tsx"
+    },
+    {
+      "label": "ProtectedRoute()",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L31",
+      "id": "src_app_protectedroute",
+      "community": 9,
+      "norm_label": "protectedroute()"
+    },
+    {
+      "label": "AdminRoute()",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L38",
+      "id": "src_app_adminroute",
+      "community": 9,
+      "norm_label": "adminroute()"
+    },
+    {
+      "label": "FraudBlockWrapper()",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L46",
+      "id": "src_app_fraudblockwrapper",
+      "community": 9,
+      "norm_label": "fraudblockwrapper()"
+    },
+    {
+      "label": "App()",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L57",
+      "id": "src_app_app",
+      "community": 9,
+      "norm_label": "app()"
+    },
+    {
+      "label": "main.tsx",
+      "file_type": "code",
+      "source_file": "src/main.tsx",
+      "source_location": "L1",
+      "id": "src_main_tsx",
+      "community": 31,
+      "norm_label": "main.tsx"
+    },
+    {
+      "label": "AffiliateNotifications.tsx",
+      "file_type": "code",
+      "source_file": "src/components/AffiliateNotifications.tsx",
+      "source_location": "L1",
+      "id": "src_components_affiliatenotifications_tsx",
+      "community": 18,
+      "norm_label": "affiliatenotifications.tsx"
+    },
+    {
+      "label": "AffiliateNotifications()",
+      "file_type": "code",
+      "source_file": "src/components/AffiliateNotifications.tsx",
+      "source_location": "L75",
+      "id": "components_affiliatenotifications_affiliatenotifications",
+      "community": 18,
+      "norm_label": "affiliatenotifications()"
+    },
+    {
+      "label": "AffiliateWithdrawals.tsx",
+      "file_type": "code",
+      "source_file": "src/components/AffiliateWithdrawals.tsx",
+      "source_location": "L1",
+      "id": "src_components_affiliatewithdrawals_tsx",
+      "community": 0,
+      "norm_label": "affiliatewithdrawals.tsx"
+    },
+    {
+      "label": "fetchAll()",
+      "file_type": "code",
+      "source_file": "src/components/AffiliateWithdrawals.tsx",
+      "source_location": "L41",
+      "id": "components_affiliatewithdrawals_fetchall",
+      "community": 0,
+      "norm_label": "fetchall()"
+    },
+    {
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "src/components/AffiliateWithdrawals.tsx",
+      "source_location": "L81",
+      "id": "components_affiliatewithdrawals_handlesubmit",
+      "community": 0,
+      "norm_label": "handlesubmit()"
+    },
+    {
+      "label": "FraudBlockModal.tsx",
+      "file_type": "code",
+      "source_file": "src/components/FraudBlockModal.tsx",
+      "source_location": "L1",
+      "id": "src_components_fraudblockmodal_tsx",
+      "community": 19,
+      "norm_label": "fraudblockmodal.tsx"
+    },
+    {
+      "label": "FraudBlockModal()",
+      "file_type": "code",
+      "source_file": "src/components/FraudBlockModal.tsx",
+      "source_location": "L9",
+      "id": "components_fraudblockmodal_fraudblockmodal",
+      "community": 19,
+      "norm_label": "fraudblockmodal()"
+    },
+    {
+      "label": "QuickAccess.tsx",
+      "file_type": "code",
+      "source_file": "src/components/home/QuickAccess.tsx",
+      "source_location": "L1",
+      "id": "src_components_home_quickaccess_tsx",
+      "community": 20,
+      "norm_label": "quickaccess.tsx"
+    },
+    {
+      "label": "QuickAccess()",
+      "file_type": "code",
+      "source_file": "src/components/home/QuickAccess.tsx",
+      "source_location": "L28",
+      "id": "home_quickaccess_quickaccess",
+      "community": 20,
+      "norm_label": "quickaccess()"
+    },
+    {
+      "label": "SummaryCard.tsx",
+      "file_type": "code",
+      "source_file": "src/components/home/SummaryCard.tsx",
+      "source_location": "L1",
+      "id": "src_components_home_summarycard_tsx",
+      "community": 21,
+      "norm_label": "summarycard.tsx"
+    },
+    {
+      "label": "SummaryCard()",
+      "file_type": "code",
+      "source_file": "src/components/home/SummaryCard.tsx",
+      "source_location": "L4",
+      "id": "home_summarycard_summarycard",
+      "community": 21,
+      "norm_label": "summarycard()"
+    },
+    {
+      "label": "TrendingItems.tsx",
+      "file_type": "code",
+      "source_file": "src/components/home/TrendingItems.tsx",
+      "source_location": "L1",
+      "id": "src_components_home_trendingitems_tsx",
+      "community": 0,
+      "norm_label": "trendingitems.tsx"
+    },
+    {
+      "label": "WelcomeCard.tsx",
+      "file_type": "code",
+      "source_file": "src/components/home/WelcomeCard.tsx",
+      "source_location": "L1",
+      "id": "src_components_home_welcomecard_tsx",
+      "community": 0,
+      "norm_label": "welcomecard.tsx"
+    },
+    {
+      "label": "WelcomeCard()",
+      "file_type": "code",
+      "source_file": "src/components/home/WelcomeCard.tsx",
+      "source_location": "L5",
+      "id": "home_welcomecard_welcomecard",
+      "community": 0,
+      "norm_label": "welcomecard()"
+    },
+    {
+      "label": "SellItemModal.tsx",
+      "file_type": "code",
+      "source_file": "src/components/items/SellItemModal.tsx",
+      "source_location": "L1",
+      "id": "src_components_items_sellitemmodal_tsx",
+      "community": 14,
+      "norm_label": "sellitemmodal.tsx"
+    },
+    {
+      "label": "formatBRL()",
+      "file_type": "code",
+      "source_file": "src/components/items/SellItemModal.tsx",
+      "source_location": "L40",
+      "id": "items_sellitemmodal_formatbrl",
+      "community": 14,
+      "norm_label": "formatbrl()"
+    },
+    {
+      "label": "handleConfirmSell()",
+      "file_type": "code",
+      "source_file": "src/components/items/SellItemModal.tsx",
+      "source_location": "L48",
+      "id": "items_sellitemmodal_handleconfirmsell",
+      "community": 14,
+      "norm_label": "handleconfirmsell()"
+    },
+    {
+      "label": "AdminLayout.tsx",
+      "file_type": "code",
+      "source_file": "src/components/layout/AdminLayout.tsx",
+      "source_location": "L1",
+      "id": "src_components_layout_adminlayout_tsx",
+      "community": 0,
+      "norm_label": "adminlayout.tsx"
+    },
+    {
+      "label": "handleSignOut()",
+      "file_type": "code",
+      "source_file": "src/components/layout/AdminLayout.tsx",
+      "source_location": "L100",
+      "id": "layout_adminlayout_handlesignout",
+      "community": 0,
+      "norm_label": "handlesignout()"
+    },
+    {
+      "label": "AppLayout.tsx",
+      "file_type": "code",
+      "source_file": "src/components/layout/AppLayout.tsx",
+      "source_location": "L1",
+      "id": "src_components_layout_applayout_tsx",
+      "community": 32,
+      "norm_label": "applayout.tsx"
+    },
+    {
+      "label": "BottomNav.tsx",
+      "file_type": "code",
+      "source_file": "src/components/layout/BottomNav.tsx",
+      "source_location": "L1",
+      "id": "src_components_layout_bottomnav_tsx",
+      "community": 33,
+      "norm_label": "bottomnav.tsx"
+    },
+    {
+      "label": "Header.tsx",
+      "file_type": "code",
+      "source_file": "src/components/layout/Header.tsx",
+      "source_location": "L1",
+      "id": "src_components_layout_header_tsx",
+      "community": 22,
+      "norm_label": "header.tsx"
+    },
+    {
+      "label": "Header()",
+      "file_type": "code",
+      "source_file": "src/components/layout/Header.tsx",
+      "source_location": "L7",
+      "id": "layout_header_header",
+      "community": 22,
+      "norm_label": "header()"
+    },
+    {
+      "label": "MessagesPanel.tsx",
+      "file_type": "code",
+      "source_file": "src/components/layout/MessagesPanel.tsx",
+      "source_location": "L1",
+      "id": "src_components_layout_messagespanel_tsx",
+      "community": 23,
+      "norm_label": "messagespanel.tsx"
+    },
+    {
+      "label": "MessagesPanel()",
+      "file_type": "code",
+      "source_file": "src/components/layout/MessagesPanel.tsx",
+      "source_location": "L9",
+      "id": "layout_messagespanel_messagespanel",
+      "community": 23,
+      "norm_label": "messagespanel()"
+    },
+    {
+      "label": "SideMenu.tsx",
+      "file_type": "code",
+      "source_file": "src/components/layout/SideMenu.tsx",
+      "source_location": "L1",
+      "id": "src_components_layout_sidemenu_tsx",
+      "community": 0,
+      "norm_label": "sidemenu.tsx"
+    },
+    {
+      "label": "handleNavigate()",
+      "file_type": "code",
+      "source_file": "src/components/layout/SideMenu.tsx",
+      "source_location": "L56",
+      "id": "layout_sidemenu_handlenavigate",
+      "community": 0,
+      "norm_label": "handlenavigate()"
+    },
+    {
+      "label": "handleSignOut()",
+      "file_type": "code",
+      "source_file": "src/components/layout/SideMenu.tsx",
+      "source_location": "L60",
+      "id": "layout_sidemenu_handlesignout",
+      "community": 0,
+      "norm_label": "handlesignout()"
+    },
+    {
+      "label": "ItemCard.tsx",
+      "file_type": "code",
+      "source_file": "src/components/store/ItemCard.tsx",
+      "source_location": "L1",
+      "id": "src_components_store_itemcard_tsx",
+      "community": 0,
+      "norm_label": "itemcard.tsx"
+    },
+    {
+      "label": "ItemCard()",
+      "file_type": "code",
+      "source_file": "src/components/store/ItemCard.tsx",
+      "source_location": "L12",
+      "id": "store_itemcard_itemcard",
+      "community": 0,
+      "norm_label": "itemcard()"
+    },
+    {
+      "label": "PurchaseModal.tsx",
+      "file_type": "code",
+      "source_file": "src/components/store/PurchaseModal.tsx",
+      "source_location": "L1",
+      "id": "src_components_store_purchasemodal_tsx",
+      "community": 0,
+      "norm_label": "purchasemodal.tsx"
+    },
+    {
+      "label": "handlePurchase()",
+      "file_type": "code",
+      "source_file": "src/components/store/PurchaseModal.tsx",
+      "source_location": "L23",
+      "id": "store_purchasemodal_handlepurchase",
+      "community": 0,
+      "norm_label": "handlepurchase()"
+    },
+    {
+      "label": "constants.ts",
+      "file_type": "code",
+      "source_file": "src/lib/constants.ts",
+      "source_location": "L1",
+      "id": "src_lib_constants_ts",
+      "community": 34,
+      "norm_label": "constants.ts"
+    },
+    {
+      "label": "robloxVaultApi.ts",
+      "file_type": "code",
+      "source_file": "src/lib/robloxVaultApi.ts",
+      "source_location": "L1",
+      "id": "src_lib_robloxvaultapi_ts",
+      "community": 15,
+      "norm_label": "robloxvaultapi.ts"
+    },
+    {
+      "label": "fetchProducts()",
+      "file_type": "code",
+      "source_file": "src/lib/robloxVaultApi.ts",
+      "source_location": "L39",
+      "id": "lib_robloxvaultapi_fetchproducts",
+      "community": 15,
+      "norm_label": "fetchproducts()"
+    },
+    {
+      "label": "apiProductToStoreItem()",
+      "file_type": "code",
+      "source_file": "src/lib/robloxVaultApi.ts",
+      "source_location": "L65",
+      "id": "lib_robloxvaultapi_apiproducttostoreitem",
+      "community": 15,
+      "norm_label": "apiproducttostoreitem()"
+    },
+    {
+      "label": "supabase.ts",
+      "file_type": "code",
+      "source_file": "src/lib/supabase.ts",
+      "source_location": "L1",
+      "id": "src_lib_supabase_ts",
+      "community": 35,
+      "norm_label": "supabase.ts"
+    },
+    {
+      "label": "types.ts",
+      "file_type": "code",
+      "source_file": "src/lib/types.ts",
+      "source_location": "L1",
+      "id": "src_lib_types_ts",
+      "community": 36,
+      "norm_label": "types.ts"
+    },
+    {
+      "label": "utils.ts",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L1",
+      "id": "src_lib_utils_ts",
+      "community": 0,
+      "norm_label": "utils.ts"
+    },
+    {
+      "label": "formatCurrency()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L1",
+      "id": "lib_utils_formatcurrency",
+      "community": 0,
+      "norm_label": "formatcurrency()"
+    },
+    {
+      "label": "formatRobux()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L8",
+      "id": "lib_utils_formatrobux",
+      "community": 0,
+      "norm_label": "formatrobux()"
+    },
+    {
+      "label": "cn()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L12",
+      "id": "lib_utils_cn",
+      "community": 0,
+      "norm_label": "cn()"
+    },
+    {
+      "label": "generateRandomCents()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L16",
+      "id": "lib_utils_generaterandomcents",
+      "community": 0,
+      "norm_label": "generaterandomcents()"
+    },
+    {
+      "label": "formatDate()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L21",
+      "id": "lib_utils_formatdate",
+      "community": 5,
+      "norm_label": "formatdate()"
+    },
+    {
+      "label": "formatDateTime()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L29",
+      "id": "lib_utils_formatdatetime",
+      "community": 0,
+      "norm_label": "formatdatetime()"
+    },
+    {
+      "label": "formatPhone()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L39",
+      "id": "lib_utils_formatphone",
+      "community": 0,
+      "norm_label": "formatphone()"
+    },
+    {
+      "label": "formatCPF()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L50",
+      "id": "lib_utils_formatcpf",
+      "community": 0,
+      "norm_label": "formatcpf()"
+    },
+    {
+      "label": "generateStartParam()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L58",
+      "id": "lib_utils_generatestartparam",
+      "community": 0,
+      "norm_label": "generatestartparam()"
+    },
+    {
+      "label": "generateFakeCardNumber()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L67",
+      "id": "lib_utils_generatefakecardnumber",
+      "community": 0,
+      "norm_label": "generatefakecardnumber()"
+    },
+    {
+      "label": "generateFakeCVV()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L77",
+      "id": "lib_utils_generatefakecvv",
+      "community": 0,
+      "norm_label": "generatefakecvv()"
+    },
+    {
+      "label": "generateFakeExpiry()",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L81",
+      "id": "lib_utils_generatefakeexpiry",
+      "community": 0,
+      "norm_label": "generatefakeexpiry()"
+    },
+    {
+      "label": "Affiliate.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L1",
+      "id": "src_pages_affiliate_tsx",
+      "community": 5,
+      "norm_label": "affiliate.tsx"
+    },
+    {
+      "label": "loadTrackingConfig()",
+      "file_type": "code",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L63",
+      "id": "pages_affiliate_loadtrackingconfig",
+      "community": 5,
+      "norm_label": "loadtrackingconfig()"
+    },
+    {
+      "label": "handleSaveTrackingConfig()",
+      "file_type": "code",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L84",
+      "id": "pages_affiliate_handlesavetrackingconfig",
+      "community": 5,
+      "norm_label": "handlesavetrackingconfig()"
+    },
+    {
+      "label": "handleCopyRef()",
+      "file_type": "code",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L121",
+      "id": "pages_affiliate_handlecopyref",
+      "community": 5,
+      "norm_label": "handlecopyref()"
+    },
+    {
+      "label": "handleApplyFilters()",
+      "file_type": "code",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L145",
+      "id": "pages_affiliate_handleapplyfilters",
+      "community": 5,
+      "norm_label": "handleapplyfilters()"
+    },
+    {
+      "label": "handleClearFilters()",
+      "file_type": "code",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L154",
+      "id": "pages_affiliate_handleclearfilters",
+      "community": 5,
+      "norm_label": "handleclearfilters()"
+    },
+    {
+      "label": "handleExportCSV()",
+      "file_type": "code",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L159",
+      "id": "pages_affiliate_handleexportcsv",
+      "community": 5,
+      "norm_label": "handleexportcsv()"
+    },
+    {
+      "label": "BuyRobux.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/BuyRobux.tsx",
+      "source_location": "L1",
+      "id": "src_pages_buyrobux_tsx",
+      "community": 11,
+      "norm_label": "buyrobux.tsx"
+    },
+    {
+      "label": "formatCardInput()",
+      "file_type": "code",
+      "source_file": "src/pages/BuyRobux.tsx",
+      "source_location": "L18",
+      "id": "pages_buyrobux_formatcardinput",
+      "community": 11,
+      "norm_label": "formatcardinput()"
+    },
+    {
+      "label": "formatExpiryInput()",
+      "file_type": "code",
+      "source_file": "src/pages/BuyRobux.tsx",
+      "source_location": "L23",
+      "id": "pages_buyrobux_formatexpiryinput",
+      "community": 11,
+      "norm_label": "formatexpiryinput()"
+    },
+    {
+      "label": "handlePayment()",
+      "file_type": "code",
+      "source_file": "src/pages/BuyRobux.tsx",
+      "source_location": "L48",
+      "id": "pages_buyrobux_handlepayment",
+      "community": 11,
+      "norm_label": "handlepayment()"
+    },
+    {
+      "label": "Contestacao.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/Contestacao.tsx",
+      "source_location": "L1",
+      "id": "src_pages_contestacao_tsx",
+      "community": 24,
+      "norm_label": "contestacao.tsx"
+    },
+    {
+      "label": "Contestacao()",
+      "file_type": "code",
+      "source_file": "src/pages/Contestacao.tsx",
+      "source_location": "L6",
+      "id": "pages_contestacao_contestacao",
+      "community": 24,
+      "norm_label": "contestacao()"
+    },
+    {
+      "label": "Home.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/Home.tsx",
+      "source_location": "L1",
+      "id": "src_pages_home_tsx",
+      "community": 12,
+      "norm_label": "home.tsx"
+    },
+    {
+      "label": "PromoBanner()",
+      "file_type": "code",
+      "source_file": "src/pages/Home.tsx",
+      "source_location": "L10",
+      "id": "pages_home_promobanner",
+      "community": 12,
+      "norm_label": "promobanner()"
+    },
+    {
+      "label": "SyncAlert()",
+      "file_type": "code",
+      "source_file": "src/pages/Home.tsx",
+      "source_location": "L18",
+      "id": "pages_home_syncalert",
+      "community": 12,
+      "norm_label": "syncalert()"
+    },
+    {
+      "label": "Home()",
+      "file_type": "code",
+      "source_file": "src/pages/Home.tsx",
+      "source_location": "L36",
+      "id": "pages_home_home",
+      "community": 12,
+      "norm_label": "home()"
+    },
+    {
+      "label": "Items.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/Items.tsx",
+      "source_location": "L1",
+      "id": "src_pages_items_tsx",
+      "community": 0,
+      "norm_label": "items.tsx"
+    },
+    {
+      "label": "Items()",
+      "file_type": "code",
+      "source_file": "src/pages/Items.tsx",
+      "source_location": "L19",
+      "id": "pages_items_items",
+      "community": 0,
+      "norm_label": "items()"
+    },
+    {
+      "label": "Profile.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/Profile.tsx",
+      "source_location": "L1",
+      "id": "src_pages_profile_tsx",
+      "community": 0,
+      "norm_label": "profile.tsx"
+    },
+    {
+      "label": "formatDatePt()",
+      "file_type": "code",
+      "source_file": "src/pages/Profile.tsx",
+      "source_location": "L25",
+      "id": "pages_profile_formatdatept",
+      "community": 0,
+      "norm_label": "formatdatept()"
+    },
+    {
+      "label": "handleSignOut()",
+      "file_type": "code",
+      "source_file": "src/pages/Profile.tsx",
+      "source_location": "L36",
+      "id": "pages_profile_handlesignout",
+      "community": 0,
+      "norm_label": "handlesignout()"
+    },
+    {
+      "label": "RobloxAccount.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/RobloxAccount.tsx",
+      "source_location": "L1",
+      "id": "src_pages_robloxaccount_tsx",
+      "community": 25,
+      "norm_label": "robloxaccount.tsx"
+    },
+    {
+      "label": "RobloxAccount()",
+      "file_type": "code",
+      "source_file": "src/pages/RobloxAccount.tsx",
+      "source_location": "L12",
+      "id": "pages_robloxaccount_robloxaccount",
+      "community": 25,
+      "norm_label": "robloxaccount()"
+    },
+    {
+      "label": "SellerPass.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/SellerPass.tsx",
+      "source_location": "L1",
+      "id": "src_pages_sellerpass_tsx",
+      "community": 16,
+      "norm_label": "sellerpass.tsx"
+    },
+    {
+      "label": "handleCopyPix()",
+      "file_type": "code",
+      "source_file": "src/pages/SellerPass.tsx",
+      "source_location": "L52",
+      "id": "pages_sellerpass_handlecopypix",
+      "community": 16,
+      "norm_label": "handlecopypix()"
+    },
+    {
+      "label": "handleAcquire()",
+      "file_type": "code",
+      "source_file": "src/pages/SellerPass.tsx",
+      "source_location": "L57",
+      "id": "pages_sellerpass_handleacquire",
+      "community": 16,
+      "norm_label": "handleacquire()"
+    },
+    {
+      "label": "Store.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/Store.tsx",
+      "source_location": "L1",
+      "id": "src_pages_store_tsx",
+      "community": 0,
+      "norm_label": "store.tsx"
+    },
+    {
+      "label": "Support.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/Support.tsx",
+      "source_location": "L1",
+      "id": "src_pages_support_tsx",
+      "community": 37,
+      "norm_label": "support.tsx"
+    },
+    {
+      "label": "Wallet.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/Wallet.tsx",
+      "source_location": "L1",
+      "id": "src_pages_wallet_tsx",
+      "community": 13,
+      "norm_label": "wallet.tsx"
+    },
+    {
+      "label": "loadWithdrawals()",
+      "file_type": "code",
+      "source_file": "src/pages/Wallet.tsx",
+      "source_location": "L70",
+      "id": "pages_wallet_loadwithdrawals",
+      "community": 13,
+      "norm_label": "loadwithdrawals()"
+    },
+    {
+      "label": "handleConfirmClick()",
+      "file_type": "code",
+      "source_file": "src/pages/Wallet.tsx",
+      "source_location": "L119",
+      "id": "pages_wallet_handleconfirmclick",
+      "community": 13,
+      "norm_label": "handleconfirmclick()"
+    },
+    {
+      "label": "handleInstantWithdrawal()",
+      "file_type": "code",
+      "source_file": "src/pages/Wallet.tsx",
+      "source_location": "L145",
+      "id": "pages_wallet_handleinstantwithdrawal",
+      "community": 13,
+      "norm_label": "handleinstantwithdrawal()"
+    },
+    {
+      "label": "AffiliateWithdrawals.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_affiliatewithdrawals_tsx",
+      "community": 0,
+      "norm_label": "affiliatewithdrawals.tsx"
+    },
+    {
+      "label": "fetchWithdrawals()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L43",
+      "id": "admin_affiliatewithdrawals_fetchwithdrawals",
+      "community": 0,
+      "norm_label": "fetchwithdrawals()"
+    },
+    {
+      "label": "loadCommissionForUser()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L62",
+      "id": "admin_affiliatewithdrawals_loadcommissionforuser",
+      "community": 0,
+      "norm_label": "loadcommissionforuser()"
+    },
+    {
+      "label": "handleExpand()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L112",
+      "id": "admin_affiliatewithdrawals_handleexpand",
+      "community": 0,
+      "norm_label": "handleexpand()"
+    },
+    {
+      "label": "handleApprove()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L122",
+      "id": "admin_affiliatewithdrawals_handleapprove",
+      "community": 0,
+      "norm_label": "handleapprove()"
+    },
+    {
+      "label": "handleReject()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L148",
+      "id": "admin_affiliatewithdrawals_handlereject",
+      "community": 0,
+      "norm_label": "handlereject()"
+    },
+    {
+      "label": "BotChats.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_botchats_tsx",
+      "community": 8,
+      "norm_label": "botchats.tsx"
+    },
+    {
+      "label": "formatTime()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L46",
+      "id": "admin_botchats_formattime",
+      "community": 8,
+      "norm_label": "formattime()"
+    },
+    {
+      "label": "formatDateGroup()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L53",
+      "id": "admin_botchats_formatdategroup",
+      "community": 8,
+      "norm_label": "formatdategroup()"
+    },
+    {
+      "label": "getInitial()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L69",
+      "id": "admin_botchats_getinitial",
+      "community": 8,
+      "norm_label": "getinitial()"
+    },
+    {
+      "label": "botLabel()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L74",
+      "id": "admin_botchats_botlabel",
+      "community": 8,
+      "norm_label": "botlabel()"
+    },
+    {
+      "label": "handleSend()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L195",
+      "id": "admin_botchats_handlesend",
+      "community": 8,
+      "norm_label": "handlesend()"
+    },
+    {
+      "label": "resolveUser()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L255",
+      "id": "admin_botchats_resolveuser",
+      "community": 8,
+      "norm_label": "resolveuser()"
+    },
+    {
+      "label": "ConversionGateway.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/ConversionGateway.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_conversiongateway_tsx",
+      "community": 0,
+      "norm_label": "conversiongateway.tsx"
+    },
+    {
+      "label": "Dashboard.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Dashboard.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_dashboard_tsx",
+      "community": 0,
+      "norm_label": "dashboard.tsx"
+    },
+    {
+      "label": "Gateways.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_gateways_tsx",
+      "community": 10,
+      "norm_label": "gateways.tsx"
+    },
+    {
+      "label": "getConfig()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L57",
+      "id": "admin_gateways_getconfig",
+      "community": 10,
+      "norm_label": "getconfig()"
+    },
+    {
+      "label": "openConfig()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L62",
+      "id": "admin_gateways_openconfig",
+      "community": 10,
+      "norm_label": "openconfig()"
+    },
+    {
+      "label": "handleSave()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L74",
+      "id": "admin_gateways_handlesave",
+      "community": 10,
+      "norm_label": "handlesave()"
+    },
+    {
+      "label": "handleTest()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L91",
+      "id": "admin_gateways_handletest",
+      "community": 10,
+      "norm_label": "handletest()"
+    },
+    {
+      "label": "TelegramAnalytics.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/TelegramAnalytics.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_telegramanalytics_tsx",
+      "community": 5,
+      "norm_label": "telegramanalytics.tsx"
+    },
+    {
+      "label": "handleApplyFilters()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/TelegramAnalytics.tsx",
+      "source_location": "L34",
+      "id": "admin_telegramanalytics_handleapplyfilters",
+      "community": 5,
+      "norm_label": "handleapplyfilters()"
+    },
+    {
+      "label": "handleClearFilters()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/TelegramAnalytics.tsx",
+      "source_location": "L44",
+      "id": "admin_telegramanalytics_handleclearfilters",
+      "community": 5,
+      "norm_label": "handleclearfilters()"
+    },
+    {
+      "label": "handleExportCSV()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/TelegramAnalytics.tsx",
+      "source_location": "L49",
+      "id": "admin_telegramanalytics_handleexportcsv",
+      "community": 5,
+      "norm_label": "handleexportcsv()"
+    },
+    {
+      "label": "TelegramBot.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/TelegramBot.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_telegrambot_tsx",
+      "community": 26,
+      "norm_label": "telegrambot.tsx"
+    },
+    {
+      "label": "handleSave()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/TelegramBot.tsx",
+      "source_location": "L63",
+      "id": "admin_telegrambot_handlesave",
+      "community": 26,
+      "norm_label": "handlesave()"
+    },
+    {
+      "label": "Users.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_users_tsx",
+      "community": 5,
+      "norm_label": "users.tsx"
+    },
+    {
+      "label": "handleSearch()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L39",
+      "id": "admin_users_handlesearch",
+      "community": 5,
+      "norm_label": "handlesearch()"
+    },
+    {
+      "label": "handleKeyDown()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L43",
+      "id": "admin_users_handlekeydown",
+      "community": 5,
+      "norm_label": "handlekeydown()"
+    },
+    {
+      "label": "generateRef()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L47",
+      "id": "admin_users_generateref",
+      "community": 5,
+      "norm_label": "generateref()"
+    },
+    {
+      "label": "handleSaveUser()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L56",
+      "id": "admin_users_handlesaveuser",
+      "community": 5,
+      "norm_label": "handlesaveuser()"
+    },
+    {
+      "label": "UtmifyIntegration.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/UtmifyIntegration.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_utmifyintegration_tsx",
+      "community": 17,
+      "norm_label": "utmifyintegration.tsx"
+    },
+    {
+      "label": "handleSave()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/UtmifyIntegration.tsx",
+      "source_location": "L39",
+      "id": "admin_utmifyintegration_handlesave",
+      "community": 17,
+      "norm_label": "handlesave()"
+    },
+    {
+      "label": "handleTest()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/UtmifyIntegration.tsx",
+      "source_location": "L53",
+      "id": "admin_utmifyintegration_handletest",
+      "community": 17,
+      "norm_label": "handletest()"
+    },
+    {
+      "label": "Webhooks.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Webhooks.tsx",
+      "source_location": "L1",
+      "id": "src_pages_admin_webhooks_tsx",
+      "community": 27,
+      "norm_label": "webhooks.tsx"
+    },
+    {
+      "label": "handleCopy()",
+      "file_type": "code",
+      "source_file": "src/pages/admin/Webhooks.tsx",
+      "source_location": "L76",
+      "id": "admin_webhooks_handlecopy",
+      "community": 27,
+      "norm_label": "handlecopy()"
+    },
+    {
+      "label": "Login.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/auth/Login.tsx",
+      "source_location": "L1",
+      "id": "src_pages_auth_login_tsx",
+      "community": 28,
+      "norm_label": "login.tsx"
+    },
+    {
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "src/pages/auth/Login.tsx",
+      "source_location": "L15",
+      "id": "auth_login_handlesubmit",
+      "community": 28,
+      "norm_label": "handlesubmit()"
+    },
+    {
+      "label": "Register.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/auth/Register.tsx",
+      "source_location": "L1",
+      "id": "src_pages_auth_register_tsx",
+      "community": 29,
+      "norm_label": "register.tsx"
+    },
+    {
+      "label": "handleSubmit()",
+      "file_type": "code",
+      "source_file": "src/pages/auth/Register.tsx",
+      "source_location": "L17",
+      "id": "auth_register_handlesubmit",
+      "community": 29,
+      "norm_label": "handlesubmit()"
+    },
+    {
+      "label": "adminStore.ts",
+      "file_type": "code",
+      "source_file": "src/stores/adminStore.ts",
+      "source_location": "L1",
+      "id": "src_stores_adminstore_ts",
+      "community": 38,
+      "norm_label": "adminstore.ts"
+    },
+    {
+      "label": "affiliateStore.ts",
+      "file_type": "code",
+      "source_file": "src/stores/affiliateStore.ts",
+      "source_location": "L1",
+      "id": "src_stores_affiliatestore_ts",
+      "community": 39,
+      "norm_label": "affiliatestore.ts"
+    },
+    {
+      "label": "authStore.ts",
+      "file_type": "code",
+      "source_file": "src/stores/authStore.ts",
+      "source_location": "L1",
+      "id": "src_stores_authstore_ts",
+      "community": 40,
+      "norm_label": "authstore.ts"
+    },
+    {
+      "label": "itemStore.ts",
+      "file_type": "code",
+      "source_file": "src/stores/itemStore.ts",
+      "source_location": "L1",
+      "id": "src_stores_itemstore_ts",
+      "community": 41,
+      "norm_label": "itemstore.ts"
+    },
+    {
+      "label": "uiStore.ts",
+      "file_type": "code",
+      "source_file": "src/stores/uiStore.ts",
+      "source_location": "L1",
+      "id": "src_stores_uistore_ts",
+      "community": 42,
+      "norm_label": "uistore.ts"
+    },
+    {
+      "label": "walletStore.ts",
+      "file_type": "code",
+      "source_file": "src/stores/walletStore.ts",
+      "source_location": "L1",
+      "id": "src_stores_walletstore_ts",
+      "community": 43,
+      "norm_label": "walletstore.ts"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/bspay-webhook/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_bspay_webhook_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/buy-item-with-robux/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_buy_item_with_robux_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_card_bot_webhook_index_ts",
+      "community": 3,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "getBotConfig()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L64",
+      "id": "card_bot_webhook_index_getbotconfig",
+      "community": 3,
+      "norm_label": "getbotconfig()"
+    },
+    {
+      "label": "sendMessage()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L74",
+      "id": "card_bot_webhook_index_sendmessage",
+      "community": 3,
+      "norm_label": "sendmessage()"
+    },
+    {
+      "label": "sendPhoto()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L95",
+      "id": "card_bot_webhook_index_sendphoto",
+      "community": 3,
+      "norm_label": "sendphoto()"
+    },
+    {
+      "label": "deleteMessage()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L131",
+      "id": "card_bot_webhook_index_deletemessage",
+      "community": 3,
+      "norm_label": "deletemessage()"
+    },
+    {
+      "label": "editMessage()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L139",
+      "id": "card_bot_webhook_index_editmessage",
+      "community": 3,
+      "norm_label": "editmessage()"
+    },
+    {
+      "label": "answerCallbackQuery()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L152",
+      "id": "card_bot_webhook_index_answercallbackquery",
+      "community": 3,
+      "norm_label": "answercallbackquery()"
+    },
+    {
+      "label": "randomDigits()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L166",
+      "id": "card_bot_webhook_index_randomdigits",
+      "community": 3,
+      "norm_label": "randomdigits()"
+    },
+    {
+      "label": "generateCardNumber()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L174",
+      "id": "card_bot_webhook_index_generatecardnumber",
+      "community": 3,
+      "norm_label": "generatecardnumber()"
+    },
+    {
+      "label": "generateExpiry()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L182",
+      "id": "card_bot_webhook_index_generateexpiry",
+      "community": 3,
+      "norm_label": "generateexpiry()"
+    },
+    {
+      "label": "generateCVV()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L189",
+      "id": "card_bot_webhook_index_generatecvv",
+      "community": 3,
+      "norm_label": "generatecvv()"
+    },
+    {
+      "label": "generateName()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L193",
+      "id": "card_bot_webhook_index_generatename",
+      "community": 3,
+      "norm_label": "generatename()"
+    },
+    {
+      "label": "generateCPF()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L199",
+      "id": "card_bot_webhook_index_generatecpf",
+      "community": 3,
+      "norm_label": "generatecpf()"
+    },
+    {
+      "label": "generateDOB()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L203",
+      "id": "card_bot_webhook_index_generatedob",
+      "community": 3,
+      "norm_label": "generatedob()"
+    },
+    {
+      "label": "getBrand()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L210",
+      "id": "card_bot_webhook_index_getbrand",
+      "community": 3,
+      "norm_label": "getbrand()"
+    },
+    {
+      "label": "getFreePurchasesRemaining()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L217",
+      "id": "card_bot_webhook_index_getfreepurchasesremaining",
+      "community": 3,
+      "norm_label": "getfreepurchasesremaining()"
+    },
+    {
+      "label": "incrementPurchaseCount()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L232",
+      "id": "card_bot_webhook_index_incrementpurchasecount",
+      "community": 3,
+      "norm_label": "incrementpurchasecount()"
+    },
+    {
+      "label": "showMainMenu()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L253",
+      "id": "card_bot_webhook_index_showmainmenu",
+      "community": 3,
+      "norm_label": "showmainmenu()"
+    },
+    {
+      "label": "showCardTypes()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L276",
+      "id": "card_bot_webhook_index_showcardtypes",
+      "community": 3,
+      "norm_label": "showcardtypes()"
+    },
+    {
+      "label": "showPurchaseConfirmation()",
+      "file_type": "code",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L316",
+      "id": "card_bot_webhook_index_showpurchaseconfirmation",
+      "community": 3,
+      "norm_label": "showpurchaseconfirmation()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_create_payment_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "hashSHA256()",
+      "file_type": "code",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L5",
+      "id": "create_payment_index_hashsha256",
+      "community": 2,
+      "norm_label": "hashsha256()"
+    },
+    {
+      "label": "generateValidCPF()",
+      "file_type": "code",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L14",
+      "id": "create_payment_index_generatevalidcpf",
+      "community": 2,
+      "norm_label": "generatevalidcpf()"
+    },
+    {
+      "label": "getGateway()",
+      "file_type": "code",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L41",
+      "id": "create_payment_index_getgateway",
+      "community": 2,
+      "norm_label": "getgateway()"
+    },
+    {
+      "label": "fireInitiateCheckout()",
+      "file_type": "code",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L72",
+      "id": "create_payment_index_fireinitiatecheckout",
+      "community": 2,
+      "norm_label": "fireinitiatecheckout()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_group_webhook_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "hashSHA256()",
+      "file_type": "code",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L14",
+      "id": "group_webhook_index_hashsha256",
+      "community": 2,
+      "norm_label": "hashsha256()"
+    },
+    {
+      "label": "fillGeoIfMissing()",
+      "file_type": "code",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L23",
+      "id": "group_webhook_index_fillgeoifmissing",
+      "community": 2,
+      "norm_label": "fillgeoifmissing()"
+    },
+    {
+      "label": "sendCAPIEvent()",
+      "file_type": "code",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L71",
+      "id": "group_webhook_index_sendcapievent",
+      "community": 2,
+      "norm_label": "sendcapievent()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_sales_bot_webhook_index_ts",
+      "community": 6,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "hashSHA256()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L23",
+      "id": "sales_bot_webhook_index_hashsha256",
+      "community": 6,
+      "norm_label": "hashsha256()"
+    },
+    {
+      "label": "sendCAPIEvent()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L32",
+      "id": "sales_bot_webhook_index_sendcapievent",
+      "community": 6,
+      "norm_label": "sendcapievent()"
+    },
+    {
+      "label": "getBotToken()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L110",
+      "id": "sales_bot_webhook_index_getbottoken",
+      "community": 6,
+      "norm_label": "getbottoken()"
+    },
+    {
+      "label": "sendMessage()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L120",
+      "id": "sales_bot_webhook_index_sendmessage",
+      "community": 6,
+      "norm_label": "sendmessage()"
+    },
+    {
+      "label": "sendVideo()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L153",
+      "id": "sales_bot_webhook_index_sendvideo",
+      "community": 6,
+      "norm_label": "sendvideo()"
+    },
+    {
+      "label": "sendChatAction()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L163",
+      "id": "sales_bot_webhook_index_sendchataction",
+      "community": 6,
+      "norm_label": "sendchataction()"
+    },
+    {
+      "label": "delay()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L171",
+      "id": "sales_bot_webhook_index_delay",
+      "community": 6,
+      "norm_label": "delay()"
+    },
+    {
+      "label": "getFunnelState()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L179",
+      "id": "sales_bot_webhook_index_getfunnelstate",
+      "community": 6,
+      "norm_label": "getfunnelstate()"
+    },
+    {
+      "label": "setFunnelState()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L188",
+      "id": "sales_bot_webhook_index_setfunnelstate",
+      "community": 6,
+      "norm_label": "setfunnelstate()"
+    },
+    {
+      "label": "getVideoFileId()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L199",
+      "id": "sales_bot_webhook_index_getvideofileid",
+      "community": 6,
+      "norm_label": "getvideofileid()"
+    },
+    {
+      "label": "setVideoFileId()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L211",
+      "id": "sales_bot_webhook_index_setvideofileid",
+      "community": 6,
+      "norm_label": "setvideofileid()"
+    },
+    {
+      "label": "handleAdmin()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L221",
+      "id": "sales_bot_webhook_index_handleadmin",
+      "community": 6,
+      "norm_label": "handleadmin()"
+    },
+    {
+      "label": "fireBackgroundTracking()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L290",
+      "id": "sales_bot_webhook_index_firebackgroundtracking",
+      "community": 6,
+      "norm_label": "firebackgroundtracking()"
+    },
+    {
+      "label": "handleStart()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L383",
+      "id": "sales_bot_webhook_index_handlestart",
+      "community": 6,
+      "norm_label": "handlestart()"
+    },
+    {
+      "label": "handleReply()",
+      "file_type": "code",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L425",
+      "id": "sales_bot_webhook_index_handlereply",
+      "community": 6,
+      "norm_label": "handlereply()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/send-bot-message/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_send_bot_message_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_telegram_bot_webhook_index_ts",
+      "community": 4,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "hashSHA256()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L50",
+      "id": "telegram_bot_webhook_index_hashsha256",
+      "community": 4,
+      "norm_label": "hashsha256()"
+    },
+    {
+      "label": "sendCAPIEvent()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L59",
+      "id": "telegram_bot_webhook_index_sendcapievent",
+      "community": 4,
+      "norm_label": "sendcapievent()"
+    },
+    {
+      "label": "getBotConfig()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L161",
+      "id": "telegram_bot_webhook_index_getbotconfig",
+      "community": 4,
+      "norm_label": "getbotconfig()"
+    },
+    {
+      "label": "getFunnelSteps()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L177",
+      "id": "telegram_bot_webhook_index_getfunnelsteps",
+      "community": 4,
+      "norm_label": "getfunnelsteps()"
+    },
+    {
+      "label": "sendMessage()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L187",
+      "id": "telegram_bot_webhook_index_sendmessage",
+      "community": 4,
+      "norm_label": "sendmessage()"
+    },
+    {
+      "label": "sendVoice()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L222",
+      "id": "telegram_bot_webhook_index_sendvoice",
+      "community": 4,
+      "norm_label": "sendvoice()"
+    },
+    {
+      "label": "sendPhoto()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L233",
+      "id": "telegram_bot_webhook_index_sendphoto",
+      "community": 4,
+      "norm_label": "sendphoto()"
+    },
+    {
+      "label": "sendVideo()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L255",
+      "id": "telegram_bot_webhook_index_sendvideo",
+      "community": 4,
+      "norm_label": "sendvideo()"
+    },
+    {
+      "label": "sendSticker()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L272",
+      "id": "telegram_bot_webhook_index_sendsticker",
+      "community": 4,
+      "norm_label": "sendsticker()"
+    },
+    {
+      "label": "sendChatAction()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L283",
+      "id": "telegram_bot_webhook_index_sendchataction",
+      "community": 4,
+      "norm_label": "sendchataction()"
+    },
+    {
+      "label": "answerCallbackQuery()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L294",
+      "id": "telegram_bot_webhook_index_answercallbackquery",
+      "community": 4,
+      "norm_label": "answercallbackquery()"
+    },
+    {
+      "label": "delay()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L302",
+      "id": "telegram_bot_webhook_index_delay",
+      "community": 4,
+      "norm_label": "delay()"
+    },
+    {
+      "label": "generateUniqueInviteLink()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L306",
+      "id": "telegram_bot_webhook_index_generateuniqueinvitelink",
+      "community": 4,
+      "norm_label": "generateuniqueinvitelink()"
+    },
+    {
+      "label": "sendFunnelStep()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L339",
+      "id": "telegram_bot_webhook_index_sendfunnelstep",
+      "community": 4,
+      "norm_label": "sendfunnelstep()"
+    },
+    {
+      "label": "handleAdmin()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L423",
+      "id": "telegram_bot_webhook_index_handleadmin",
+      "community": 4,
+      "norm_label": "handleadmin()"
+    },
+    {
+      "label": "handleStart()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L545",
+      "id": "telegram_bot_webhook_index_handlestart",
+      "community": 4,
+      "norm_label": "handlestart()"
+    },
+    {
+      "label": "handleChatMember()",
+      "file_type": "code",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L613",
+      "id": "telegram_bot_webhook_index_handlechatmember",
+      "community": 4,
+      "norm_label": "handlechatmember()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/tracking-redirect/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_tracking_redirect_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "generateStartParam()",
+      "file_type": "code",
+      "source_file": "supabase/functions/tracking-redirect/index.ts",
+      "source_location": "L4",
+      "id": "tracking_redirect_index_generatestartparam",
+      "community": 2,
+      "norm_label": "generatestartparam()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/tracking-save/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_tracking_save_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "lookupGeoAndUpdate()",
+      "file_type": "code",
+      "source_file": "supabase/functions/tracking-save/index.ts",
+      "source_location": "L5",
+      "id": "tracking_save_index_lookupgeoandupdate",
+      "community": 2,
+      "norm_label": "lookupgeoandupdate()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/utmify-event/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_utmify_event_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "mapPaymentStatus()",
+      "file_type": "code",
+      "source_file": "supabase/functions/utmify-event/index.ts",
+      "source_location": "L6",
+      "id": "utmify_event_index_mappaymentstatus",
+      "community": 2,
+      "norm_label": "mappaymentstatus()"
+    },
+    {
+      "label": "generateValidCPF()",
+      "file_type": "code",
+      "source_file": "supabase/functions/utmify-event/index.ts",
+      "source_location": "L25",
+      "id": "utmify_event_index_generatevalidcpf",
+      "community": 2,
+      "norm_label": "generatevalidcpf()"
+    },
+    {
+      "label": "formatUTMifyDate()",
+      "file_type": "code",
+      "source_file": "supabase/functions/utmify-event/index.ts",
+      "source_location": "L169",
+      "id": "utmify_event_index_formatutmifydate",
+      "community": 2,
+      "norm_label": "formatutmifydate()"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/validate-card-purchase/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_validate_card_purchase_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/zucropay-webhook/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_zucropay_webhook_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "cors.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/_shared/cors.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_shared_cors_ts",
+      "community": 2,
+      "norm_label": "cors.ts"
+    },
+    {
+      "label": "supabase.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/_shared/supabase.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_shared_supabase_ts",
+      "community": 2,
+      "norm_label": "supabase.ts"
+    },
+    {
+      "label": "BSPay API Documentation",
+      "file_type": "document",
+      "source_file": "documentation/Doc bspay.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_bspay",
+      "community": 7,
+      "norm_label": "bspay api documentation"
+    },
+    {
+      "label": "ZucroPay API Documentation",
+      "file_type": "document",
+      "source_file": "documentation/docs_zucropay.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_zucropay",
+      "community": 7,
+      "norm_label": "zucropay api documentation"
+    },
+    {
+      "label": "UTMify API Documentation",
+      "file_type": "document",
+      "source_file": "documentation/Documenta\u00e7\u00e3o API - UTMify.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_utmify",
+      "community": 7,
+      "norm_label": "utmify api documentation"
+    },
+    {
+      "label": "BSPay UTMify Integration Flow",
+      "file_type": "document",
+      "source_file": "documentation/Fluxo BSPay UTMify.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_fluxo_bspay_utmify",
+      "community": 1,
+      "norm_label": "bspay utmify integration flow"
+    },
+    {
+      "label": "Meta Pixel vs Conversions API Guide (2024-2026)",
+      "file_type": "document",
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_meta_capi",
+      "community": 1,
+      "norm_label": "meta pixel vs conversions api guide (2024-2026)"
+    },
+    {
+      "label": "PRD \u2014 Roblox Vault v3.0",
+      "file_type": "document",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_prd",
+      "community": 7,
+      "norm_label": "prd \u2014 roblox vault v3.0"
+    },
+    {
+      "label": "Telegram Bot API Documentation",
+      "file_type": "document",
+      "source_file": "documentation/Telegram Bot API Documentacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doc_telegram_api",
+      "community": 1,
+      "norm_label": "telegram bot api documentation"
+    },
+    {
+      "label": "BSPay OAuth2 Basic Authentication",
+      "file_type": "rationale",
+      "source_file": "documentation/Doc bspay.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_bspay_auth",
+      "community": 7,
+      "norm_label": "bspay oauth2 basic authentication"
+    },
+    {
+      "label": "BSPay Webhook Payment Notification",
+      "file_type": "rationale",
+      "source_file": "documentation/Doc bspay.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_bspay_webhook",
+      "community": 7,
+      "norm_label": "bspay webhook payment notification"
+    },
+    {
+      "label": "BSPay PIX QR Code Generation",
+      "file_type": "rationale",
+      "source_file": "documentation/Doc bspay.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_bspay_pix_qrcode",
+      "community": 7,
+      "norm_label": "bspay pix qr code generation"
+    },
+    {
+      "label": "ZucroPay Charges API",
+      "file_type": "rationale",
+      "source_file": "documentation/docs_zucropay.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_zucropay_charges",
+      "community": 7,
+      "norm_label": "zucropay charges api"
+    },
+    {
+      "label": "ZucroPay Webhook Events",
+      "file_type": "rationale",
+      "source_file": "documentation/docs_zucropay.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_zucropay_webhooks",
+      "community": 7,
+      "norm_label": "zucropay webhook events"
+    },
+    {
+      "label": "ZucroPay PIX Payment Method",
+      "file_type": "rationale",
+      "source_file": "documentation/docs_zucropay.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_zucropay_pix",
+      "community": 7,
+      "norm_label": "zucropay pix payment method"
+    },
+    {
+      "label": "ZucroPay API Key Authentication",
+      "file_type": "rationale",
+      "source_file": "documentation/docs_zucropay.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_zucropay_apikey",
+      "community": 7,
+      "norm_label": "zucropay api key authentication"
+    },
+    {
+      "label": "UTMify Orders API Endpoint",
+      "file_type": "rationale",
+      "source_file": "documentation/Documenta\u00e7\u00e3o API - UTMify.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_utmify_orders_api",
+      "community": 7,
+      "norm_label": "utmify orders api endpoint"
+    },
+    {
+      "label": "UTMify Tracking Parameters (UTM + src/sck)",
+      "file_type": "rationale",
+      "source_file": "documentation/Documenta\u00e7\u00e3o API - UTMify.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_utmify_tracking_params",
+      "community": 7,
+      "norm_label": "utmify tracking parameters (utm + src/sck)"
+    },
+    {
+      "label": "UTMify Commission Data Structure",
+      "file_type": "rationale",
+      "source_file": "documentation/Documenta\u00e7\u00e3o API - UTMify.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_utmify_commission",
+      "community": 7,
+      "norm_label": "utmify commission data structure"
+    },
+    {
+      "label": "Meta Conversions API Server-Side Tracking",
+      "file_type": "rationale",
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_capi_server_side",
+      "community": 1,
+      "norm_label": "meta conversions api server-side tracking"
+    },
+    {
+      "label": "Meta Pixel Client-Side Tracking",
+      "file_type": "rationale",
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_meta_pixel",
+      "community": 1,
+      "norm_label": "meta pixel client-side tracking"
+    },
+    {
+      "label": "Event Match Quality (EMQ) Score",
+      "file_type": "rationale",
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_event_match_quality",
+      "community": 1,
+      "norm_label": "event match quality (emq) score"
+    },
+    {
+      "label": "CAPI Event Deduplication via event_id",
+      "file_type": "rationale",
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_capi_deduplication",
+      "community": 1,
+      "norm_label": "capi event deduplication via event_id"
+    },
+    {
+      "label": "Hybrid Pixel + CAPI Tracking Strategy",
+      "file_type": "rationale",
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_hybrid_tracking",
+      "community": 1,
+      "norm_label": "hybrid pixel + capi tracking strategy"
+    },
+    {
+      "label": "LGPD Privacy Compliance for CAPI",
+      "file_type": "rationale",
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_lgpd_privacy",
+      "community": 1,
+      "norm_label": "lgpd privacy compliance for capi"
+    },
+    {
+      "label": "Roblox Vault Platform",
+      "file_type": "document",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_roblox_vault",
+      "community": 44,
+      "norm_label": "roblox vault platform"
+    },
+    {
+      "label": "Supabase Project (eopofvyigdokxatoijzt)",
+      "file_type": "document",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_supabase_project",
+      "community": 45,
+      "norm_label": "supabase project (eopofvyigdokxatoijzt)"
+    },
+    {
+      "label": "Edge Function: create-payment",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_edge_create_payment",
+      "community": 7,
+      "norm_label": "edge function: create-payment"
+    },
+    {
+      "label": "Edge Function: zucropay-webhook",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_edge_zucropay_webhook",
+      "community": 1,
+      "norm_label": "edge function: zucropay-webhook"
+    },
+    {
+      "label": "Edge Function: bspay-webhook",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_edge_bspay_webhook",
+      "community": 1,
+      "norm_label": "edge function: bspay-webhook"
+    },
+    {
+      "label": "Edge Function: utmify-event",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_edge_utmify_event",
+      "community": 1,
+      "norm_label": "edge function: utmify-event"
+    },
+    {
+      "label": "Edge Function: telegram-bot-webhook",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_edge_telegram_bot_webhook",
+      "community": 1,
+      "norm_label": "edge function: telegram-bot-webhook"
+    },
+    {
+      "label": "Edge Function: group-webhook",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_edge_group_webhook",
+      "community": 1,
+      "norm_label": "edge function: group-webhook"
+    },
+    {
+      "label": "Edge Function: tracking-save",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_edge_tracking_save",
+      "community": 1,
+      "norm_label": "edge function: tracking-save"
+    },
+    {
+      "label": "Edge Function: card-bot-webhook",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_edge_card_bot_webhook",
+      "community": 46,
+      "norm_label": "edge function: card-bot-webhook"
+    },
+    {
+      "label": "DB Table: payments",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_table_payments",
+      "community": 1,
+      "norm_label": "db table: payments"
+    },
+    {
+      "label": "DB Table: telegram_leads",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_table_telegram_leads",
+      "community": 1,
+      "norm_label": "db table: telegram_leads"
+    },
+    {
+      "label": "DB Table: capi_logs",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_table_capi_logs",
+      "community": 1,
+      "norm_label": "db table: capi_logs"
+    },
+    {
+      "label": "DB Table: profiles",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_table_profiles",
+      "community": 30,
+      "norm_label": "db table: profiles"
+    },
+    {
+      "label": "DB Table: gateway_configs",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_table_gateway_configs",
+      "community": 7,
+      "norm_label": "db table: gateway_configs"
+    },
+    {
+      "label": "DB Table: affiliate_tracking_configs",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_table_affiliate_tracking_configs",
+      "community": 1,
+      "norm_label": "db table: affiliate_tracking_configs"
+    },
+    {
+      "label": "DB Table: utmify_configs",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_table_utmify_configs",
+      "community": 1,
+      "norm_label": "db table: utmify_configs"
+    },
+    {
+      "label": "DB Table: pixel_configs",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_table_pixel_configs",
+      "community": 1,
+      "norm_label": "db table: pixel_configs"
+    },
+    {
+      "label": "DB Table: withdrawals",
+      "file_type": "code",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_table_withdrawals",
+      "community": 1,
+      "norm_label": "db table: withdrawals"
+    },
+    {
+      "label": "Affiliate System (independent tracking per affiliate)",
+      "file_type": "rationale",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_affiliate_system",
+      "community": 1,
+      "norm_label": "affiliate system (independent tracking per affiliate)"
+    },
+    {
+      "label": "Antifraud System (saque_recusado_fraude)",
+      "file_type": "rationale",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_antifraud_system",
+      "community": 30,
+      "norm_label": "antifraud system (saque_recusado_fraude)"
+    },
+    {
+      "label": "Telegram Bot Sales Funnel",
+      "file_type": "rationale",
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "prd_telegram_funnel",
+      "community": 1,
+      "norm_label": "telegram bot sales funnel"
+    },
+    {
+      "label": "Telegram Bot Webhook (setWebhook)",
+      "file_type": "rationale",
+      "source_file": "documentation/Telegram Bot API Documentacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_telegram_webhook",
+      "community": 1,
+      "norm_label": "telegram bot webhook (setwebhook)"
+    },
+    {
+      "label": "Telegram createChatInviteLink",
+      "file_type": "rationale",
+      "source_file": "documentation/Telegram Bot API Documentacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_telegram_invite_link",
+      "community": 1,
+      "norm_label": "telegram createchatinvitelink"
+    },
+    {
+      "label": "Telegram chat_member Update Event",
+      "file_type": "rationale",
+      "source_file": "documentation/Telegram Bot API Documentacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "concept_telegram_chat_member",
+      "community": 1,
+      "norm_label": "telegram chat_member update event"
+    },
+    {
+      "label": "DB Trigger: utmify_payments (AFTER INSERT on payments)",
+      "file_type": "rationale",
+      "source_file": "documentation/Fluxo BSPay UTMify.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "fluxo_utmify_payments_trigger",
+      "community": 1,
+      "norm_label": "db trigger: utmify_payments (after insert on payments)"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_protectedroute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_adminroute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_fraudblockwrapper",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "src_app_tsx",
+      "target": "src_app_app",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AffiliateNotifications.tsx",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "src_components_affiliatenotifications_tsx",
+      "target": "components_affiliatenotifications_affiliatenotifications",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AffiliateWithdrawals.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "src_components_affiliatewithdrawals_tsx",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AffiliateWithdrawals.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "src_components_affiliatewithdrawals_tsx",
+      "target": "lib_utils_formatdatetime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AffiliateWithdrawals.tsx",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "src_components_affiliatewithdrawals_tsx",
+      "target": "components_affiliatewithdrawals_fetchall",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AffiliateWithdrawals.tsx",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "src_components_affiliatewithdrawals_tsx",
+      "target": "components_affiliatewithdrawals_handlesubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/AffiliateWithdrawals.tsx",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "components_affiliatewithdrawals_handlesubmit",
+      "target": "components_affiliatewithdrawals_fetchall",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FraudBlockModal.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_components_fraudblockmodal_tsx",
+      "target": "components_fraudblockmodal_fraudblockmodal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/home/QuickAccess.tsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "src_components_home_quickaccess_tsx",
+      "target": "home_quickaccess_quickaccess",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/home/SummaryCard.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_components_home_summarycard_tsx",
+      "target": "home_summarycard_summarycard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/home/TrendingItems.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_components_home_trendingitems_tsx",
+      "target": "lib_utils_formatrobux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/home/WelcomeCard.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_components_home_welcomecard_tsx",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/home/WelcomeCard.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_components_home_welcomecard_tsx",
+      "target": "lib_utils_formatrobux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/home/WelcomeCard.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_components_home_welcomecard_tsx",
+      "target": "home_welcomecard_welcomecard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/items/SellItemModal.tsx",
+      "source_location": "L40",
+      "weight": 1.0,
+      "source": "src_components_items_sellitemmodal_tsx",
+      "target": "items_sellitemmodal_formatbrl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/items/SellItemModal.tsx",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "src_components_items_sellitemmodal_tsx",
+      "target": "items_sellitemmodal_handleconfirmsell",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/layout/AdminLayout.tsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "src_components_layout_adminlayout_tsx",
+      "target": "lib_utils_cn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/layout/AdminLayout.tsx",
+      "source_location": "L100",
+      "weight": 1.0,
+      "source": "src_components_layout_adminlayout_tsx",
+      "target": "layout_adminlayout_handlesignout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/layout/Header.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_components_layout_header_tsx",
+      "target": "layout_header_header",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/layout/MessagesPanel.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_components_layout_messagespanel_tsx",
+      "target": "layout_messagespanel_messagespanel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/layout/SideMenu.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "src_components_layout_sidemenu_tsx",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/layout/SideMenu.tsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "src_components_layout_sidemenu_tsx",
+      "target": "lib_utils_formatrobux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/layout/SideMenu.tsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "src_components_layout_sidemenu_tsx",
+      "target": "layout_sidemenu_handlenavigate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/layout/SideMenu.tsx",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "src_components_layout_sidemenu_tsx",
+      "target": "layout_sidemenu_handlesignout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/store/ItemCard.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_components_store_itemcard_tsx",
+      "target": "lib_utils_formatrobux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/store/ItemCard.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_components_store_itemcard_tsx",
+      "target": "lib_utils_cn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/store/ItemCard.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "src_components_store_itemcard_tsx",
+      "target": "store_itemcard_itemcard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/store/PurchaseModal.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_components_store_purchasemodal_tsx",
+      "target": "lib_utils_formatrobux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/store/PurchaseModal.tsx",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "src_components_store_purchasemodal_tsx",
+      "target": "store_purchasemodal_handlepurchase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/robloxVaultApi.ts",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "src_lib_robloxvaultapi_ts",
+      "target": "lib_robloxvaultapi_fetchproducts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/robloxVaultApi.ts",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "src_lib_robloxvaultapi_ts",
+      "target": "lib_robloxvaultapi_apiproducttostoreitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_formatrobux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_cn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_generaterandomcents",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_formatdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_formatdatetime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_formatphone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_formatcpf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_generatestartparam",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_generatefakecardnumber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_generatefakecvv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "src_lib_utils_ts",
+      "target": "lib_utils_generatefakeexpiry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_pages_affiliate_tsx",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Profile.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_profile_tsx",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_admin_affiliatewithdrawals_tsx",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/ConversionGateway.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "src_pages_admin_conversiongateway_tsx",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Dashboard.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "src_pages_admin_dashboard_tsx",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/TelegramAnalytics.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_admin_telegramanalytics_tsx",
+      "target": "lib_utils_formatcurrency",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L139",
+      "weight": 1.0,
+      "source": "admin_affiliatewithdrawals_handleapprove",
+      "target": "lib_utils_formatcurrency"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Items.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "src_pages_items_tsx",
+      "target": "lib_utils_formatrobux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Profile.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_profile_tsx",
+      "target": "lib_utils_formatrobux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Store.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_pages_store_tsx",
+      "target": "lib_utils_formatrobux",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_pages_affiliate_tsx",
+      "target": "lib_utils_formatdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/TelegramAnalytics.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_admin_telegramanalytics_tsx",
+      "target": "lib_utils_formatdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "src_pages_admin_users_tsx",
+      "target": "lib_utils_formatdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_admin_affiliatewithdrawals_tsx",
+      "target": "lib_utils_formatdatetime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Profile.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_profile_tsx",
+      "target": "lib_utils_formatphone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Profile.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_profile_tsx",
+      "target": "lib_utils_formatcpf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "src_pages_affiliate_tsx",
+      "target": "pages_affiliate_loadtrackingconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "src_pages_affiliate_tsx",
+      "target": "pages_affiliate_handlesavetrackingconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L121",
+      "weight": 1.0,
+      "source": "src_pages_affiliate_tsx",
+      "target": "pages_affiliate_handlecopyref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L145",
+      "weight": 1.0,
+      "source": "src_pages_affiliate_tsx",
+      "target": "pages_affiliate_handleapplyfilters",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L154",
+      "weight": 1.0,
+      "source": "src_pages_affiliate_tsx",
+      "target": "pages_affiliate_handleclearfilters",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Affiliate.tsx",
+      "source_location": "L159",
+      "weight": 1.0,
+      "source": "src_pages_affiliate_tsx",
+      "target": "pages_affiliate_handleexportcsv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BuyRobux.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_buyrobux_tsx",
+      "target": "pages_buyrobux_formatcardinput",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BuyRobux.tsx",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "src_pages_buyrobux_tsx",
+      "target": "pages_buyrobux_formatexpiryinput",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/BuyRobux.tsx",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "src_pages_buyrobux_tsx",
+      "target": "pages_buyrobux_handlepayment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Contestacao.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "src_pages_contestacao_tsx",
+      "target": "pages_contestacao_contestacao",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Home.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_pages_home_tsx",
+      "target": "pages_home_promobanner",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Home.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "src_pages_home_tsx",
+      "target": "pages_home_syncalert",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Home.tsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "src_pages_home_tsx",
+      "target": "pages_home_home",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Items.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "src_pages_items_tsx",
+      "target": "pages_items_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Profile.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_pages_profile_tsx",
+      "target": "pages_profile_formatdatept",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Profile.tsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "src_pages_profile_tsx",
+      "target": "pages_profile_handlesignout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/RobloxAccount.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "src_pages_robloxaccount_tsx",
+      "target": "pages_robloxaccount_robloxaccount",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SellerPass.tsx",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "src_pages_sellerpass_tsx",
+      "target": "pages_sellerpass_handlecopypix",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/SellerPass.tsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "src_pages_sellerpass_tsx",
+      "target": "pages_sellerpass_handleacquire",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Wallet.tsx",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "src_pages_wallet_tsx",
+      "target": "pages_wallet_loadwithdrawals",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Wallet.tsx",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "src_pages_wallet_tsx",
+      "target": "pages_wallet_handleconfirmclick",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/Wallet.tsx",
+      "source_location": "L145",
+      "weight": 1.0,
+      "source": "src_pages_wallet_tsx",
+      "target": "pages_wallet_handleinstantwithdrawal",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "src_pages_admin_affiliatewithdrawals_tsx",
+      "target": "admin_affiliatewithdrawals_fetchwithdrawals",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "src_pages_admin_affiliatewithdrawals_tsx",
+      "target": "admin_affiliatewithdrawals_loadcommissionforuser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "src_pages_admin_affiliatewithdrawals_tsx",
+      "target": "admin_affiliatewithdrawals_handleexpand",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "src_pages_admin_affiliatewithdrawals_tsx",
+      "target": "admin_affiliatewithdrawals_handleapprove",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L148",
+      "weight": 1.0,
+      "source": "src_pages_admin_affiliatewithdrawals_tsx",
+      "target": "admin_affiliatewithdrawals_handlereject",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L140",
+      "weight": 1.0,
+      "source": "admin_affiliatewithdrawals_handleapprove",
+      "target": "admin_affiliatewithdrawals_fetchwithdrawals",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L171",
+      "weight": 1.0,
+      "source": "admin_affiliatewithdrawals_handlereject",
+      "target": "admin_affiliatewithdrawals_fetchwithdrawals",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/AffiliateWithdrawals.tsx",
+      "source_location": "L118",
+      "weight": 1.0,
+      "source": "admin_affiliatewithdrawals_handleexpand",
+      "target": "admin_affiliatewithdrawals_loadcommissionforuser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "src_pages_admin_botchats_tsx",
+      "target": "admin_botchats_formattime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "src_pages_admin_botchats_tsx",
+      "target": "admin_botchats_formatdategroup",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "src_pages_admin_botchats_tsx",
+      "target": "admin_botchats_getinitial",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "src_pages_admin_botchats_tsx",
+      "target": "admin_botchats_botlabel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L195",
+      "weight": 1.0,
+      "source": "src_pages_admin_botchats_tsx",
+      "target": "admin_botchats_handlesend",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/BotChats.tsx",
+      "source_location": "L255",
+      "weight": 1.0,
+      "source": "src_pages_admin_botchats_tsx",
+      "target": "admin_botchats_resolveuser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "src_pages_admin_gateways_tsx",
+      "target": "admin_gateways_getconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "src_pages_admin_gateways_tsx",
+      "target": "admin_gateways_openconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "src_pages_admin_gateways_tsx",
+      "target": "admin_gateways_handlesave",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L91",
+      "weight": 1.0,
+      "source": "src_pages_admin_gateways_tsx",
+      "target": "admin_gateways_handletest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "admin_gateways_openconfig",
+      "target": "admin_gateways_getconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Gateways.tsx",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "admin_gateways_handlesave",
+      "target": "admin_gateways_getconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/TelegramAnalytics.tsx",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "src_pages_admin_telegramanalytics_tsx",
+      "target": "admin_telegramanalytics_handleapplyfilters",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/TelegramAnalytics.tsx",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "src_pages_admin_telegramanalytics_tsx",
+      "target": "admin_telegramanalytics_handleclearfilters",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/TelegramAnalytics.tsx",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "src_pages_admin_telegramanalytics_tsx",
+      "target": "admin_telegramanalytics_handleexportcsv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/TelegramBot.tsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "src_pages_admin_telegrambot_tsx",
+      "target": "admin_telegrambot_handlesave",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "src_pages_admin_users_tsx",
+      "target": "admin_users_handlesearch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "src_pages_admin_users_tsx",
+      "target": "admin_users_handlekeydown",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "src_pages_admin_users_tsx",
+      "target": "admin_users_generateref",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "src_pages_admin_users_tsx",
+      "target": "admin_users_handlesaveuser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Users.tsx",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "admin_users_handlekeydown",
+      "target": "admin_users_handlesearch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/UtmifyIntegration.tsx",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "src_pages_admin_utmifyintegration_tsx",
+      "target": "admin_utmifyintegration_handlesave",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/UtmifyIntegration.tsx",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "src_pages_admin_utmifyintegration_tsx",
+      "target": "admin_utmifyintegration_handletest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/admin/Webhooks.tsx",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "src_pages_admin_webhooks_tsx",
+      "target": "admin_webhooks_handlecopy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/Login.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "src_pages_auth_login_tsx",
+      "target": "auth_login_handlesubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/Register.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "src_pages_auth_register_tsx",
+      "target": "auth_register_handlesubmit",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/bspay-webhook/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_bspay_webhook_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/bspay-webhook/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_bspay_webhook_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/buy-item-with-robux/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_buy_item_with_robux_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/buy-item-with-robux/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_buy_item_with_robux_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_getbotconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_sendphoto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L131",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_deletemessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L139",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_editmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L152",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_answercallbackquery",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L166",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_randomdigits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L174",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_generatecardnumber",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L182",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_generateexpiry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L189",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_generatecvv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L193",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_generatename",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L199",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_generatecpf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_generatedob",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L210",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_getbrand",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L217",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_getfreepurchasesremaining",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L232",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_incrementpurchasecount",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L253",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_showmainmenu",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L276",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_showcardtypes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L316",
+      "weight": 1.0,
+      "source": "supabase_functions_card_bot_webhook_index_ts",
+      "target": "card_bot_webhook_index_showpurchaseconfirmation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L149",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_editmessage",
+      "target": "card_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L272",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_showmainmenu",
+      "target": "card_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L269",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_showmainmenu",
+      "target": "card_bot_webhook_index_sendphoto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L147",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_editmessage",
+      "target": "card_bot_webhook_index_deletemessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L255",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_showmainmenu",
+      "target": "card_bot_webhook_index_deletemessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L311",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_showcardtypes",
+      "target": "card_bot_webhook_index_editmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L345",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_showpurchaseconfirmation",
+      "target": "card_bot_webhook_index_editmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L177",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_generatecardnumber",
+      "target": "card_bot_webhook_index_randomdigits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L190",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_generatecvv",
+      "target": "card_bot_webhook_index_randomdigits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/card-bot-webhook/index.ts",
+      "source_location": "L200",
+      "weight": 1.0,
+      "source": "card_bot_webhook_index_generatecpf",
+      "target": "card_bot_webhook_index_randomdigits",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_create_payment_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_create_payment_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "supabase_functions_create_payment_index_ts",
+      "target": "create_payment_index_hashsha256",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "supabase_functions_create_payment_index_ts",
+      "target": "create_payment_index_generatevalidcpf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "supabase_functions_create_payment_index_ts",
+      "target": "create_payment_index_getgateway",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "supabase_functions_create_payment_index_ts",
+      "target": "create_payment_index_fireinitiatecheckout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/create-payment/index.ts",
+      "source_location": "L149",
+      "weight": 1.0,
+      "source": "create_payment_index_fireinitiatecheckout",
+      "target": "create_payment_index_hashsha256",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_group_webhook_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_group_webhook_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "supabase_functions_group_webhook_index_ts",
+      "target": "group_webhook_index_hashsha256",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "supabase_functions_group_webhook_index_ts",
+      "target": "group_webhook_index_fillgeoifmissing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L71",
+      "weight": 1.0,
+      "source": "supabase_functions_group_webhook_index_ts",
+      "target": "group_webhook_index_sendcapievent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/group-webhook/index.ts",
+      "source_location": "L118",
+      "weight": 1.0,
+      "source": "group_webhook_index_sendcapievent",
+      "target": "group_webhook_index_hashsha256",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_hashsha256",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_sendcapievent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L110",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_getbottoken",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L153",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_sendvideo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L163",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_sendchataction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L171",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_delay",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L179",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_getfunnelstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L188",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_setfunnelstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L199",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_getvideofileid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L211",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_setvideofileid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L221",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_handleadmin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L290",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_firebackgroundtracking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L383",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_handlestart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L425",
+      "weight": 1.0,
+      "source": "supabase_functions_sales_bot_webhook_index_ts",
+      "target": "sales_bot_webhook_index_handlereply",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_sendcapievent",
+      "target": "sales_bot_webhook_index_hashsha256",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L362",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_firebackgroundtracking",
+      "target": "sales_bot_webhook_index_sendcapievent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L233",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handleadmin",
+      "target": "sales_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L397",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlestart",
+      "target": "sales_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L435",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlereply",
+      "target": "sales_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L406",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlestart",
+      "target": "sales_bot_webhook_index_sendvideo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L404",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlestart",
+      "target": "sales_bot_webhook_index_sendchataction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L433",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlereply",
+      "target": "sales_bot_webhook_index_sendchataction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L405",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlestart",
+      "target": "sales_bot_webhook_index_delay",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L434",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlereply",
+      "target": "sales_bot_webhook_index_delay",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L417",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlestart",
+      "target": "sales_bot_webhook_index_setfunnelstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L447",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlereply",
+      "target": "sales_bot_webhook_index_setfunnelstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L259",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handleadmin",
+      "target": "sales_bot_webhook_index_getvideofileid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L402",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlestart",
+      "target": "sales_bot_webhook_index_getvideofileid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L232",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handleadmin",
+      "target": "sales_bot_webhook_index_setvideofileid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/sales-bot-webhook/index.ts",
+      "source_location": "L421",
+      "weight": 1.0,
+      "source": "sales_bot_webhook_index_handlestart",
+      "target": "sales_bot_webhook_index_firebackgroundtracking",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/send-bot-message/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_send_bot_message_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/send-bot-message/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_send_bot_message_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_hashsha256",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_sendcapievent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L161",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_getbotconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L177",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_getfunnelsteps",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L222",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_sendvoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L233",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_sendphoto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L255",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_sendvideo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L272",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_sendsticker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L283",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_sendchataction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L294",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_answercallbackquery",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L302",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_delay",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L306",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_generateuniqueinvitelink",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L339",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_sendfunnelstep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L423",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_handleadmin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L545",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_handlestart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L613",
+      "weight": 1.0,
+      "source": "supabase_functions_telegram_bot_webhook_index_ts",
+      "target": "telegram_bot_webhook_index_handlechatmember",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L93",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_sendcapievent",
+      "target": "telegram_bot_webhook_index_hashsha256",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L686",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_handlechatmember",
+      "target": "telegram_bot_webhook_index_sendcapievent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L471",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_handleadmin",
+      "target": "telegram_bot_webhook_index_getfunnelsteps",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L385",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_sendfunnelstep",
+      "target": "telegram_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L434",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_handleadmin",
+      "target": "telegram_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L608",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_handlestart",
+      "target": "telegram_bot_webhook_index_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L374",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_sendfunnelstep",
+      "target": "telegram_bot_webhook_index_sendvoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L382",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_sendfunnelstep",
+      "target": "telegram_bot_webhook_index_sendphoto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L391",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_sendfunnelstep",
+      "target": "telegram_bot_webhook_index_sendvideo",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L399",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_sendfunnelstep",
+      "target": "telegram_bot_webhook_index_sendsticker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L359",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_sendfunnelstep",
+      "target": "telegram_bot_webhook_index_sendchataction",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L364",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_sendfunnelstep",
+      "target": "telegram_bot_webhook_index_delay",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/telegram-bot-webhook/index.ts",
+      "source_location": "L600",
+      "weight": 1.0,
+      "source": "telegram_bot_webhook_index_handlestart",
+      "target": "telegram_bot_webhook_index_generateuniqueinvitelink",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/tracking-redirect/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_tracking_redirect_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/tracking-redirect/index.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "supabase_functions_tracking_redirect_index_ts",
+      "target": "tracking_redirect_index_generatestartparam",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/tracking-save/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_tracking_save_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/tracking-save/index.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "supabase_functions_tracking_save_index_ts",
+      "target": "tracking_save_index_lookupgeoandupdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/utmify-event/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_utmify_event_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/utmify-event/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_utmify_event_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/utmify-event/index.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "supabase_functions_utmify_event_index_ts",
+      "target": "utmify_event_index_mappaymentstatus",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/utmify-event/index.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "supabase_functions_utmify_event_index_ts",
+      "target": "utmify_event_index_generatevalidcpf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/utmify-event/index.ts",
+      "source_location": "L169",
+      "weight": 1.0,
+      "source": "supabase_functions_utmify_event_index_ts",
+      "target": "utmify_event_index_formatutmifydate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/validate-card-purchase/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_validate_card_purchase_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/validate-card-purchase/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_validate_card_purchase_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/zucropay-webhook/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "supabase_functions_zucropay_webhook_index_ts",
+      "target": "supabase_functions_shared_cors_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/zucropay-webhook/index.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "supabase_functions_zucropay_webhook_index_ts",
+      "target": "supabase_functions_shared_supabase_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Doc bspay.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_bspay",
+      "target": "concept_bspay_auth"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Doc bspay.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_bspay",
+      "target": "concept_bspay_webhook"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Doc bspay.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_bspay",
+      "target": "concept_bspay_pix_qrcode"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_prd",
+      "target": "doc_bspay"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/docs_zucropay.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_zucropay",
+      "target": "concept_zucropay_charges"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/docs_zucropay.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_zucropay",
+      "target": "concept_zucropay_webhooks"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/docs_zucropay.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_zucropay",
+      "target": "concept_zucropay_pix"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/docs_zucropay.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_zucropay",
+      "target": "concept_zucropay_apikey"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_prd",
+      "target": "doc_zucropay"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Documenta\u00e7\u00e3o API - UTMify.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_utmify",
+      "target": "concept_utmify_orders_api"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Documenta\u00e7\u00e3o API - UTMify.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_utmify",
+      "target": "concept_utmify_tracking_params"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Documenta\u00e7\u00e3o API - UTMify.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_utmify",
+      "target": "concept_utmify_commission"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_prd",
+      "target": "doc_utmify"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Fluxo BSPay UTMify.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_fluxo_bspay_utmify",
+      "target": "prd_edge_bspay_webhook"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Fluxo BSPay UTMify.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_fluxo_bspay_utmify",
+      "target": "prd_edge_utmify_event"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Fluxo BSPay UTMify.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_fluxo_bspay_utmify",
+      "target": "prd_table_payments"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Fluxo BSPay UTMify.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_fluxo_bspay_utmify",
+      "target": "fluxo_utmify_payments_trigger"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_meta_capi",
+      "target": "concept_capi_server_side"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_meta_capi",
+      "target": "concept_meta_pixel"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_meta_capi",
+      "target": "concept_event_match_quality"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_meta_capi",
+      "target": "concept_capi_deduplication"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_meta_capi",
+      "target": "concept_hybrid_tracking"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_meta_capi",
+      "target": "concept_lgpd_privacy"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_prd",
+      "target": "doc_meta_capi"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_prd",
+      "target": "doc_telegram_api"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Telegram Bot API Documentacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_telegram_api",
+      "target": "concept_telegram_webhook"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Telegram Bot API Documentacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_telegram_api",
+      "target": "concept_telegram_invite_link"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Telegram Bot API Documentacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doc_telegram_api",
+      "target": "concept_telegram_chat_member"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "documentation/Fluxo BSPay UTMify.md",
+      "source_location": null,
+      "weight": 0.95,
+      "source": "concept_bspay_webhook",
+      "target": "concept_zucropay_webhooks"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "documentation/Doc bspay.md",
+      "source_location": null,
+      "weight": 0.95,
+      "source": "concept_bspay_pix_qrcode",
+      "target": "concept_zucropay_pix"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_create_payment",
+      "target": "concept_zucropay_charges"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_utmify_event",
+      "target": "concept_utmify_orders_api"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_group_webhook",
+      "target": "concept_capi_server_side"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 0.85,
+      "source": "concept_capi_deduplication",
+      "target": "prd_table_capi_logs"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 0.85,
+      "source": "concept_hybrid_tracking",
+      "target": "prd_affiliate_system"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_create_payment",
+      "target": "prd_table_payments"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_create_payment",
+      "target": "prd_table_gateway_configs"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_zucropay_webhook",
+      "target": "prd_table_payments"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_zucropay_webhook",
+      "target": "prd_edge_utmify_event"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_zucropay_webhook",
+      "target": "prd_table_capi_logs"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 0.95,
+      "source": "prd_edge_bspay_webhook",
+      "target": "prd_edge_zucropay_webhook"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_bspay_webhook",
+      "target": "prd_edge_utmify_event"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_utmify_event",
+      "target": "prd_table_capi_logs"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_utmify_event",
+      "target": "prd_table_affiliate_tracking_configs"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_utmify_event",
+      "target": "prd_table_utmify_configs"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/Fluxo BSPay UTMify.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fluxo_utmify_payments_trigger",
+      "target": "prd_edge_utmify_event"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_telegram_bot_webhook",
+      "target": "concept_telegram_webhook"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_telegram_bot_webhook",
+      "target": "concept_telegram_invite_link"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_telegram_bot_webhook",
+      "target": "prd_table_telegram_leads"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_telegram_funnel",
+      "target": "prd_edge_telegram_bot_webhook"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_group_webhook",
+      "target": "concept_telegram_chat_member"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_group_webhook",
+      "target": "prd_table_telegram_leads"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_group_webhook",
+      "target": "prd_table_capi_logs"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_group_webhook",
+      "target": "prd_table_pixel_configs"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_telegram_funnel",
+      "target": "prd_edge_group_webhook"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_edge_tracking_save",
+      "target": "prd_table_telegram_leads"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_table_payments",
+      "target": "prd_table_withdrawals"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 0.85,
+      "source": "prd_table_payments",
+      "target": "prd_table_telegram_leads"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_telegram_funnel",
+      "target": "prd_table_telegram_leads"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_antifraud_system",
+      "target": "prd_table_profiles"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_affiliate_system",
+      "target": "prd_table_affiliate_tracking_configs"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_affiliate_system",
+      "target": "prd_table_utmify_configs"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "prd_affiliate_system",
+      "target": "prd_table_pixel_configs"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "payment_flow_pix_utmify",
+      "label": "PIX Payment \u2192 Webhook \u2192 UTMify Reporting Flow",
+      "nodes": [
+        "prd_edge_create_payment",
+        "prd_edge_zucropay_webhook",
+        "prd_edge_utmify_event",
+        "prd_table_payments",
+        "prd_table_capi_logs"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md"
+    },
+    {
+      "id": "telegram_lead_capi_flow",
+      "label": "Telegram Funnel \u2192 Group Join \u2192 CAPI Lead Event Flow",
+      "nodes": [
+        "prd_edge_telegram_bot_webhook",
+        "prd_edge_group_webhook",
+        "concept_capi_server_side",
+        "prd_table_telegram_leads",
+        "prd_table_capi_logs"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "documentation/PRD.md"
+    },
+    {
+      "id": "affiliate_tracking_routing",
+      "label": "Affiliate-Specific Pixel + UTMify Routing",
+      "nodes": [
+        "prd_affiliate_system",
+        "prd_table_affiliate_tracking_configs",
+        "prd_edge_utmify_event",
+        "prd_edge_group_webhook",
+        "concept_hybrid_tracking"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "documentation/PRD.md"
+    }
+  ],
+  "built_at_commit": "a29dc2651f6d0e1f2cb64c2d4def795f8ac0edf9"
+}

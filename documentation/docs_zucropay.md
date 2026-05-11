@@ -1,5 +1,7 @@
 # Documentação ZucroPay
+
 ## Sumário
+
 - [Introdução](#introduction)
 - [Início Rápido](#quickstart)
 - [Autenticação](#authentication)
@@ -87,7 +89,6 @@ Após criar sua conta, vá em Integrações e gere sua API Key:
 - Copie e guarde sua chave (ela não será exibida novamente!)
 
 **Importante:** Guarde sua API Key em local seguro. Ela não será exibida novamente após criada.
-              
 
 3
 
@@ -112,22 +113,22 @@ curl -X POST https://api.appzucropay.com/api/v1/charges \
 ```
 
 ```javascript
-const response = await fetch('https://api.appzucropay.com/api/v1/charges', {
-  method: 'POST',
+const response = await fetch("https://api.appzucropay.com/api/v1/charges", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': 'zp_sua_api_key_aqui'
+    "Content-Type": "application/json",
+    "X-API-Key": "zp_sua_api_key_aqui",
   },
   body: JSON.stringify({
-    billing_type: 'PIX',
-    value: 99.90,
-    description: 'Produto de Teste',
+    billing_type: "PIX",
+    value: 99.9,
+    description: "Produto de Teste",
     customer: {
-      name: 'João Silva',
-      email: 'joao@email.com',
-      cpf_cnpj: '12345678900'
-    }
-  })
+      name: "João Silva",
+      email: "joao@email.com",
+      cpf_cnpj: "12345678900",
+    },
+  }),
 });
 
 const data = await response.json();
@@ -196,7 +197,7 @@ print_r(json_decode($response, true));
   "object": "charge",
   "billing_type": "PIX",
   "status": "PENDING",
-  "value": 99.90,
+  "value": 99.9,
   "net_value": 93.91,
   "platform_fee": 5.99,
   "pix": {
@@ -222,7 +223,7 @@ Use o campo pix.qr_code para exibir a imagem do QR Code:
 E o campo pix.copy_paste para o código copia-e-cola:
 
 ```javascript
-document.getElementById('pixCode').textContent = data.pix.copy_paste;
+document.getElementById("pixCode").textContent = data.pix.copy_paste;
 ```
 
 5
@@ -235,14 +236,17 @@ Você pode verificar o status de duas formas:
 
 ```javascript
 const checkPayment = setInterval(async () => {
-  const response = await fetch(`https://api.appzucropay.com/api/v1/charges/${chargeId}`, {
-    headers: { 'X-API-Key': 'zp_sua_api_key_aqui' }
-  });
+  const response = await fetch(
+    `https://api.appzucropay.com/api/v1/charges/${chargeId}`,
+    {
+      headers: { "X-API-Key": "zp_sua_api_key_aqui" },
+    },
+  );
   const data = await response.json();
-  
-  if (data.status === 'RECEIVED') {
+
+  if (data.status === "RECEIVED") {
     clearInterval(checkPayment);
-    alert('Pagamento confirmado!');
+    alert("Pagamento confirmado!");
   }
 }, 5000); // A cada 5 segundos
 ```
@@ -270,7 +274,6 @@ zp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 **Nunca compartilhe sua API Key!** Ela dá acesso completo à sua conta. Se você suspeitar que ela foi comprometida, revogue-a imediatamente no Dashboard.
-        
 
 ## Como Autenticar
 
@@ -318,11 +321,11 @@ Solução: Verifique se a API Key está correta e não foi revogada.
 
 A API possui limites de requisições para garantir estabilidade:
 
-| Endpoint | Limite | Janela |
-| --- | --- | --- |
-| Geral | 100 req | 1 min |
-| Criação de cobranças | 60 req | 1 min |
-| Webhooks | 500 req | 1 min |
+| Endpoint             | Limite  | Janela |
+| -------------------- | ------- | ------ |
+| Geral                | 100 req | 1 min  |
+| Criação de cobranças | 60 req  | 1 min  |
+| Webhooks             | 500 req | 1 min  |
 
 ### Headers de Rate Limit
 
@@ -353,7 +356,7 @@ Pagamento instantâneo via PIX. Confirmação em segundos.
 ```json
 {
   "billing_type": "PIX",
-  "value": 99.90
+  "value": 99.9
 }
 ```
 
@@ -366,7 +369,7 @@ Pagamento com cartão de crédito. Suporta parcelamento.
 ```json
 {
   "billing_type": "CREDIT_CARD",
-  "value": 99.90
+  "value": 99.9
 }
 ```
 
@@ -379,7 +382,7 @@ Cria um link onde o cliente escolhe como pagar.
 ```json
 {
   "billing_type": "UNDEFINED",
-  "value": 99.90
+  "value": 99.9
 }
 ```
 
@@ -387,31 +390,31 @@ Retorno: URL do checkout
 
 ## Status das Cobranças
 
-| Status | Descrição | Quando ocorre |
-| --- | --- | --- |
-| PENDING | Aguardando pagamento | Cobrança criada, aguardando o cliente pagar |
-| RECEIVED | Pagamento confirmado | PIX confirmado, cartão aprovado ou boleto compensado |
-| REFUSED | Pagamento recusado | Cartão recusado pelo banco emissor ou gateway |
-| REFUNDED | Pagamento estornado | Estorno processado via API ou painel |
+| Status    | Descrição            | Quando ocorre                                         |
+| --------- | -------------------- | ----------------------------------------------------- |
+| PENDING   | Aguardando pagamento | Cobrança criada, aguardando o cliente pagar           |
+| RECEIVED  | Pagamento confirmado | PIX confirmado, cartão aprovado ou boleto compensado  |
+| REFUSED   | Pagamento recusado   | Cartão recusado pelo banco emissor ou gateway         |
+| REFUNDED  | Pagamento estornado  | Estorno processado via API ou painel                  |
 | CANCELLED | Cancelado / Expirado | Cobrança cancelada manualmente ou PIX/boleto expirado |
-| OVERDUE | Pagamento vencido | Boleto passou da data de vencimento sem pagamento |
+| OVERDUE   | Pagamento vencido    | Boleto passou da data de vencimento sem pagamento     |
 
 ## Valores
 
 Cada cobrança tem:
 
-| Campo | Descrição |
-| --- | --- |
-| value | Valor bruto cobrado do cliente |
-| net_value | Valor líquido que você recebe |
-| platform_fee | Taxa da plataforma |
-| reserve_amount | Valor em reserva (5%) |
+| Campo          | Descrição                      |
+| -------------- | ------------------------------ |
+| value          | Valor bruto cobrado do cliente |
+| net_value      | Valor líquido que você recebe  |
+| platform_fee   | Taxa da plataforma             |
+| reserve_amount | Valor em reserva (5%)          |
 
 ### Exemplo
 
 ```json
 {
-  "value": 100.00,
+  "value": 100.0,
   "net_value": 86.93,
   "platform_fee": 8.49,
   "reserve_amount": 4.58
@@ -469,30 +472,30 @@ Pagamento tradicional
 ### Criando Cobrança PIX
 
 ```javascript
-const response = await fetch('https://api.appzucropay.com/api/v1/charges', {
-  method: 'POST',
+const response = await fetch("https://api.appzucropay.com/api/v1/charges", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': 'zp_sua_api_key'
+    "Content-Type": "application/json",
+    "X-API-Key": "zp_sua_api_key",
   },
   body: JSON.stringify({
-    billing_type: 'PIX',
-    value: 99.90,
-    description: 'Meu Produto',
+    billing_type: "PIX",
+    value: 99.9,
+    description: "Meu Produto",
     customer: {
-      name: 'Cliente',
-      cpf_cnpj: '12345678900'
-    }
-  })
+      name: "Cliente",
+      cpf_cnpj: "12345678900",
+    },
+  }),
 });
 
 const data = await response.json();
 
 // Exibir QR Code
-document.getElementById('qrcode').src = data.pix.qr_code;
+document.getElementById("qrcode").src = data.pix.qr_code;
 
 // Código para copiar
-document.getElementById('pixCode').textContent = data.pix.copy_paste;
+document.getElementById("pixCode").textContent = data.pix.copy_paste;
 ```
 
 ## Cartão de Crédito via API
@@ -502,23 +505,23 @@ A API suporta pagamentos com Cartão de Crédito. Ao criar uma cobrança com bil
 ### Criando Cobrança com Cartão
 
 ```javascript
-const response = await fetch('https://api.appzucropay.com/api/v1/charges', {
-  method: 'POST',
+const response = await fetch("https://api.appzucropay.com/api/v1/charges", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': 'zp_sua_api_key'
+    "Content-Type": "application/json",
+    "X-API-Key": "zp_sua_api_key",
   },
   body: JSON.stringify({
-    billing_type: 'CREDIT_CARD',
-    value: 149.90,
-    description: 'Assinatura Premium',
+    billing_type: "CREDIT_CARD",
+    value: 149.9,
+    description: "Assinatura Premium",
     customer: {
-      name: 'Maria Santos',
-      email: 'maria@email.com',
-      cpf_cnpj: '98765432100'
+      name: "Maria Santos",
+      email: "maria@email.com",
+      cpf_cnpj: "98765432100",
     },
-    postback_url: 'https://meusite.com/webhooks/zucropay'
-  })
+    postback_url: "https://meusite.com/webhooks/zucropay",
+  }),
 });
 
 const data = await response.json();
@@ -535,7 +538,7 @@ window.location.href = data.payment_url;
   "object": "charge",
   "billing_type": "CREDIT_CARD",
   "status": "PENDING",
-  "value": 149.90,
+  "value": 149.9,
   "net_value": 140.93,
   "platform_fee": 8.97,
   "payment_url": "https://pay.zucropay.com/charge/abc123def456",
@@ -555,12 +558,12 @@ Visa, Mastercard, Elo, American Express, Hipercard, Diners
 O valor mínimo por parcela é R$ 5,00.
 
 | Parcelas | Taxa Adicional |
-| --- | --- |
-| 1x | 0% |
-| 2x | 2,49% |
-| 3x | 4,98% |
-| 6x | 9,96% |
-| 12x | 19,92% |
+| -------- | -------------- |
+| 1x       | 0%             |
+| 2x       | 2,49%          |
+| 3x       | 4,98%          |
+| 6x       | 9,96%          |
+| 12x      | 19,92%         |
 
 ## Webhooks <a name="webhooks"></a>
 
@@ -574,13 +577,13 @@ Webhooks são notificações HTTP enviadas automaticamente quando eventos aconte
 
 ## Eventos Disponíveis
 
-| Evento | Descrição |
-| --- | --- |
-| payment.received | Pagamento confirmado |
-| payment.refunded | Pagamento estornado |
-| payment.overdue | Pagamento vencido |
-| withdrawal.completed | Saque realizado |
-| withdrawal.rejected | Saque rejeitado |
+| Evento               | Descrição            |
+| -------------------- | -------------------- |
+| payment.received     | Pagamento confirmado |
+| payment.refunded     | Pagamento estornado  |
+| payment.overdue      | Pagamento vencido    |
+| withdrawal.completed | Saque realizado      |
+| withdrawal.rejected  | Saque rejeitado      |
 
 ## Formato do Payload
 
@@ -591,7 +594,7 @@ Quando um evento ocorre, enviamos um POST para sua URL:
   "event": "payment.received",
   "data": {
     "payment_id": "abc123-def456",
-    "value": 99.90,
+    "value": 99.9,
     "net_value": 93.91,
     "status": "RECEIVED",
     "billing_type": "PIX",
@@ -607,35 +610,35 @@ Quando um evento ocorre, enviamos um POST para sua URL:
 ## Implementando seu Webhook
 
 ```javascript
-const express = require('express');
+const express = require("express");
 const app = express();
 
 app.use(express.json());
 
-app.post('/webhook', (req, res) => {
+app.post("/webhook", (req, res) => {
   const { event, data, timestamp } = req.body;
-  const secret = req.headers['x-webhook-secret'];
-  
+  const secret = req.headers["x-webhook-secret"];
+
   // Valide o secret se configurado
   if (secret && secret !== process.env.WEBHOOK_SECRET) {
-    return res.status(401).send('Invalid secret');
+    return res.status(401).send("Invalid secret");
   }
-  
+
   switch (event) {
-    case 'payment.received':
-      console.log('Pagamento recebido!', data.payment_id);
+    case "payment.received":
+      console.log("Pagamento recebido!", data.payment_id);
       // Liberar produto, enviar email, etc.
       liberarProduto(data);
       break;
-      
-    case 'payment.refunded':
-      console.log('Pagamento estornado!', data.payment_id);
+
+    case "payment.refunded":
+      console.log("Pagamento estornado!", data.payment_id);
       // Reverter acesso, notificar, etc.
       break;
   }
-  
+
   // IMPORTANTE: Sempre retorne 200
-  res.status(200).send('OK');
+  res.status(200).send("OK");
 });
 
 app.listen(3000);
@@ -661,11 +664,11 @@ switch ($data['event']) {
         $paymentId = $data['data']['payment_id'];
         // Liberar produto
         liberarProduto($paymentId);
-        
+
         // Enviar email
         enviarEmailConfirmacao($data['data']['customer']['email']);
         break;
-        
+
     case 'payment.refunded':
         // Reverter acesso
         revogarAcesso($data['data']['payment_id']);
@@ -687,23 +690,23 @@ app = Flask(__name__)
 def webhook():
     data = request.json
     secret = request.headers.get('X-Webhook-Secret')
-    
+
     # Validar secret
     if secret != os.environ.get('WEBHOOK_SECRET'):
         return jsonify({'error': 'Invalid secret'}), 401
-    
+
     event = data.get('event')
     payload = data.get('data')
-    
+
     if event == 'payment.received':
         print(f"Pagamento recebido: {payload['payment_id']}")
         # Liberar produto
         liberar_produto(payload)
-        
+
     elif event == 'payment.refunded':
         print(f"Pagamento estornado: {payload['payment_id']}")
         # Reverter acesso
-    
+
     # IMPORTANTE: Sempre retorne 200
     return jsonify({'received': True}), 200
 
@@ -723,11 +726,11 @@ Configure um secret e valide em cada webhook recebido para garantir que a requis
 
 Se seu endpoint retornar erro (status != 2xx) ou timeout, tentamos novamente:
 
-| Tentativa | Intervalo |
-| --- | --- |
-| 1ª | Imediata |
-| 2ª | 5 segundos |
-| 3ª | 30 segundos |
+| Tentativa | Intervalo   |
+| --------- | ----------- |
+| 1ª        | Imediata    |
+| 2ª        | 5 segundos  |
+| 3ª        | 30 segundos |
 
 ## Taxas e Tarifas <a name="fees"></a>
 
@@ -755,7 +758,7 @@ Confirmação instantânea
 
 5,99% + R$ 2,50 fixo
 
-+ 2,49% por parcela
+- 2,49% por parcela
 
 📄
 
@@ -767,16 +770,16 @@ Compensação em 1-3 dias
 
 ## Exemplo PIX - R$ 100,00
 
-| Item | Valor |
-| --- | --- |
-| Valor da venda | R$ 100,00 |
+| Item                    | Valor     |
+| ----------------------- | --------- |
+| Valor da venda          | R$ 100,00 |
 | Taxa percentual (5,99%) | - R$ 5,99 |
-| Taxa fixa | - R$ 2,50 |
-| Reserva (5%) | - R$ 4,58 |
-| Você recebe | R$ 86,93 |
+| Taxa fixa               | - R$ 2,50 |
+| Reserva (5%)            | - R$ 4,58 |
+| Você recebe             | R$ 86,93  |
 
           A reserva de 5% é liberada após 30 dias automaticamente.
-        
+
 
 ## Reserva de Segurança
 
@@ -814,93 +817,93 @@ X-API-Key: zp_sua_api_key_aqui
 
 ### Conta / Seller
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| GET | /api/v1/account | Dados do seller/empresa |
+| Método | Endpoint        | Descrição               |
+| ------ | --------------- | ----------------------- |
+| GET    | /api/v1/account | Dados do seller/empresa |
 
 ### Cobranças
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| POST | /api/v1/charges | Criar nova cobrança |
-| GET | /api/v1/charges/:id | Consultar cobrança |
-| GET | /api/v1/charges | Listar cobranças |
-| POST | /api/v1/charges/:id/refund | Estornar cobrança |
+| Método | Endpoint                   | Descrição           |
+| ------ | -------------------------- | ------------------- |
+| POST   | /api/v1/charges            | Criar nova cobrança |
+| GET    | /api/v1/charges/:id        | Consultar cobrança  |
+| GET    | /api/v1/charges            | Listar cobranças    |
+| POST   | /api/v1/charges/:id/refund | Estornar cobrança   |
 
 ### Clientes
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| POST | /api/v1/customers | Criar cliente |
-| GET | /api/v1/customers/:id | Consultar cliente |
-| GET | /api/v1/customers | Listar clientes |
+| Método | Endpoint              | Descrição         |
+| ------ | --------------------- | ----------------- |
+| POST   | /api/v1/customers     | Criar cliente     |
+| GET    | /api/v1/customers/:id | Consultar cliente |
+| GET    | /api/v1/customers     | Listar clientes   |
 
 ### Links de Pagamento
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| POST | /api/v1/payment-links | Criar link de pagamento |
-| GET | /api/v1/payment-links/:id | Consultar link |
-| GET | /api/v1/payment-links | Listar links |
-| DELETE | /api/v1/payment-links/:id | Desativar link |
+| Método | Endpoint                  | Descrição               |
+| ------ | ------------------------- | ----------------------- |
+| POST   | /api/v1/payment-links     | Criar link de pagamento |
+| GET    | /api/v1/payment-links/:id | Consultar link          |
+| GET    | /api/v1/payment-links     | Listar links            |
+| DELETE | /api/v1/payment-links/:id | Desativar link          |
 
 ### Produtos
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| POST | /api/v1/products | Criar produto |
-| GET | /api/v1/products/:id | Consultar produto |
-| GET | /api/v1/products | Listar produtos |
-| PUT | /api/v1/products/:id | Atualizar produto |
-| DELETE | /api/v1/products/:id | Excluir produto |
+| Método | Endpoint             | Descrição         |
+| ------ | -------------------- | ----------------- |
+| POST   | /api/v1/products     | Criar produto     |
+| GET    | /api/v1/products/:id | Consultar produto |
+| GET    | /api/v1/products     | Listar produtos   |
+| PUT    | /api/v1/products/:id | Atualizar produto |
+| DELETE | /api/v1/products/:id | Excluir produto   |
 
 ### Transações
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| GET | /api/v1/transactions | Listar transações |
+| Método | Endpoint             | Descrição         |
+| ------ | -------------------- | ----------------- |
+| GET    | /api/v1/transactions | Listar transações |
 
 ### Saques
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| POST | /api/v1/withdrawals | Solicitar saque |
-| GET | /api/v1/withdrawals | Listar saques |
+| Método | Endpoint            | Descrição       |
+| ------ | ------------------- | --------------- |
+| POST   | /api/v1/withdrawals | Solicitar saque |
+| GET    | /api/v1/withdrawals | Listar saques   |
 
 ### Saldo
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| GET | /api/v1/balance | Consultar saldo |
+| Método | Endpoint        | Descrição       |
+| ------ | --------------- | --------------- |
+| GET    | /api/v1/balance | Consultar saldo |
 
 ### Webhooks
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| POST | /api/v1/webhooks | Criar webhook |
-| GET | /api/v1/webhooks | Listar webhooks |
+| Método | Endpoint             | Descrição       |
+| ------ | -------------------- | --------------- |
+| POST   | /api/v1/webhooks     | Criar webhook   |
+| GET    | /api/v1/webhooks     | Listar webhooks |
 | DELETE | /api/v1/webhooks/:id | Deletar webhook |
 
 ### API Keys
 
-| Método | Endpoint | Descrição |
-| --- | --- | --- |
-| POST | /api/v1/keys | Criar API Key |
-| GET | /api/v1/keys | Listar API Keys |
+| Método | Endpoint         | Descrição       |
+| ------ | ---------------- | --------------- |
+| POST   | /api/v1/keys     | Criar API Key   |
+| GET    | /api/v1/keys     | Listar API Keys |
 | DELETE | /api/v1/keys/:id | Revogar API Key |
 
 ## Códigos de Status
 
-| Código | Descrição |
-| --- | --- |
-| 200 | Sucesso |
-| 201 | Criado com sucesso |
-| 400 | Requisição inválida |
-| 401 | Não autenticado |
-| 403 | Sem permissão |
-| 404 | Não encontrado |
-| 429 | Rate limit excedido |
-| 500 | Erro interno |
+| Código | Descrição           |
+| ------ | ------------------- |
+| 200    | Sucesso             |
+| 201    | Criado com sucesso  |
+| 400    | Requisição inválida |
+| 401    | Não autenticado     |
+| 403    | Sem permissão       |
+| 404    | Não encontrado      |
+| 429    | Rate limit excedido |
+| 500    | Erro interno        |
 
 ## Formato de Erros
 
@@ -985,11 +988,11 @@ Cria uma nova cobrança PIX, Cartão ou link de pagamento
 
 ## Request Body
 
-billing_type 
+billing_type
 string
 Tipo de cobrança: `PIX`, `CREDIT_CARD` ou `UNDEFINED`
 
-value 
+value
 number
 Valor da cobrança em reais (ex: 99.90)
 
@@ -1052,48 +1055,48 @@ curl -X POST https://api.appzucropay.com/api/v1/charges \
 ```
 
 ```javascript
-const response = await fetch('https://api.appzucropay.com/api/v1/charges', {
-  method: 'POST',
+const response = await fetch("https://api.appzucropay.com/api/v1/charges", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': 'zp_sua_api_key_aqui'
+    "Content-Type": "application/json",
+    "X-API-Key": "zp_sua_api_key_aqui",
   },
   body: JSON.stringify({
-    billing_type: 'PIX',
-    value: 99.90,
-    description: 'Produto Premium',
+    billing_type: "PIX",
+    value: 99.9,
+    description: "Produto Premium",
     customer: {
-      name: 'João Silva',
-      email: 'joao@email.com',
-      cpf_cnpj: '12345678900'
+      name: "João Silva",
+      email: "joao@email.com",
+      cpf_cnpj: "12345678900",
     },
-    external_reference: 'PEDIDO-123',
-    postback_url: 'https://meusite.com/webhooks/zucropay'
-  })
+    external_reference: "PEDIDO-123",
+    postback_url: "https://meusite.com/webhooks/zucropay",
+  }),
 });
 
 const data = await response.json();
 ```
 
 ```javascript
-const response = await fetch('https://api.appzucropay.com/api/v1/charges', {
-  method: 'POST',
+const response = await fetch("https://api.appzucropay.com/api/v1/charges", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': 'zp_sua_api_key_aqui'
+    "Content-Type": "application/json",
+    "X-API-Key": "zp_sua_api_key_aqui",
   },
   body: JSON.stringify({
-    billing_type: 'CREDIT_CARD',
-    value: 149.90,
-    description: 'Assinatura Mensal',
+    billing_type: "CREDIT_CARD",
+    value: 149.9,
+    description: "Assinatura Mensal",
     customer: {
-      name: 'Maria Santos',
-      email: 'maria@email.com',
-      cpf_cnpj: '98765432100'
+      name: "Maria Santos",
+      email: "maria@email.com",
+      cpf_cnpj: "98765432100",
     },
-    external_reference: 'ASSINATURA-456',
-    postback_url: 'https://meusite.com/webhooks/zucropay'
-  })
+    external_reference: "ASSINATURA-456",
+    postback_url: "https://meusite.com/webhooks/zucropay",
+  }),
 });
 
 const data = await response.json();
@@ -1108,7 +1111,7 @@ const data = await response.json();
   "object": "charge",
   "billing_type": "PIX",
   "status": "PENDING",
-  "value": 99.90,
+  "value": 99.9,
   "net_value": 93.91,
   "platform_fee": 5.99,
   "pix": {
@@ -1129,7 +1132,7 @@ const data = await response.json();
   "object": "charge",
   "billing_type": "CREDIT_CARD",
   "status": "PENDING",
-  "value": 149.90,
+  "value": 149.9,
   "net_value": 140.93,
   "platform_fee": 8.97,
   "payment_url": "https://pay.zucropay.com/charge/abc123def456",
@@ -1148,7 +1151,7 @@ Consulta os detalhes de uma cobrança específica
 
 ## Path Parameters
 
-id 
+id
 string
 ID da cobrança
 
@@ -1167,7 +1170,7 @@ curl -X GET https://api.appzucropay.com/api/v1/charges/abc123-def456 \
   "object": "charge",
   "billing_type": "PIX",
   "status": "RECEIVED",
-  "value": 99.90,
+  "value": 99.9,
   "net_value": 93.91,
   "description": "Produto Premium",
   "pix": {
@@ -1223,7 +1226,7 @@ curl -X GET "https://api.appzucropay.com/api/v1/charges?status=RECEIVED&limit=10
       "id": "abc123-def456",
       "billing_type": "PIX",
       "status": "RECEIVED",
-      "value": 99.90,
+      "value": 99.9,
       "description": "Produto A",
       "created_at": "2026-01-20T13:00:00.000Z"
     },
@@ -1231,7 +1234,7 @@ curl -X GET "https://api.appzucropay.com/api/v1/charges?status=RECEIVED&limit=10
       "id": "xyz789-uvw123",
       "billing_type": "CREDIT_CARD",
       "status": "RECEIVED",
-      "value": 149.90,
+      "value": 149.9,
       "description": "Produto B",
       "created_at": "2026-01-19T10:30:00.000Z"
     }
@@ -1261,9 +1264,9 @@ curl -X GET https://api.appzucropay.com/api/v1/balance \
 ```json
 {
   "object": "balance",
-  "available": 1500.00,
-  "reserved": 75.00,
-  "total": 1575.00
+  "available": 1500.0,
+  "reserved": 75.0,
+  "total": 1575.0
 }
 ```
 
@@ -1278,7 +1281,7 @@ curl -X GET https://api.appzucropay.com/api/v1/balance \
 5% de cada venda fica em reserva por 30 dias como garantia contra chargebacks e estornos. Após esse período, o valor é automaticamente liberado para o saldo disponível.
 
           O saldo reservado é uma medida de segurança padrão do mercado de pagamentos. Ele protege tanto você quanto a plataforma contra fraudes.
-        
+
 
 ## Criar Webhook <a name="api-webhooks-create"></a>
 
@@ -1290,11 +1293,11 @@ Registra um novo endpoint de webhook para receber notificações
 
 ## Request Body
 
-url 
+url
 string
 URL do endpoint que receberá as notificações
 
-events 
+events
 array
 Lista de eventos: `payment.received`, `payment.failed`, `payment.expired`, `withdrawal.approved`, `withdrawal.rejected`
 
@@ -1346,15 +1349,15 @@ npm install axios
 ## Configuração
 
 ```javascript
-const ZUCROPAY_API_KEY = 'sua_api_key';
-const ZUCROPAY_BASE_URL = 'https://api.appzucropay.com';
+const ZUCROPAY_API_KEY = "sua_api_key";
+const ZUCROPAY_BASE_URL = "https://api.appzucropay.com";
 
 const api = axios.create({
   baseURL: ZUCROPAY_BASE_URL,
   headers: {
-    'X-API-Key': ZUCROPAY_API_KEY,
-    'Content-Type': 'application/json'
-  }
+    "X-API-Key": ZUCROPAY_API_KEY,
+    "Content-Type": "application/json",
+  },
 });
 ```
 
@@ -1363,32 +1366,32 @@ const api = axios.create({
 ```javascript
 async function criarCobrancaPix(valor, descricao, cliente) {
   try {
-    const response = await api.post('/api/v1/charges', {
+    const response = await api.post("/api/v1/charges", {
       value: valor,
       description: descricao,
-      billing_type: 'PIX',
+      billing_type: "PIX",
       customer: {
         name: cliente.nome,
         cpf_cnpj: cliente.cpf,
-        email: cliente.email
-      }
+        email: cliente.email,
+      },
     });
 
-    console.log('QR Code:', response.data.pix.qr_code);
-    console.log('Copia e Cola:', response.data.pix.copy_paste);
+    console.log("QR Code:", response.data.pix.qr_code);
+    console.log("Copia e Cola:", response.data.pix.copy_paste);
     return response.data;
   } catch (error) {
-    console.error('Erro ao criar cobrança:', error.response?.data);
+    console.error("Erro ao criar cobrança:", error.response?.data);
     throw error;
   }
 }
 
 // Uso
-const cobranca = await criarCobrancaPix(
-  99.90, 
-  'Produto XYZ',
-  { nome: 'João Silva', cpf: '12345678900', email: 'joao@email.com' }
-);
+const cobranca = await criarCobrancaPix(99.9, "Produto XYZ", {
+  nome: "João Silva",
+  cpf: "12345678900",
+  email: "joao@email.com",
+});
 ```
 
 ## Classe Completa
@@ -1397,16 +1400,16 @@ const cobranca = await criarCobrancaPix(
 class ZucroPay {
   constructor(apiKey) {
     this.apiKey = apiKey;
-    this.baseUrl = 'https://api.appzucropay.com';
+    this.baseUrl = "https://api.appzucropay.com";
   }
 
   async request(method, endpoint, data = null) {
     const options = {
       method,
       headers: {
-        'X-API-Key': this.apiKey,
-        'Content-Type': 'application/json'
-      }
+        "X-API-Key": this.apiKey,
+        "Content-Type": "application/json",
+      },
     };
 
     if (data) {
@@ -1419,56 +1422,56 @@ class ZucroPay {
 
   // Cobranças
   async criarCobranca(data) {
-    return this.request('POST', '/api/v1/charges', data);
+    return this.request("POST", "/api/v1/charges", data);
   }
 
   async buscarCobranca(id) {
-    return this.request('GET', `/api/v1/charges/${id}`);
+    return this.request("GET", `/api/v1/charges/${id}`);
   }
 
   async listarCobrancas() {
-    return this.request('GET', '/api/v1/charges');
+    return this.request("GET", "/api/v1/charges");
   }
 
   async estornarCobranca(id, amount) {
-    return this.request('POST', `/api/v1/charges/${id}/refund`, { amount });
+    return this.request("POST", `/api/v1/charges/${id}/refund`, { amount });
   }
 
   // Produtos
   async criarProduto(data) {
-    return this.request('POST', '/api/v1/products', data);
+    return this.request("POST", "/api/v1/products", data);
   }
 
   async listarProdutos() {
-    return this.request('GET', '/api/v1/products');
+    return this.request("GET", "/api/v1/products");
   }
 
   // Links de Pagamento
   async criarLink(data) {
-    return this.request('POST', '/api/v1/payment-links', data);
+    return this.request("POST", "/api/v1/payment-links", data);
   }
 
   async listarLinks() {
-    return this.request('GET', '/api/v1/payment-links');
+    return this.request("GET", "/api/v1/payment-links");
   }
 
   // Saldo e Saques
   async saldo() {
-    return this.request('GET', '/api/v1/balance');
+    return this.request("GET", "/api/v1/balance");
   }
 
   async solicitarSaque(amount, pix_key) {
-    return this.request('POST', '/api/v1/withdrawals', { amount, pix_key });
+    return this.request("POST", "/api/v1/withdrawals", { amount, pix_key });
   }
 }
 
 // Uso
-const zucropay = new ZucroPay('zp_sua_api_key');
+const zucropay = new ZucroPay("zp_sua_api_key");
 const cobranca = await zucropay.criarCobranca({
   value: 100,
-  description: 'Teste',
-  billing_type: 'PIX',
-  customer: { name: 'Cliente', cpf_cnpj: '12345678900' }
+  description: "Teste",
+  billing_type: "PIX",
+  customer: { name: "Cliente", cpf_cnpj: "12345678900" },
 });
 ```
 
@@ -1482,7 +1485,7 @@ Estorna uma cobrança já paga
 
 ## Path Parameters
 
-id 
+id
 string
 ID da cobrança a ser estornada
 
@@ -1515,7 +1518,7 @@ curl -X POST https://api.appzucropay.com/api/v1/charges/abc123/refund \
   "object": "refund",
   "id": "ref_a1b2c3d4e5f6",
   "charge_id": "abc123",
-  "amount": 50.00,
+  "amount": 50.0,
   "reason": "Cliente solicitou devolução",
   "status": "succeeded",
   "created_at": "2026-01-20T14:00:00.000Z"
@@ -1532,7 +1535,7 @@ Cadastra um novo cliente
 
 ## Request Body
 
-name 
+name
 string
 Nome do cliente
 
@@ -1591,11 +1594,11 @@ Cria um novo link de pagamento
 
 ## Request Body
 
-name 
+name
 string
 Nome do link
 
-value 
+value
 number
 Valor do pagamento
 
@@ -1615,7 +1618,7 @@ Tipo de pagamento: PIX, CREDIT_CARD ou UNDEFINED
   "id": "abc123-def456",
   "name": "Produto Premium",
   "description": "Acesso vitalício",
-  "value": 299.90,
+  "value": 299.9,
   "billing_type": "UNDEFINED",
   "checkout_url": "https://dashboard.appzucropay.com/checkout/abc123-def456",
   "active": true,
@@ -1640,11 +1643,11 @@ Lista todos os links de pagamento
     {
       "id": "abc123-def456",
       "name": "Produto Premium",
-      "value": 299.90,
+      "value": 299.9,
       "billing_type": "UNDEFINED",
       "checkout_url": "https://dashboard.appzucropay.com/checkout/abc123-def456",
       "active": true,
-      "total_received": 1500.00,
+      "total_received": 1500.0,
       "created_at": "2026-01-20T13:00:00.000Z"
     }
   ],
@@ -1679,11 +1682,11 @@ Cadastra um novo produto
 
 ## Request Body
 
-name 
+name
 string
 Nome do produto
 
-price 
+price
 number
 Preço do produto
 
@@ -1707,7 +1710,7 @@ Quantidade em estoque
   "id": "prod_abc123",
   "name": "Curso Premium",
   "description": "Acesso vitalício ao curso",
-  "price": 497.00,
+  "price": 497.0,
   "image_url": "https://exemplo.com/imagem.jpg",
   "stock": null,
   "active": true,
@@ -1733,7 +1736,7 @@ Lista todos os produtos
       "id": "prod_abc123",
       "name": "Curso Premium",
       "description": "Acesso vitalício",
-      "price": 497.00,
+      "price": 497.0,
       "image_url": "https://exemplo.com/imagem.jpg",
       "stock": null,
       "active": true,
@@ -1777,7 +1780,7 @@ Ativar/desativar produto
   "object": "product",
   "id": "prod_abc123",
   "name": "Curso Premium Atualizado",
-  "price": 597.00,
+  "price": 597.0,
   "active": true
 }
 ```
@@ -1830,7 +1833,7 @@ Offset para paginação
     {
       "id": "txn_abc123",
       "type": "credit",
-      "amount": 99.90,
+      "amount": 99.9,
       "status": "completed",
       "description": "Pagamento recebido",
       "created_at": "2026-01-20T13:05:00.000Z"
@@ -1850,7 +1853,7 @@ Solicita um novo saque
 
 ## Request Body
 
-amount 
+amount
 number
 Valor do saque
 
@@ -1864,7 +1867,7 @@ Chave PIX para receber o saque
 {
   "object": "withdrawal",
   "id": "wd_abc123",
-  "amount": 500.00,
+  "amount": 500.0,
   "status": "pending",
   "created_at": "2026-01-20T14:00:00.000Z"
 }
@@ -1892,7 +1895,7 @@ Filtrar por status: pending, approved, rejected
   "data": [
     {
       "id": "wd_abc123",
-      "amount": 500.00,
+      "amount": 500.0,
       "status": "approved",
       "pix_key": "email@exemplo.com",
       "created_at": "2026-01-20T14:00:00.000Z"
@@ -1973,7 +1976,6 @@ Nome descritivo para a API Key
 ```
 
 **Importante:** A API Key completa só é exibida uma vez no momento da criação. Guarde-a em local seguro!
-        
 
 ## Listar API Keys <a name="api-keys-list"></a>
 
@@ -2018,4 +2020,4 @@ Revoga uma API Key (requer autenticação JWT)
 ```
 
           API Keys revogadas param de funcionar imediatamente. Certifique-se de atualizar suas integrações antes de revogar.
-        
+

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "google-veo": {
+      "source": "inference-sh/skills",
+      "sourceType": "github",
+      "skillPath": "tools/video/google-veo/SKILL.md",
+      "computedHash": "1bd9a1797baf2cdc9aae29762737ea123ce8792ab2fb6389ba5e6200bc0d57e1"
+    }
+  }
+}

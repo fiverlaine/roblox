@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "push-notifications": {
+      "source": "dpearson2699/swift-ios-skills",
+      "sourceType": "github",
+      "skillPath": "skills/push-notifications/SKILL.md",
+      "computedHash": "29a6e65b38db2a603e2304c0dc9d15ffbdc4356991f07a1ff6f557b9829c1238"
+    }
+  }
+}
