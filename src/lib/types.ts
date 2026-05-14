@@ -142,6 +142,8 @@ export interface AffiliateTrackingConfig {
   utmify_platform_name: string
   pixel_id: string | null
   pixel_access_token: string | null
+  tiktok_pixel_code: string | null
+  tiktok_access_token: string | null
   is_active: boolean
   created_at: string
   updated_at: string

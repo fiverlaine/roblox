@@ -157,6 +157,111 @@ async function sendCAPIEvent(
   }
 }
 
+// ==================== TIKTOK EVENTS API ====================
+async function sendTikTokEvent(
+  accessToken: string,
+  pixelCode: string,
+  eventName: string,
+  userData: {
+    ttclid?: string | null;
+    ttp?: string | null;
+    user_agent?: string | null;
+    ip_address?: string | null;
+    external_id?: string | null;
+  },
+  customData?: {
+    content_name?: string;
+  },
+  logMeta?: {
+    lead_id?: number;
+    start_param?: string;
+  },
+) {
+  const tkUserData: Record<string, unknown> = {};
+
+  if (userData.ttclid && String(userData.ttclid).trim()) {
+    tkUserData.ttclid = String(userData.ttclid).trim();
+  }
+  if (userData.ttp && String(userData.ttp).trim()) {
+    tkUserData.ttp = String(userData.ttp).trim();
+  }
+  if (userData.user_agent) {
+    tkUserData.user_agent = userData.user_agent;
+  }
+  if (userData.ip_address && userData.ip_address !== '0.0.0.0') {
+    tkUserData.ip = userData.ip_address;
+  }
+  if (userData.external_id) {
+    tkUserData.external_id = [await hashSHA256(userData.external_id)];
+  }
+
+  const tkProperties: Record<string, unknown> = {};
+  if (customData?.content_name) {
+    tkProperties.content_name = customData.content_name;
+  }
+
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+  const eventId = `${eventName.toLowerCase()}_${currentTimestamp}_${logMeta?.start_param || 'unknown'}`;
+
+  const eventPayload = {
+    event_source: 'web',
+    event_source_id: pixelCode,
+    data: [
+      {
+        event: eventName,
+        event_time: currentTimestamp,
+        event_id: eventId,
+        user: tkUserData,
+        ...(Object.keys(tkProperties).length > 0 && { properties: tkProperties }),
+      },
+    ],
+  };
+
+  const url = 'https://business-api.tiktok.com/open_api/v1.3/event/track/';
+
+  console.log(`[TikTok CAPI] Enviando ${eventName} para Pixel ${pixelCode}...`);
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Token': accessToken,
+      },
+      body: JSON.stringify(eventPayload),
+    });
+
+    const result = await response.json();
+    const logStatus = result.code === 0 ? 'success' : 'error';
+    const logError = result.code !== 0 ? (result.message || JSON.stringify(result)) : null;
+
+    await supabase.from('capi_logs').insert({
+      lead_id: logMeta?.lead_id || null,
+      start_param: logMeta?.start_param || null,
+      event_name: `TikTok_${eventName}`,
+      pixel_id: pixelCode,
+      status: logStatus,
+      request_payload: eventPayload,
+      response_payload: result,
+      error_message: logError,
+    });
+
+    return result;
+  } catch (err) {
+    console.error(`[TikTok CAPI] ❌ Erro de rede:`, err);
+    await supabase.from('capi_logs').insert({
+      lead_id: logMeta?.lead_id || null,
+      start_param: logMeta?.start_param || null,
+      event_name: `TikTok_${eventName}`,
+      pixel_id: pixelCode,
+      status: 'error',
+      request_payload: eventPayload,
+      error_message: String(err),
+    });
+    return null;
+  }
+}
+
 // ==================== BOT UTILITIES ====================
 async function getBotConfig(): Promise<{ token: string; group_link: string; group_chat_id: string | null } | null> {
   const { data } = await supabase
@@ -604,7 +709,7 @@ async function handleStart(
   }
 
   // Send just the final entry message
-  const text = `Clique aqui no botão pra entrar no grupo e aprender a virada de saldo 👇`;
+  const text = `Clique aqui no botão pra entrar no grupo e aprender a sacar R$1100 ainda hoje 👇`;
   await sendMessage(token, chatId, text, {
     inline_keyboard: [[{ text: '💸 ENTRAR NO GRUPO', url: finalGroupLink }]],
   });
@@ -686,6 +791,49 @@ async function handleChatMember(chatMember: NonNullable<TelegramUpdate['chat_mem
           await sendCAPIEvent(pixel.access_token, pixel.pixel_id, 'Lead', {
             fbc: lead.fbc,
             fbp: lead.fbp,
+            user_agent: lead.user_agent,
+            ip_address: lead.ip_address,
+            external_id: lead.start_param,
+          }, {
+            content_name: 'Roblox Vault - Entrada no Grupo',
+          }, {
+            lead_id: lead.id,
+            start_param: lead.start_param,
+          });
+        }
+      }
+
+      // Route TikTok Lead to correct pixel (owner vs affiliate)
+      let tiktokPixels: { pixel_code: string; access_token: string }[] = [];
+
+      if (lead.affiliate_ref) {
+        const { data: affProfile } = await supabase.from('profiles').select('id').eq('affiliate_ref', lead.affiliate_ref).single();
+        if (affProfile) {
+          const { data: affConfig } = await supabase
+            .from('affiliate_tracking_configs')
+            .select('tiktok_pixel_code, tiktok_access_token')
+            .eq('user_id', affProfile.id).eq('is_active', true).maybeSingle();
+          if (affConfig?.tiktok_pixel_code && affConfig?.tiktok_access_token) {
+            tiktokPixels = [{ pixel_code: affConfig.tiktok_pixel_code, access_token: affConfig.tiktok_access_token }];
+          }
+        }
+      } else {
+        const { data: globalTk } = await supabase
+          .from('tiktok_configs')
+          .select('pixel_code, access_token')
+          .eq('is_active', true)
+          .limit(1)
+          .maybeSingle();
+        if (globalTk?.pixel_code && globalTk?.access_token) {
+          tiktokPixels = [{ pixel_code: globalTk.pixel_code, access_token: globalTk.access_token }];
+        }
+      }
+
+      if (tiktokPixels.length > 0) {
+        for (const tk of tiktokPixels) {
+          await sendTikTokEvent(tk.access_token, tk.pixel_code, 'Lead', {
+            ttclid: lead.ttclid,
+            ttp: lead.ttp,
             user_agent: lead.user_agent,
             ip_address: lead.ip_address,
             external_id: lead.start_param,

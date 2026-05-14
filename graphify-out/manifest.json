@@ -236,8 +236,8 @@
     "hash": "57929402dda242604e935c8b94468322"
   },
   "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\telegram-bot-webhook\\index.ts": {
-    "mtime": 1775603413.8594844,
-    "hash": "59d22d959d176c4a3a82c51aff558ff1"
+    "mtime": 1778560388.8054278,
+    "hash": "9cddfe3f44502aac8930b1b19517b56a"
   },
   "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\functions\\tracking-redirect\\index.ts": {
     "mtime": 1774924037.791829,
@@ -298,33 +298,5 @@
   "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\supabase\\migrations\\20260227180000_add_group_tracking_infrastructure.sql": {
     "mtime": 1772227564.2996876,
     "hash": "20adb13254fe3a0e0392172085730318"
-  },
-  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Doc bspay.md": {
-    "mtime": 1771962262.0,
-    "hash": "f3ced39bda289f64c5fdb0a3c1f46e12"
-  },
-  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\docs_zucropay.md": {
-    "mtime": 1776313798.9676147,
-    "hash": "ee47fb15271e161fa97b8796e1664325"
-  },
-  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Documenta\u00e7\u00e3o API - UTMify.md": {
-    "mtime": 1771962190.0,
-    "hash": "c4a9cd70b0a30f3d568495acb29040f8"
-  },
-  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Fluxo BSPay UTMify.md": {
-    "mtime": 1773330294.027691,
-    "hash": "bba13b37cd187f41ea34455881225ba3"
-  },
-  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Meta vs API de Convers\u00f5es (CAPI) \u2013 Guia T\u00e9cnico (2024\u20132026).md": {
-    "mtime": 1770651842.0726182,
-    "hash": "d6423ec10c5e1c61728a5455075411cf"
-  },
-  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\PRD.md": {
-    "mtime": 1775494109.9705315,
-    "hash": "2fda238504cadac9d0201705f63f0794"
-  },
-  "E:\\BACKUP SALVO\\Roblox\\roblox-vault\\documentation\\Telegram Bot API Documentacao.md": {
-    "mtime": 1772045098.7371595,
-    "hash": "bda765076c67fa0806376cb72b1e7388"
   }
 }

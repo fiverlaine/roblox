@@ -45,6 +45,8 @@ export default function Affiliate() {
     utmify_platform_name: 'RobloxVault',
     pixel_id: '',
     pixel_access_token: '',
+    tiktok_pixel_code: '',
+    tiktok_access_token: '',
     is_active: true,
   });
   const [trackingConfigId, setTrackingConfigId] = useState<number | null>(null);
@@ -91,6 +93,8 @@ export default function Affiliate() {
         utmify_platform_name: trackingConfig.utmify_platform_name || 'RobloxVault',
         pixel_id: trackingConfig.pixel_id || null,
         pixel_access_token: trackingConfig.pixel_access_token || null,
+        tiktok_pixel_code: trackingConfig.tiktok_pixel_code || null,
+        tiktok_access_token: trackingConfig.tiktok_access_token || null,
         is_active: trackingConfig.is_active ?? true,
         updated_at: new Date().toISOString(),
       };
@@ -540,6 +544,36 @@ export default function Affiliate() {
                             value={trackingConfig.pixel_access_token || ''}
                             onChange={(e) => setTrackingConfig(c => ({ ...c, pixel_access_token: e.target.value }))}
                             placeholder="EAAG..."
+                            className="w-full bg-background-secondary border border-ui-divider rounded-xl py-3 px-4 text-text-primary text-sm font-mono focus:outline-none focus:border-brand-primary/50 transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* TikTok Pixel */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-pink-400" />
+                        <h4 className="text-sm font-bold text-text-primary">TikTok Pixel (Events API)</h4>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Pixel Code</label>
+                          <input
+                            type="text"
+                            value={trackingConfig.tiktok_pixel_code || ''}
+                            onChange={(e) => setTrackingConfig(c => ({ ...c, tiktok_pixel_code: e.target.value }))}
+                            placeholder="Ex: C4ABCDEFGHIJKLMNOPQR"
+                            className="w-full bg-background-secondary border border-ui-divider rounded-xl py-3 px-4 text-text-primary text-sm font-mono focus:outline-none focus:border-brand-primary/50 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Access Token</label>
+                          <input
+                            type="password"
+                            value={trackingConfig.tiktok_access_token || ''}
+                            onChange={(e) => setTrackingConfig(c => ({ ...c, tiktok_access_token: e.target.value }))}
+                            placeholder="Token da Events API do TikTok"
                             className="w-full bg-background-secondary border border-ui-divider rounded-xl py-3 px-4 text-text-primary text-sm font-mono focus:outline-none focus:border-brand-primary/50 transition-all"
                           />
                         </div>

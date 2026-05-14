@@ -105,6 +105,8 @@ Deno.serve(async (req: Request) => {
         fbclid: data.fbclid || null,
         fbc: data.fbc || null,
         fbp: data.fbp || null,
+        ttclid: data.ttclid || null,
+        ttp: data.ttp || null,
         ip_address: ipAddress,
         user_agent: data.user_agent || req.headers.get('user-agent') || null,
         status: 'new',
@@ -113,7 +115,7 @@ Deno.serve(async (req: Request) => {
     if (error) {
       console.error('Failed to save tracking data:', error);
     } else {
-      console.log(`[tracking-save] Lead saved: ${startParam} | fbc: ${data.fbc ? 'YES' : 'NO'} | fbp: ${data.fbp ? 'YES' : 'NO'}`);
+      console.log(`[tracking-save] Lead saved: ${startParam} | fbc: ${data.fbc ? 'YES' : 'NO'} | fbp: ${data.fbp ? 'YES' : 'NO'} | ttclid: ${data.ttclid ? 'YES' : 'NO'} | ttp: ${data.ttp ? 'YES' : 'NO'}`);
 
       // Fire-and-forget: geo lookup in background AFTER lead is saved
       // This NEVER blocks the response or affects the redirect
