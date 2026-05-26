@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Igor Villani Bot - Telegram</title>
+<link rel="stylesheet" href="https://telegram.org/css/font-roboto.css?1">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
+    background-color: #fff;
+    color: #333;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .screen {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .screen.active {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* TELEGRAM HEADER */
+  .tg-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .tg-header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .tg-header-logo svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .tg-header-logo span {
+    font-size: 22px;
+    font-weight: 500;
+    color: #333;
+    font-family: "Roboto", Arial, sans-serif;
+  }
+
+  .tg-download-btn {
+    background: #2ca5e0;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: "Roboto", Arial, sans-serif;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .tg-download-btn:hover {
+    background: #229ed9;
+  }
+
+  /* MAIN BACKGROUND */
+  .tg-bg {
+    flex: 1;
+    margin-top: 56px;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px 40px;
+    min-height: calc(100vh - 56px);
+    background: linear-gradient(135deg, #7db87a 0%, #9fc97a 40%, #c8d88a 70%, #b8cf85 100%);
+    overflow: hidden;
+  }
+
+  .tg-bg-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://telegram.org/img/tgme/pattern.svg?1');
+    background-size: 400px auto;
+    background-repeat: repeat;
+    opacity: 0.35;
+    z-index: 0;
+  }
+
+  /* BOT CARD */
+  .bot-card {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 50px 40px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+
+  .bot-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 22px;
+    border: 3px solid #e8e8e8;
+  }
+
+  .bot-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .bot-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 6px;
+    font-family: "Roboto", "Lucida Grande", Arial, sans-serif;
+  }
+
+  .bot-username {
+    font-size: 15px;
+    color: #888;
+    margin-bottom: 28px;
+    font-family: "Roboto", "Lucida Grande", Arial, sans-serif;
+  }
+
+  .start-bot-btn {
+    display: inline-block;
+    background: #2ca5e0;
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    padding: 12px 40px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: "Roboto", Arial, sans-serif;
+    transition: background 0.2s, transform 0.1s;
+    text-decoration: none;
+  }
+
+  .start-bot-btn:hover {
+    background: #229ed9;
+    transform: translateY(-1px);
+  }
+
+  .start-bot-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .tg-header {
+      padding: 0 12px;
+    }
+
+    .tg-header-logo span {
+      font-size: 18px;
+    }
+
+    .tg-download-btn {
+      padding: 7px 12px;
+      font-size: 11px;
+    }
+
+    .bot-card {
+      padding: 32px 28px 32px;
+      max-width: 340px;
+    }
+
+    .bot-avatar {
+      width: 90px;
+      height: 90px;
+    }
+
+    .bot-name {
+      font-size: 22px;
+    }
+
+    .tg-bg {
+      padding: 24px 16px;
+    }
+  }
+</style>
+
+<style id="criaai-nav-css">
+/* ── Fallback de seleção — só aplica se a IA não definiu .option.selected ── */
+.option { cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+/* ── Loading bar: estado inicial 0% (o JS anima via inline style que tem prioridade) ── */
+[data-loading-duration] .loading-bar-fill,
+[data-loading-duration] [class*="loading-fill"],
+[data-loading-duration] [class*="progress-fill"] {
+  width: 0%;
+}
+</style>
+
+</head>
+<body>
+
+<!-- SCREEN 1 -->
+<div class="screen active" id="screen-1">
+
+  <!-- Telegram Header -->
+  <header class="tg-header">
+    <a href="#" class="tg-header-logo">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="12" fill="#2CA5E0"/>
+        <path d="M5.2 11.8l2.8 1 1.1 3.4c.1.2.3.3.5.2l1.6-1.3 3.1 2.3c.3.2.7.1.8-.3l2.1-9.8c.1-.4-.3-.7-.7-.5L5 10.9c-.4.2-.4.7.2.9z" fill="white"/>
+        <path d="M9 13.8l-.3 2.6c0 .2.2.4.4.3l1.5-1.3-1.6-1.6z" fill="#B0D6F0"/>
+      </svg>
+      <span>Telegram</span>
+    </a>
+    <button class="tg-download-btn" onclick="window.open('https://desktop.telegram.org/?setln=en','_blank')">DOWNLOAD FOR MAC</button>
+  </header>
+
+  <!-- Background -->
+  <div class="tg-bg">
+    <div class="tg-bg-pattern"></div>
+
+    <!-- Bot Card -->
+    <div class="bot-card">
+      <div class="bot-avatar">
+        <img src="https://cdn1.telesco.pe/file/JA-dA8n_mRAuRLTpKHbBXZNTE3G-yi9e7D5Tc82B15BFiQ2kWc9Mq8gCv9XH4wrwE2J0Vzd4e-uxBXrTAr7AS-gfLPDOpUqLMBz4FrFuOatNeacbMSC9Inm3SbN7mQkoQYMyTl9liMxJG-pAz9y8B_cf2Xm_iOPo0Th5fYj-7TvR_NNvT5vlAXaVs5AP9Vku4MaqkXMYIG8Q8QUiZOCAtA7oAOgTJh_drEXgLvyc3RgSlPHC8Dw6RTsCkIZuxKbcr__X47BVm2dtQbxN8bvLXkwmUDY2O0gqB1SME0_HVjTNzuIyFQVPkdnPl_hCua-jyf3FP0yLG6O-F9Y47ew53A.jpg" alt="Igor Villani">
+      </div>
+      <div class="bot-name">Igor Villani</div>
+      <div class="bot-username">@igorvillani_bot</div>
+      <a href="https://t.me/igorvillani_bot" target="_blank" class="start-bot-btn">START BOT</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let currentScreen = 1;
+  const totalScreens = 1;
+
+  function goToScreen(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + n).classList.add('active');
+    currentScreen = n;
+    updateProgress();
+    updateBackBtn();
+    window.scrollTo(0, 0);
+  }
+
+  function goBack() {
+    if (currentScreen > 1) goToScreen(currentScreen - 1);
+  }
+
+  function updateProgress() {
+    const pct = totalScreens > 1 ? ((currentScreen - 1) / (totalScreens - 1)) * 100 : 100;
+    const bar = document.getElementById('progress-fill');
+    if (bar) bar.style.width = pct + '%';
+  }
+
+  function updateBackBtn() {
+    const btn = document.getElementById('back-btn');
+    if (btn) btn.style.visibility = currentScreen > 1 ? 'visible' : 'hidden';
+  }
+
+  goToScreen(1);
+</script>
+
+<script id="criaai-nav-js">
+(function() {
+  let _currentScreen = 1;
+  let _loadingTimers = {};
+
+  function _getTotalScreens() {
+    return document.querySelectorAll('.screen, [id^="screen-"]').length || 1;
+  }
+
+  // ── Animação de loading ──────────────────────────────────────────────────
+  function _startLoadingAnimation(screenEl, screenNum) {
+    const duration = parseInt(screenEl.getAttribute('data-loading-duration') || '0', 10);
+    if (!duration) return;
+
+    const nextNum = screenNum + 1;
+
+    // Reseta e anima a barra de progresso
+    const fills = screenEl.querySelectorAll(
+      '#loading-fill-' + screenNum + ', .loading-bar-fill, [class*="loading-fill"], [class*="progress-fill"]'
+    );
+    fills.forEach(function(el) {
+      el.style.transition = 'none';
+      el.style.width = '0%';
+      // Força reflow para a transição funcionar
+      el.getBoundingClientRect();
+      el.style.transition = 'width ' + duration + 'ms linear';
+      el.style.width = '100%';
+    });
+
+    // Anima o contador de porcentagem
+    var pctEls = screenEl.querySelectorAll(
+      '#loading-pct-' + screenNum + ', .loading-pct, [class*="loading-pct"], [class*="loading-percent"]'
+    );
+    if (pctEls.length) {
+      var startTime = Date.now();
+      var timer = setInterval(function() {
+        var elapsed = Date.now() - startTime;
+        var pct = Math.min(100, Math.round((elapsed / duration) * 100));
+        pctEls.forEach(function(el) { el.textContent = pct + '%'; });
+        if (elapsed >= duration) clearInterval(timer);
+      }, 80);
+      _loadingTimers['pct_' + screenNum] = timer;
+    }
+
+    // Auto-avança para a próxima tela ao fim do loading
+    clearTimeout(_loadingTimers['nav_' + screenNum]);
+    _loadingTimers['nav_' + screenNum] = setTimeout(function() {
+      if (_currentScreen === screenNum) goToScreen(nextNum);
+    }, duration);
+  }
+
+  // ── Navegação principal ──────────────────────────────────────────────────
+  function goToScreen(n) {
+    var total = _getTotalScreens();
+    if (n < 1 || n > total) return;
+
+    document.querySelectorAll('.screen, [id^="screen-"]').forEach(function(s) {
+      s.style.display = 'none';
+      s.classList.remove('active');
+    });
+
+    var target = document.getElementById('screen-' + n);
+    if (target) {
+      target.style.display = '';
+      target.classList.add('active');
+      if (window.getComputedStyle(target).display === 'none') {
+        target.style.display = 'flex';
+      }
+
+      // Se é tela de loading, dispara a animação
+      if (target.hasAttribute('data-loading-duration')) {
+        _startLoadingAnimation(target, n);
+      }
+    }
+
+    _currentScreen = n;
+    _updateProgress(n, total);
+    _updateBackBtn(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goBack() {
+    if (_currentScreen > 1) goToScreen(_currentScreen - 1);
+  }
+
+  function _updateProgress(current, total) {
+    var pct = total > 1 ? ((current - 1) / (total - 1)) * 100 : 0;
+    document.querySelectorAll(
+      '#progress-fill, [class*="progress-fill"], [class*="progress-bar"]:not(.loading-bar-fill):not([class*="loading"])'
+    ).forEach(function(bar) {
+      bar.style.width = pct + '%';
+    });
+  }
+
+  function _updateBackBtn(current) {
+    document.querySelectorAll('#back-btn, [id*="back-btn"], [class*="back-btn"]').forEach(function(btn) {
+      btn.style.visibility = current > 1 ? 'visible' : 'hidden';
+    });
+  }
+
+  // ── Auto-wiring de opções e botões ──────────────────────────────────────
+  var CONTINUE_KW = ['continu', 'próximo', 'proximo', 'next', 'avançar', 'avancar', 'confirmar', 'enviar'];
+  // Palavras que indicam que o onclick já lida com seleção — não adicionar listener duplicado
+  var SELECT_KW = ['select', 'toggle', 'choose', 'pick', 'mark', 'check'];
+
+  function _hasSelectionOnclick(el) {
+    var oc = (el.getAttribute('onclick') || '').toLowerCase();
+    return SELECT_KW.some(function(k) { return oc.includes(k); });
+  }
+
+  function wireOptions() {
+    var total = _getTotalScreens();
+
+    document.querySelectorAll('.screen, [id^="screen-"]').forEach(function(screen, idx) {
+      var screenNum = idx + 1;
+      var nextScreen = screenNum + 1;
+
+      // Telas de loading: o timer cuida do avanço, não precisa wiring de opções
+      if (screen.hasAttribute('data-loading-duration')) return;
+
+      var options = Array.from(screen.querySelectorAll(
+        '.option, [class*="option"], [class*="choice"], [class*="answer"]'
+      ));
+
+      var allBtns = Array.from(screen.querySelectorAll('button, [class*="btn"], [role="button"]'));
+      var continueBtn = allBtns.find(function(b) {
+        var t = (b.innerText || b.textContent || '').toLowerCase().trim();
+        return CONTINUE_KW.some(function(k) { return t.includes(k); });
+      });
+
+      // Wiring de opções — pula se a IA já gerou onclick de seleção
+      options.forEach(function(opt) {
+        var existingOC = opt.getAttribute('onclick') || '';
+        // Se a IA já tem goToScreen ou seleção própria, não duplicar
+        if (existingOC.includes('goToScreen') || _hasSelectionOnclick(opt)) return;
+
+        if (continueBtn) {
+          // Single-select com Continuar: clique só marca visualmente
+          opt.addEventListener('click', function() {
+            options.forEach(function(o) { o.classList.remove('selected'); });
+            this.classList.add('selected');
+            var cb = this.querySelector('input[type="checkbox"], input[type="radio"]');
+            if (cb) cb.checked = true;
+          });
+        } else {
+          // Single-select puro: clique marca e avança
+          opt.addEventListener('click', function() {
+            options.forEach(function(o) { o.classList.remove('selected'); });
+            this.classList.add('selected');
+            if (nextScreen <= total) setTimeout(function() { goToScreen(nextScreen); }, 300);
+          });
+        }
+      });
+
+      // Wiring do botão Continuar — só adiciona se não tem goToScreen inline
+      if (continueBtn) {
+        var existingOC = continueBtn.getAttribute('onclick') || '';
+        if (!existingOC.includes('goToScreen') && nextScreen <= total) {
+          continueBtn.addEventListener('click', function() {
+            goToScreen(nextScreen);
+          });
+        }
+      }
+    });
+
+    // Botão voltar global
+    document.querySelectorAll('#back-btn, [id*="back-btn"], [class*="back-btn"]').forEach(function(btn) {
+      btn.addEventListener('click', goBack);
+    });
+  }
+
+  // ── Delegator global de seleção visual ─────────────────────────────────
+  // Aplica inline styles diretamente — não depende de CSS classes.
+  // Inline style tem prioridade máxima, nada sobrescreve.
+
+  var _cachedPrimary = null;
+
+  function _detectPrimaryColor() {
+    if (_cachedPrimary) return _cachedPrimary;
+    // Busca qualquer botão de continuar em qualquer tela (mesmo ocultas)
+    var candidates = document.querySelectorAll(
+      'button[class*="continue"], .btn-continue, button[class*="primary"], [class*="btn-primary"]'
+    );
+    for (var i = 0; i < candidates.length; i++) {
+      var bg = window.getComputedStyle(candidates[i]).backgroundColor;
+      if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent' && bg.indexOf('0, 0, 0') === -1) {
+        _cachedPrimary = bg;
+        return bg;
+      }
+    }
+    // Fallback: procura qualquer elemento com background não-branco/preto
+    var allBtns = document.querySelectorAll('button');
+    for (var j = 0; j < allBtns.length; j++) {
+      var bg2 = window.getComputedStyle(allBtns[j]).backgroundColor;
+      if (bg2 && bg2 !== 'rgba(0, 0, 0, 0)' && bg2 !== 'transparent'
+          && bg2.indexOf('255, 255, 255') === -1 && bg2.indexOf('0, 0, 0') === -1) {
+        _cachedPrimary = bg2;
+        return bg2;
+      }
+    }
+    return 'rgb(34, 197, 94)';
+  }
+
+  function _rgbToRgba(rgb, alpha) {
+    // 'rgb(34, 197, 94)' → 'rgba(34, 197, 94, 0.1)'
+    return rgb.replace('rgb(', 'rgba(').replace(')', ', ' + alpha + ')');
+  }
+
+  function _clearSelectionStyle(el) {
+    el.style.borderColor = '';
+    el.style.background = '';
+    el.style.boxShadow = '';
+    var letter = el.querySelector('[class*="letter"], [class*="badge"], [class*="number"]');
+    if (letter) { letter.style.background = ''; letter.style.color = ''; letter.style.borderColor = ''; }
+  }
+
+  function _applySelectedStyle(el) {
+    var c = _detectPrimaryColor();
+    el.style.borderColor = c;
+    el.style.background = _rgbToRgba(c, 0.1);
+    el.style.boxShadow = '0 0 0 2px ' + c;
+    var letter = el.querySelector('[class*="letter"], [class*="badge"], [class*="number"]');
+    if (letter) { letter.style.background = c; letter.style.color = '#fff'; letter.style.borderColor = c; }
+  }
+
+  document.addEventListener('click', function(e) {
+    var opt = e.target.closest('.option, [class*="option"], [class*="choice"], [class*="answer"]');
+    if (!opt) return;
+    // Não processar se for botão ou se for elemento navegação (ex: back-btn dentro de uma option)
+    if (opt.tagName === 'BUTTON' || opt.tagName === 'A') return;
+    var container = opt.parentElement;
+    if (!container) return;
+    // Só filhos DIRETOS que são opções — evita pegar .option-letter e outros sub-elementos
+    var siblings = Array.from(container.children).filter(function(child) {
+      return child !== opt && child.matches('.option, [class*="option"], [class*="choice"], [class*="answer"]');
+    });
+    var hasCheckbox = !!opt.querySelector('input[type="checkbox"]');
+    if (hasCheckbox) {
+      // Multi-select: toggle
+      if (opt.classList.contains('selected')) { _clearSelectionStyle(opt); }
+      else { _applySelectedStyle(opt); }
+    } else {
+      // Single-select: desmarca irmãos, marca clicado
+      siblings.forEach(function(s) { _clearSelectionStyle(s); });
+      _applySelectedStyle(opt);
+    }
+  }, true); // capture=true — roda antes de qualquer outro handler
+
+  window.goToScreen = goToScreen;
+  window.goBack = goBack;
+
+  function _init() {
+    goToScreen(1);
+    wireOptions();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _init);
+  } else {
+    _init();
+  }
+})();
+</script>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"3ec4db72a7ab44e38d943b7e148c223d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

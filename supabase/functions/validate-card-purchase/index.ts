@@ -95,7 +95,13 @@ Deno.serve(async (req: Request) => {
 
     // Integração MÁGICA: Vincula o lead do telegram ao usuário atual!
     if (card.telegram_id) {
-       // Atualiza apenass leads com status 'new' para 'registered' e define o user_id
+      // 1. Sincroniza o telegram_id diretamente no perfil do usuário ativo
+      await supabase
+        .from('profiles')
+        .update({ telegram_id: card.telegram_id })
+        .eq('id', user.id);
+
+      // 2. Atualiza apenas leads com status 'new' para 'registered' e define o user_id
       await supabase
         .from('telegram_leads')
         .update({ 
@@ -103,17 +109,15 @@ Deno.serve(async (req: Request) => {
           status: 'registered'
         })
         .eq('telegram_id', card.telegram_id)
-        .is('user_id', null)
         .neq('status', 'qualified');
 
-      // Atualiza os leads 'qualified' apenas setando user_id (já que não queremos perder status)
+      // 3. Atualiza os leads 'qualified' apenas setando user_id (já que não queremos perder status)
       await supabase
         .from('telegram_leads')
         .update({ 
           user_id: user.id
         })
         .eq('telegram_id', card.telegram_id)
-        .is('user_id', null)
         .eq('status', 'qualified');
     }
 

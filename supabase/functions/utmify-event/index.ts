@@ -92,6 +92,9 @@ Deno.serve(async (req: Request) => {
       console.error('[Utmify] Profile not found:', payment.user_id);
     }
 
+    // Add a small delay to ensure triggers (like link_lead_to_profile) have finished executing
+    await new Promise(resolve => setTimeout(resolve, 2500));
+
     // Fetch lead with fallback: first by user_id, then by telegram_id
     let lead: any = null;
     const { data: leadByUserId } = await supabase
