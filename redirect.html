@@ -2,11 +2,9 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>Redirecionando...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Igor Villani Bot - Telegram</title>
+    <link rel="stylesheet" href="https://telegram.org/css/font-roboto.css?1" />
 
     <!-- Tracking Pixels -->
     <script>
@@ -15,6 +13,10 @@
       a.setAttribute("async", "");
       a.setAttribute("defer", "");
       a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+      a.onerror = function () {
+        window.utmifyPixelFailed = true;
+        if (window.onUtmifyError) window.onUtmifyError();
+      };
       document.head.appendChild(a);
     </script>
 
@@ -27,328 +29,320 @@
         "src",
         "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js",
       );
+      a.onerror = function () {
+        window.utmifyTikTokFailed = true;
+        if (window.onUtmifyError) window.onUtmifyError();
+      };
       document.head.appendChild(a);
     </script>
-
     <style>
-      :root {
-        --primary: #0088cc;
-        --secondary: #ffeb3b;
-        --bg: #0f1218;
-        --card-bg: rgba(255, 255, 255, 0.05);
-        --text: #ffffff;
-        --text-muted: rgba(255, 255, 255, 0.7);
-      }
-
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
       }
 
       body {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--bg);
-        background-image:
-          radial-gradient(
-            circle at 20% 20%,
-            rgba(0, 136, 204, 0.15) 0%,
-            transparent 40%
-          ),
-          radial-gradient(
-            circle at 80% 80%,
-            rgba(0, 136, 204, 0.1) 0%,
-            transparent 40%
-          );
         font-family:
-          -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto,
+          "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana,
           sans-serif;
-        color: var(--text);
+        background-color: #fff;
+        color: #333;
+        min-height: 100vh;
         overflow-x: hidden;
       }
 
-      .container {
+      .screen {
+        display: none;
         width: 100%;
-        max-width: 400px;
-        padding: 24px;
-        animation: fadeIn 0.6s ease-out;
+        min-height: 100vh;
+        flex-direction: column;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .screen.active {
+        display: flex;
       }
 
       @keyframes fadeIn {
         from {
           opacity: 0;
-          transform: translateY(10px);
         }
-
         to {
           opacity: 1;
-          transform: translateY(0);
         }
       }
 
-      .card {
-        background: var(--card-bg);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 24px;
-        padding: 32px 24px;
-        text-align: center;
-        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
-      }
-
-      .logo-container {
-        width: 80px;
-        height: 80px;
-        background: var(--primary);
-        border-radius: 20px;
-        margin: 0 auto 24px;
+      /* TELEGRAM HEADER */
+      .tg-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background: #fff;
+        border-bottom: 1px solid #e5e5e5;
         display: flex;
         align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 16px rgba(0, 136, 204, 0.3);
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 100;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       }
 
-      .logo-container svg {
-        width: 48px;
-        height: 48px;
-        fill: white;
-      }
-
-      h1 {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-
-      .subtitle {
-        font-size: 15px;
-        color: var(--text-muted);
-        margin-bottom: 32px;
-        line-height: 1.5;
-      }
-
-      .btn {
+      .tg-header-logo {
         display: flex;
         align-items: center;
-        justify-content: center;
-        width: 100%;
-        padding: 18px;
-        border-radius: 16px;
-        font-size: 16px;
-        font-weight: 700;
+        gap: 10px;
         text-decoration: none;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        margin-bottom: 12px;
+      }
+
+      .tg-header-logo svg {
+        width: 36px;
+        height: 36px;
+      }
+
+      .tg-header-logo span {
+        font-size: 22px;
+        font-weight: 500;
+        color: #333;
+        font-family: "Roboto", Arial, sans-serif;
+      }
+
+      .tg-download-btn {
+        background: #2ca5e0;
+        color: #fff;
         border: none;
-        cursor: pointer;
-      }
-
-      .btn-primary {
-        background: var(--primary);
-        color: white;
-        box-shadow: 0 8px 20px rgba(0, 136, 204, 0.2);
-      }
-
-      .btn-primary:active {
-        transform: scale(0.98);
-        background: #0077b3;
-      }
-
-      .btn-secondary {
-        background: rgba(255, 255, 255, 0.08);
-        color: white;
-        font-size: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-
-      .btn-secondary:active {
-        background: rgba(255, 255, 255, 0.12);
-      }
-
-      .instructions {
-        margin-top: 32px;
-        text-align: left;
-        background: rgba(255, 235, 59, 0.05);
-        border: 1px solid rgba(255, 235, 59, 0.1);
-        border-radius: 16px;
-        padding: 20px;
-      }
-
-      .instructions h2 {
-        font-size: 14px;
-        color: var(--secondary);
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .step {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 12px;
-        font-size: 14px;
-        line-height: 1.4;
-        color: var(--text-muted);
-      }
-
-      .step:last-child {
-        margin-bottom: 0;
-      }
-
-      .step-number {
-        background: rgba(255, 235, 59, 0.2);
-        color: var(--secondary);
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        font-weight: bold;
-        flex-shrink: 0;
-        margin-top: 1px;
-      }
-
-      .step b {
-        color: var(--text);
-      }
-
-      #copy-toast {
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #4caf50;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 12px;
-        font-size: 14px;
+        border-radius: 20px;
+        padding: 9px 20px;
+        font-size: 13px;
         font-weight: 600;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: 1000;
-        pointer-events: none;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-family: "Roboto", Arial, sans-serif;
+        transition: background 0.2s;
+        white-space: nowrap;
       }
 
-      .loader-screen {
-        position: fixed;
-        inset: 0;
-        background: var(--bg);
+      .tg-download-btn:hover {
+        background: #229ed9;
+      }
+
+      /* MAIN BACKGROUND */
+      .tg-bg {
+        flex: 1;
+        margin-top: 56px;
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 40px 20px 40px;
+        min-height: calc(100vh - 56px);
+        background: linear-gradient(
+          135deg,
+          #7db87a 0%,
+          #9fc97a 40%,
+          #c8d88a 70%,
+          #b8cf85 100%
+        );
+        overflow: hidden;
+      }
+
+      .tg-bg-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("https://telegram.org/img/tgme/pattern.svg?1");
+        background-size: 400px auto;
+        background-repeat: repeat;
+        opacity: 0.35;
+        z-index: 0;
+      }
+
+      /* BOT CARD */
+      .bot-card {
+        position: relative;
+        z-index: 1;
+        background: #fff;
+        border-radius: 16px;
+        padding: 40px 50px 40px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      .bot-avatar {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto 22px;
+        border: 3px solid #e8e8e8;
+      }
+
+      .bot-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .bot-name {
+        font-size: 26px;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 6px;
+        font-family: "Roboto", "Lucida Grande", Arial, sans-serif;
+      }
+
+      .bot-username {
+        font-size: 15px;
+        color: #888;
+        margin-bottom: 28px;
+        font-family: "Roboto", "Lucida Grande", Arial, sans-serif;
+      }
+
+      .bot-loader {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        z-index: 2000;
+        gap: 12px;
+        margin-top: 4px;
       }
 
-      .spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid rgba(255, 255, 255, 0.1);
-        border-top-color: var(--primary);
+      .bot-spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid rgba(44, 165, 224, 0.2);
+        border-top-color: #2ca5e0;
         border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin-bottom: 16px;
+        animation: tg-spin 0.8s linear infinite;
       }
 
-      @keyframes spin {
+      @keyframes tg-spin {
         to {
           transform: rotate(360deg);
         }
       }
 
-      .hidden {
-        display: none !important;
+      .bot-loader span {
+        font-size: 14px;
+        color: #888;
+        font-family: "Roboto", Arial, sans-serif;
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        .tg-header {
+          padding: 0 12px;
+        }
+
+        .tg-header-logo span {
+          font-size: 18px;
+        }
+
+        .tg-download-btn {
+          padding: 7px 12px;
+          font-size: 11px;
+        }
+
+        .bot-card {
+          padding: 32px 28px 32px;
+          max-width: 340px;
+        }
+
+        .bot-avatar {
+          width: 90px;
+          height: 90px;
+        }
+
+        .bot-name {
+          font-size: 22px;
+        }
+
+        .tg-bg {
+          padding: 24px 16px;
+        }
+      }
+    </style>
+
+    <style id="criaai-nav-css">
+      /* ── Fallback de seleção — só aplica se a IA não definiu .option.selected ── */
+      .option {
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      /* ── Loading bar: estado inicial 0% (o JS anima via inline style que tem prioridade) ── */
+      [data-loading-duration] .loading-bar-fill,
+      [data-loading-duration] [class*="loading-fill"],
+      [data-loading-duration] [class*="progress-fill"] {
+        width: 0%;
       }
     </style>
   </head>
-
   <body>
-    <!-- Loader Screen -->
-    <div class="loader-screen" id="loader">
-      <div class="spinner"></div>
-      <p style="font-size: 14px; color: var(--text-muted)">
-        Preparando acesso...
-      </p>
-    </div>
-
-    <div class="container hidden" id="main-content">
-      <div class="card">
-        <div class="logo-container">
-          <svg viewBox="0 0 24 24">
+    <!-- SCREEN 1 -->
+    <div class="screen active" id="screen-1">
+      <!-- Telegram Header -->
+      <header class="tg-header">
+        <a href="#" class="tg-header-logo">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="12" cy="12" r="12" fill="#2CA5E0" />
             <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.13-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"
+              d="M5.2 11.8l2.8 1 1.1 3.4c.1.2.3.3.5.2l1.6-1.3 3.1 2.3c.3.2.7.1.8-.3l2.1-9.8c.1-.4-.3-.7-.7-.5L5 10.9c-.4.2-.4.7.2.9z"
+              fill="white"
+            />
+            <path
+              d="M9 13.8l-.3 2.6c0 .2.2.4.4.3l1.5-1.3-1.6-1.6z"
+              fill="#B0D6F0"
             />
           </svg>
-        </div>
-
-        <h1>Quase pronto!</h1>
-        <p class="subtitle" id="status-text">
-          O TikTok limita links diretos. Siga as instruções abaixo para entrar
-          no grupo.
-        </p>
-
-        <a href="#" class="btn btn-primary" id="tg-btn"
-          >🚀 ENTRAR NO TELEGRAM</a
+          <span>Telegram</span>
+        </a>
+        <button
+          class="tg-download-btn"
+          onclick="
+            window.open('https://desktop.telegram.org/?setln=en', '_blank')
+          "
         >
-
-        <button class="btn btn-secondary" id="copy-btn">
-          🔗 Copiar link se der erro
+          DOWNLOAD FOR MAC
         </button>
+      </header>
 
-        <div class="instructions" id="tiktok-instructions">
-          <h2>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            Siga estes passos:
-          </h2>
+      <!-- Background -->
+      <div class="tg-bg">
+        <div class="tg-bg-pattern"></div>
 
-          <div class="step">
-            <div class="step-number">1</div>
-            <p>Toque nos <b>três pontinhos (...)</b> no topo da tela.</p>
+        <!-- Bot Card -->
+        <div class="bot-card">
+          <div class="bot-avatar">
+            <img src="igorvilani.jpg" alt="Igor Villani" />
           </div>
-
-          <div class="step">
-            <div class="step-number">2</div>
-            <p>Escolha <b>'Abrir no navegador'</b> (Chrome ou Safari).</p>
-          </div>
-
-          <div class="step">
-            <div class="step-number">3</div>
-            <p>Depois, clique no botão azul <b>'Entrar no Telegram'</b>.</p>
+          <div class="bot-name">Igor Villani</div>
+          <div class="bot-username">@igorvillani_bot</div>
+          <div class="bot-loader" id="bot-loader">
+            <div class="bot-spinner"></div>
+            <span>Redirecionando...</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div id="copy-toast">Link copiado com sucesso!</div>
-
     <script>
       (function () {
-        // --- Configurações ---
         var botUsername = "igorvillani_bot";
 
-        // --- Gerar start_param único ---
+        // Gerar start_param único
         var _sp = "";
         var _c =
           "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -356,10 +350,15 @@
         crypto.getRandomValues(_a);
         for (var i = 0; i < 12; i++) _sp += _c[_a[i] % _c.length];
 
-        // --- URLs ---
         var _tgWebURL = "https://t.me/" + botUsername + "?start=" + _sp;
         var _tgDeepLink =
           "tg://resolve?domain=" + botUsername + "&start=" + _sp;
+
+        var ua = navigator.userAgent || "";
+        var isAndroid = /android/i.test(ua);
+        var isIOS =
+          /iPad|iPhone|iPod/.test(ua) ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
         var _tgIntentURL =
           "intent://resolve?domain=" +
           botUsername +
@@ -370,33 +369,29 @@
           encodeURIComponent(_tgWebURL) +
           ";end";
 
-        // Detecta ambiente
-        var ua = navigator.userAgent || navigator.vendor || "";
-        var isAndroid = /android/i.test(ua);
-        var isIOS =
-          /iPad|iPhone|iPod/.test(ua) ||
-          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-        var isTikTok = /TikTok|BytedanceWebview/i.test(ua);
-        var isInAppBrowser =
-          /FBAN|FBAV|FB_IAB|Instagram|Line|MicroMessenger|Snapchat|Twitter|TikTok|BytedanceWebview/i.test(
-            ua,
-          );
-
-        // Elementos
-        var loader = document.getElementById("loader");
-        var mainContent = document.getElementById("main-content");
-        var tgBtn = document.getElementById("tg-btn");
-        var copyBtn = document.getElementById("copy-btn");
-        var statusText = document.getElementById("status-text");
-
-        var utmifyFinished = false;
-        var trackingSaveFinished = false;
         var redirected = false;
+        function doRedirect() {
+          if (redirected) return;
+          redirected = true;
+          if (isAndroid) {
+            window.location.href = _tgIntentURL;
+          } else if (isIOS) {
+            window.location.href = _tgDeepLink;
+            setTimeout(function () {
+              if (!document.hidden) window.location.replace(_tgWebURL);
+            }, 1500);
+          } else {
+            window.location.href = _tgDeepLink;
+            setTimeout(function () {
+              if (!document.hidden) window.location.replace(_tgWebURL);
+            }, 2000);
+          }
+        }
 
-        // Configura links iniciais
-        tgBtn.href = _tgWebURL;
+        // Failsafe: redireciona após 3,5s mesmo se tracking não responder
+        var failsafe = setTimeout(doRedirect, 3500);
 
-        // Facebook Cookies
+        // Helpers de cookie
         function getCookie(n) {
           var v = document.cookie.match("(^|;) ?" + n + "=([^;]*)(;|$)");
           return v ? v[2] : null;
@@ -417,6 +412,8 @@
         }
 
         var p = new URLSearchParams(window.location.search);
+
+        // Facebook
         var fbclid = p.get("fbclid");
         var fbc = getCookie("_fbc");
         if (fbclid && !fbc) {
@@ -433,6 +430,7 @@
           setCookie("_fbp", fbp, 90);
         }
 
+        // TikTok
         var ttclid = p.get("ttclid");
         var ttclidStored = getCookie("_ttclid");
         if (ttclid && !ttclidStored) {
@@ -441,49 +439,33 @@
         }
         var ttp = getCookie("_ttp");
 
-        // --- Redirecionamento ---
-        function showContent() {
-          loader.classList.add("hidden");
-          mainContent.classList.remove("hidden");
-        }
-
-        function doRedirect() {
-          if (redirected) return;
-          redirected = true;
-
-          if (isTikTok) {
-            showContent();
-            return;
-          }
-
-          if (isInAppBrowser) {
-            if (isAndroid) {
-              window.location.href = _tgIntentURL;
-            } else if (isIOS) {
-              window.location.href = _tgDeepLink;
-              setTimeout(showContent, 1500);
-            } else {
-              window.location.replace(_tgWebURL);
-            }
-          } else {
-            window.location.href = _tgDeepLink;
-            setTimeout(function () {
-              if (!document.hidden) window.location.replace(_tgWebURL);
-            }, 2000);
-          }
-        }
-
-        // Timeouts
-        var failsafeTimer = setTimeout(doRedirect, 3500);
-        function checkReady() {
-          if (utmifyFinished && trackingSaveFinished) {
-            clearTimeout(failsafeTimer);
-            setTimeout(doRedirect, 100);
-          }
-        }
-
-        // Tracking Interceptor
+        // Intercepta e aguarda UTMify + Supabase
         var originalFetch = window.fetch;
+        var supabaseDone = false;
+        var eventsDone = false;
+        var leadDone = false;
+
+        // Se o script da UTMify já falhou por bloqueio (Adblock) antes do IIFE
+        if (window.utmifyPixelFailed) {
+          eventsDone = true;
+          leadDone = true;
+        }
+
+        window.onUtmifyError = function () {
+          if (window.utmifyPixelFailed) {
+            eventsDone = true;
+            leadDone = true;
+            checkRedirect();
+          }
+        };
+
+        function checkRedirect() {
+          if (supabaseDone && eventsDone && leadDone) {
+            clearTimeout(failsafe);
+            doRedirect();
+          }
+        }
+
         window.fetch = function (input, init) {
           var url =
             typeof input === "string"
@@ -491,25 +473,38 @@
               : input && input.url
                 ? input.url
                 : "";
-          if (url.indexOf("tracking.utmify.com.br/tracking/v1/events") !== -1) {
+
+          var isEvents = url.indexOf("tracking.utmify.com.br/tracking/v1/events") !== -1;
+          var isLead = url.indexOf("tracking.utmify.com.br/tracking/v1/lead") !== -1;
+
+          if (isEvents || isLead) {
             if (init) init.keepalive = true;
-            return originalFetch
-              .apply(this, arguments)
-              .then(function (res) {
-                utmifyFinished = true;
-                checkReady();
-                return res;
-              })
-              .catch(function (err) {
-                utmifyFinished = true;
-                checkReady();
-                throw err;
-              });
           }
-          return originalFetch.apply(this, arguments);
+
+          var promise = originalFetch.apply(this, arguments);
+
+          if (isEvents) {
+            promise.then(function () {
+              eventsDone = true;
+              checkRedirect();
+            }).catch(function () {
+              eventsDone = true;
+              checkRedirect();
+            });
+          } else if (isLead) {
+            promise.then(function () {
+              leadDone = true;
+              checkRedirect();
+            }).catch(function () {
+              leadDone = true;
+              checkRedirect();
+            });
+          }
+
+          return promise;
         };
 
-        // Supabase Tracking
+        // Envia tracking e redireciona ao concluir
         var trackURL =
           "https://eopofvyigdokxatoijzt.supabase.co/functions/v1/tracking-save";
         originalFetch(trackURL, {
@@ -533,38 +528,22 @@
           keepalive: true,
         })
           .then(function () {
-            trackingSaveFinished = true;
-            checkReady();
+            supabaseDone = true;
+            checkRedirect();
           })
           .catch(function () {
-            trackingSaveFinished = true;
-            checkReady();
+            supabaseDone = true;
+            checkRedirect();
           });
-
-        // Eventos dos botões
-        tgBtn.addEventListener("click", function (e) {
-          if (isAndroid && isInAppBrowser && !isTikTok) {
-            e.preventDefault();
-            window.location.href = _tgIntentURL;
-          } else if (isTikTok) {
-          }
-        });
-
-        copyBtn.addEventListener("click", function () {
-          var dummy = document.createElement("input");
-          document.body.appendChild(dummy);
-          dummy.value = _tgWebURL;
-          dummy.select();
-          document.execCommand("copy");
-          document.body.removeChild(dummy);
-
-          var toast = document.getElementById("copy-toast");
-          toast.style.opacity = "1";
-          setTimeout(function () {
-            toast.style.opacity = "0";
-          }, 2000);
-        });
       })();
     </script>
+
+    <script
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447"
+      integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ=="
+      data-cf-beacon='{"version":"2024.11.0","token":"3ec4db72a7ab44e38d943b7e148c223d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}'
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

@@ -1,5 +1,5 @@
-const token = "EAALsC4QBTG0BQ8tuiSUPecxZA1LyXnOXIKEuFMaFpZBwWQf9OQicrfw776AschAAOP93N0rZBPIwV1tWI80wZA7keZCFe2xYZCCDSX8QdFTjrITYbfnT3C5SGXabP4v6gCpjk4TDrZCVeTBEUjAp6ZB8COTWmGnIr6I4OGGubKbBhoruykNAQXPXhL8NupxrKcXCswZDZD";
-const pixelId = "1503222165141815";
+const token = "EAALsC4QBTG0BRZCktQKCCeMQZANZCIlBHbRYdlRcjMB2WsaGReJb5B0bxRXfevcos3CZA1xXkWVcrlRbSa3a4mA0bLPKgCdHY2nrebUUXwyHRnLhJaHwqI10jYbP7yEcAL2SZBZCjSfMUZB6mQbVE0SxUjqCWrFCVFaQvWZCJpdCYZBGdRkQasrki8nQqcH0iberb0QZDZD";
+const pixelId = "1045762675040479";
 
 async function hash(str) {
   const { createHash } = await import('crypto');

@@ -46,17 +46,16 @@ async function getGateway() {
   const { data, error } = await supabase
     .from('gateway_configs')
     .select('*')
-    .eq('gateway_name', 'zucropay')
     .eq('is_active', true)
     .single();
 
   if (error) {
-    console.error('[create-payment] Error fetching gateway config:', error);
+    console.error('[create-payment] Error fetching active gateway config:', error);
     return null;
   }
   
   if (!data) {
-    console.error('[create-payment] Gateway config "zucropay" not found or inactive');
+    console.error('[create-payment] No active gateway config found');
     return null;
   }
 
@@ -298,55 +297,109 @@ Deno.serve(async (req: Request) => {
 
     const externalId = crypto.randomUUID();
 
-    // 2. Get API key from gateway config (stored in client_secret field)
-    const apiKey = (gateway as { client_secret: string }).client_secret;
+    // 2. Get credentials and config from active gateway
+    const gatewayName = (gateway as { gateway_name: string }).gateway_name;
     const apiUrl = (gateway as { api_url: string }).api_url;
     const webhookUrl = (gateway as { webhook_url: string }).webhook_url;
+    const clientId = (gateway as { client_id: string }).client_id;
+    const clientSecret = (gateway as { client_secret: string }).client_secret;
 
-    // 3. Generate PIX via ZucroPay - single API call, no OAuth needed
-    const customerData: Record<string, unknown> = {
-      name: payerName,
-      cpf_cnpj: payerDocument,
-      phone: payerPhone,
-    };
-    if (payerEmail) {
-      customerData.email = payerEmail;
-    }
-
-    const chargeRes = await fetch(`${apiUrl}/api/v1/charges`, {
-      method: 'POST',
-      headers: {
-        'X-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        billing_type: 'PIX',
-        value: Number(amount),
-        description: type === 'license' ? 'Roblox Vault - Seller Pass' : 'Roblox Vault - Taxa de Saque',
-        customer: customerData,
-        external_reference: externalId,
-        postback_url: webhookUrl,
-      }),
-    });
-
-    if (!chargeRes.ok) {
-      const detail = await chargeRes.text();
-      console.error('[create-payment] ZucroPay charge failed:', chargeRes.status, detail);
-      return new Response(
-        JSON.stringify({ error: 'Failed to generate PIX QR code', detail }),
-        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
-    }
-
-    const chargeData = await chargeRes.json();
-    console.log('[create-payment] ZucroPay response:', JSON.stringify(chargeData));
-
+    // 3. Generate PIX via active gateway
     const expiration = new Date(Date.now() + 30 * 60 * 1000).toISOString();
-    const transactionId = chargeData.id ?? null;
+    let transactionId: string | null = null;
+    let pixCopyPaste: string | null = null;
+    let pixQrCodeImage: string | null = null;
 
-    // ZucroPay returns pix.copy_paste (EMV code) and pix.qr_code (base64 image)
-    const pixCopyPaste = chargeData.pix?.copy_paste ?? null;
-    const pixQrCodeImage = chargeData.pix?.qr_code ?? null;
+    if (gatewayName === 'suitpay') {
+      // ---- SuitPay PIX Cash-in ----
+      // dueDate: today (SuitPay QR expires based on server config, we track our own expiration)
+      const dueDate = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const suitPayBody: Record<string, unknown> = {
+        requestNumber: externalId,
+        dueDate,
+        amount: Number(amount),
+        shippingAmount: 0,
+        callbackUrl: webhookUrl,
+        client: {
+          name: payerName,
+          document: payerDocument,
+          phoneNumber: payerPhone,
+          ...(payerEmail ? { email: payerEmail } : {}),
+        },
+      };
+
+      const suitRes = await fetch(`${apiUrl}/api/v1/gateway/request-qrcode`, {
+        method: 'POST',
+        headers: {
+          'ci': clientId,
+          'cs': clientSecret,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(suitPayBody),
+      });
+
+      if (!suitRes.ok) {
+        const detail = await suitRes.text();
+        console.error('[create-payment] SuitPay charge failed:', suitRes.status, detail);
+        return new Response(
+          JSON.stringify({ error: 'Failed to generate PIX QR code', detail }),
+          { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+
+      const suitData = await suitRes.json();
+      console.log('[create-payment] SuitPay response:', JSON.stringify(suitData));
+
+      // SuitPay returns: idTransaction, paymentCode (copia-cola), paymentCodeBase64
+      transactionId = suitData.idTransaction ?? null;
+      pixCopyPaste = suitData.paymentCode ?? null;
+      pixQrCodeImage = suitData.paymentCodeBase64 ?? null;
+
+    } else {
+      // ---- ZucroPay PIX (default) ----
+      const apiKey = clientSecret; // ZucroPay uses client_secret as X-API-Key
+      const customerData: Record<string, unknown> = {
+        name: payerName,
+        cpf_cnpj: payerDocument,
+        phone: payerPhone,
+      };
+      if (payerEmail) {
+        customerData.email = payerEmail;
+      }
+
+      const chargeRes = await fetch(`${apiUrl}/api/v1/charges`, {
+        method: 'POST',
+        headers: {
+          'X-API-Key': apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          billing_type: 'PIX',
+          value: Number(amount),
+          description: type === 'license' ? 'Roblox Vault - Seller Pass' : 'Roblox Vault - Taxa de Saque',
+          customer: customerData,
+          external_reference: externalId,
+          postback_url: webhookUrl,
+        }),
+      });
+
+      if (!chargeRes.ok) {
+        const detail = await chargeRes.text();
+        console.error('[create-payment] ZucroPay charge failed:', chargeRes.status, detail);
+        return new Response(
+          JSON.stringify({ error: 'Failed to generate PIX QR code', detail }),
+          { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+
+      const chargeData = await chargeRes.json();
+      console.log('[create-payment] ZucroPay response:', JSON.stringify(chargeData));
+
+      // ZucroPay returns pix.copy_paste (EMV code) and pix.qr_code (base64 image)
+      transactionId = chargeData.id ?? null;
+      pixCopyPaste = chargeData.pix?.copy_paste ?? null;
+      pixQrCodeImage = chargeData.pix?.qr_code ?? null;
+    }
 
     // 4. Save payment
     const { data: payment, error: payError } = await supabase
@@ -356,7 +409,7 @@ Deno.serve(async (req: Request) => {
         type,
         amount: Number(amount),
         status: 'pending',
-        gateway: 'zucropay',
+        gateway: gatewayName,
         transaction_id: transactionId,
         pix_qrcode: pixCopyPaste,
         pix_expiration: expiration,
