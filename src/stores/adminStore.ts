@@ -41,6 +41,7 @@ interface AdminState {
   fetchUsers: (search?: string) => Promise<void>;
   fetchGatewayConfigs: () => Promise<void>;
   saveGatewayConfig: (config: Partial<GatewayConfig> & { id?: number; gateway_name: string }) => Promise<void>;
+  activateGateway: (gatewayName: string) => Promise<void>;
   fetchBotConfigs: () => Promise<void>;
   saveBotConfig: (config: Partial<BotConfig> & { id?: number }) => Promise<void>;
   fetchUtmifyConfig: () => Promise<void>;
@@ -225,6 +226,38 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
           .insert(config);
         if (error) throw error;
       }
+      await get().fetchGatewayConfigs();
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  activateGateway: async (gatewayName: string) => {
+    set({ loading: true });
+    try {
+      // Fetch fresh list first
+      const { data: allConfigs, error: fetchErr } = await supabase
+        .from('gateway_configs')
+        .select('*')
+        .order('id');
+      if (fetchErr) throw fetchErr;
+      if (!allConfigs || allConfigs.length === 0) throw new Error('No gateway configs found');
+
+      const target = allConfigs.find((c: GatewayConfig) => c.gateway_name === gatewayName);
+      if (!target) throw new Error(`Gateway "${gatewayName}" not found in database`);
+
+      // Deactivate each config individually by ID (RLS-safe)
+      for (const cfg of allConfigs as GatewayConfig[]) {
+        const shouldBeActive = cfg.gateway_name === gatewayName;
+        if (cfg.is_active !== shouldBeActive) {
+          const { error } = await supabase
+            .from('gateway_configs')
+            .update({ is_active: shouldBeActive })
+            .eq('id', cfg.id);
+          if (error) throw error;
+        }
+      }
+
       await get().fetchGatewayConfigs();
     } finally {
       set({ loading: false });

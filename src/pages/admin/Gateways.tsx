@@ -17,7 +17,6 @@ import {
 import toast from 'react-hot-toast';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { useAdminStore } from '../../stores/adminStore';
-import { supabase } from '../../lib/supabase';
 import type { GatewayConfig } from '../../lib/types';
 
 const GATEWAYS = [
@@ -56,7 +55,7 @@ const GATEWAYS = [
 ];
 
 export default function Gateways() {
-  const { gatewayConfigs, loading, fetchGatewayConfigs, saveGatewayConfig } = useAdminStore();
+  const { gatewayConfigs, loading, fetchGatewayConfigs, saveGatewayConfig, activateGateway } = useAdminStore();
   const [configuring, setConfiguring] = useState<string | null>(null);
   const [showSecret, setShowSecret] = useState(false);
   const [activating, setActivating] = useState<string | null>(null);
@@ -106,38 +105,18 @@ export default function Gateways() {
   };
 
   const handleActivate = async (name: string) => {
+    const existing = getConfig(name);
+    if (!existing) {
+      toast.error(`Gateway "${name}" não encontrado. Configure-o primeiro.`);
+      return;
+    }
     setActivating(name);
     try {
-      // 1. Make sure the target gateway exists in DB
-      const existing = getConfig(name);
-
-      if (!existing) {
-        toast.error(`Gateway "${name}" não encontrado. Configure-o primeiro.`);
-        return;
-      }
-
-      // 2. Deactivate ALL gateways
-      const { error: deactivateErr } = await supabase
-        .from('gateway_configs')
-        .update({ is_active: false })
-        .neq('id', 0); // update all rows
-
-      if (deactivateErr) throw deactivateErr;
-
-      // 3. Activate only the selected one
-      const { error: activateErr } = await supabase
-        .from('gateway_configs')
-        .update({ is_active: true })
-        .eq('id', existing.id);
-
-      if (activateErr) throw activateErr;
-
-      // 4. Refresh store
-      await fetchGatewayConfigs();
+      await activateGateway(name);
       toast.success(`Gateway ${GATEWAYS.find(g => g.name === name)?.label ?? name} ativado com sucesso!`);
     } catch (err) {
       console.error('Error activating gateway:', err);
-      toast.error('Erro ao ativar gateway');
+      toast.error('Erro ao ativar gateway: ' + String(err));
     } finally {
       setActivating(null);
     }
